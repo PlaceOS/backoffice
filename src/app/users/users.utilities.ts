@@ -5,7 +5,7 @@ import {
     SchemaFn,
     validate,
 } from '@angular/forms/signals';
-import { PlaceUser } from '@placeos/ts-client';
+import { type User } from '@placeos/ts-client';
 import { isValidUrl } from '../common/validation';
 
 export interface UserFormModel {
@@ -17,14 +17,14 @@ export interface UserFormModel {
     support: boolean;
     sys_admin: boolean;
     locatable: boolean;
-    groups: string[];
+    groups: readonly string[];
     password: string;
     confirm_password: string;
     card_number: string;
     image: string;
 }
 
-export function generateUserFormModel(user: PlaceUser): UserFormModel {
+export function generateUserFormModel(user: User): UserFormModel {
     return {
         authority_id: user?.authority_id || '',
         first_name: user?.first_name || user?.name || '',
@@ -33,7 +33,8 @@ export function generateUserFormModel(user: PlaceUser): UserFormModel {
         staff_id: user?.staff_id || '',
         support: user?.support || false,
         sys_admin: user?.sys_admin || false,
-        locatable: user?.locatable || false,
+        // A new user is locatable, as in 6.x
+        locatable: user?.id ? !!user.locatable : true,
         groups: user?.groups || [],
         password: '',
         confirm_password: '',
@@ -43,7 +44,7 @@ export function generateUserFormModel(user: PlaceUser): UserFormModel {
 }
 
 export function userFormSchema(
-    user?: PlaceUser,
+    user?: User,
     lock_authority = false,
 ): SchemaFn<UserFormModel> {
     return (path) => {
@@ -68,5 +69,7 @@ export function userFormSchema(
                 : { kind: 'url', message: 'Invalid URL' },
         );
         disabled(path.authority_id, () => !!user?.id || lock_authority);
+        // The API does not change the email of a saved user
+        disabled(path.email, () => !!user?.id);
     };
 }

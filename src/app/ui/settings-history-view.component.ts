@@ -1,9 +1,6 @@
 import { Component, computed, inject, resource, signal } from '@angular/core';
-import {
-    PlaceSettings,
-    querySettings,
-    settingsHistory,
-} from '@placeos/ts-client';
+import { settings, type Settings } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -155,22 +152,26 @@ import { TranslatePipe } from './translate.pipe';
 export class SettingsHistoryViewComponent {
     private _service = inject(ActiveItemService);
 
-    public readonly active_setting = signal<PlaceSettings | null>(null);
-    public readonly old_setting = signal<PlaceSettings | null>(null);
+    public readonly active_setting = signal<Settings | null>(null);
+    public readonly old_setting = signal<Settings | null>(null);
     public readonly types = ['UNENCRYPTED', 'SUPPORT', 'ADMIN', 'ENCRYPTED'];
 
     private readonly _settings = resource({
         params: () => this._service.item()?.id,
         loader: async ({ params: id }) =>
-            id ? (await querySettings({ parent_id: id })).data : [],
+            id
+                ? (await settings.query({ parent_id: [id] }).then(orThrowPage))
+                      .data
+                : [],
     });
     public readonly settings = computed(() => this._settings.value() || []);
 
     private readonly _history = resource({
         params: () => this.active_setting()?.id,
-        loader: async ({ params: id }) => (id ? settingsHistory(id) : []),
+        loader: async ({ params: id }) =>
+            id ? settings.history({ id }).then(orThrow) : [],
     });
     public readonly history = computed(
-        () => this._history.value() || ([] as PlaceSettings[]),
+        () => this._history.value() || ([] as Settings[]),
     );
 }

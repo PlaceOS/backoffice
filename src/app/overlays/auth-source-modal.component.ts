@@ -9,30 +9,31 @@ import {
 import { FormsModule } from '@angular/forms';
 import { form, submit } from '@angular/forms/signals';
 import {
-    addLDAPSource,
-    addOAuthSource,
-    addSAMLSource,
-    PlaceDomain,
-    PlaceLDAPSource,
-    PlaceOAuthSource,
-    PlaceSAMLSource,
-    updateLDAPSource,
-    updateOAuthSource,
-    updateSAMLSource,
+    type Domain,
+    ldap_authentications,
+    LdapAuthentication,
+    oauth_authentications,
+    OauthAuthentication,
+    saml_authentications,
+    SamlAuthentication,
 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { readError } from '../common/errors';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { newItem, toBody } from '../common/placeos';
 import { DialogEvent, Identity } from '../common/types';
 import {
     applyLDAPSourceFormSchema,
     applyOAuthSourceFormSchema,
     applySAMLSourceFormSchema,
+    authSourceType,
     generateLDAPSourceForm,
     generateOAuthSourceForm,
     generateSAMLSourceForm,
+    newSAMLSourceBody,
 } from '../domains/auth-sources.utilities';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { OptionComponent } from '../ui/controls/option.component';
@@ -45,9 +46,9 @@ import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface AuthSourceModalData {
     /** Domain the auth source is associated with */
-    domain: PlaceDomain;
+    domain: Domain;
     /** Item to add/update the trigger on */
-    auth_source?: PlaceOAuthSource | PlaceLDAPSource | PlaceSAMLSource;
+    auth_source?: OauthAuthentication | LdapAuthentication | SamlAuthentication;
 }
 
 export type AuthSourceTypes = 'oauth' | 'saml' | 'ldap';
@@ -146,7 +147,7 @@ export class AuthSourceModalComponent implements OnInit {
     );
     public readonly samlFormModel = signal(
         generateSAMLSourceForm(
-            new PlaceSAMLSource({ authority_id: this._data.domain.id }),
+            newItem(SamlAuthentication, { authority_id: this._data.domain.id }),
         ),
     );
     public readonly samlForm = form(
@@ -155,7 +156,7 @@ export class AuthSourceModalComponent implements OnInit {
     );
     public readonly ldapFormModel = signal(
         generateLDAPSourceForm(
-            new PlaceLDAPSource({ authority_id: this._data.domain.id }),
+            newItem(LdapAuthentication, { authority_id: this._data.domain.id }),
         ),
     );
     public readonly ldapForm = form(
@@ -163,15 +164,11 @@ export class AuthSourceModalComponent implements OnInit {
         applyLDAPSourceFormSchema,
     );
     public readonly item = signal<
-        PlaceOAuthSource | PlaceLDAPSource | PlaceSAMLSource
+        OauthAuthentication | LdapAuthentication | SamlAuthentication
     >(null);
     public readonly active_type = signal<AuthSourceTypes>(null);
     public readonly type = computed(() =>
-        this.item() instanceof PlaceSAMLSource
-            ? 'saml'
-            : this.item() instanceof PlaceLDAPSource
-              ? 'ldap'
-              : 'oauth',
+        this.item() ? authSourceType(this.item()) : 'oauth',
     );
 
     /** Whether the triggers is new or not */
@@ -195,32 +192,41 @@ export class AuthSourceModalComponent implements OnInit {
         const data = { authority_id: this._data.domain.id };
         switch (type) {
             case 'saml':
-                this.item.set(new PlaceSAMLSource(data));
+                this.item.set(newItem(SamlAuthentication, data));
                 break;
             case 'ldap':
-                this.item.set(new PlaceLDAPSource(data));
+                this.item.set(newItem(LdapAuthentication, data));
                 break;
             default:
-                this.item.set(new PlaceOAuthSource(data));
+                this.item.set(newItem(OauthAuthentication, data));
                 break;
         }
         this.initialiseForm();
     }
 
-    public updateMethod(item) {
+    public updateMethod(item: { id?: string }) {
+        const data = item;
+        const id = item.id;
         switch (this.type()) {
-            case 'saml':
-                return item.id
-                    ? updateSAMLSource(item.id, item)
-                    : addSAMLSource(item);
-            case 'ldap':
-                return item.id
-                    ? updateLDAPSource(item.id, item)
-                    : addLDAPSource(item);
+            case 'saml': {
+                const body = toBody(SamlAuthentication, data);
+                return id
+                    ? saml_authentications.update({ id, body }).then(orThrow)
+                    : saml_authentications
+                          .create({ body: newSAMLSourceBody(body) })
+                          .then(orThrow);
+            }
+            case 'ldap': {
+                const body = toBody(LdapAuthentication, data);
+                return id
+                    ? ldap_authentications.update({ id, body }).then(orThrow)
+                    : ldap_authentications.create({ body }).then(orThrow);
+            }
         }
-        return item.id
-            ? updateOAuthSource(item.id, item)
-            : addOAuthSource(item);
+        const body = toBody(OauthAuthentication, data);
+        return id
+            ? oauth_authentications.update({ id, body }).then(orThrow)
+            : oauth_authentications.create({ body }).then(orThrow);
     }
 
     /**
@@ -234,7 +240,7 @@ export class AuthSourceModalComponent implements OnInit {
         }
         this.loading.set('Saving authentication source...');
         const method: Promise<unknown> = this.updateMethod({
-            ...this.item().toJSON(),
+            ...this.item(),
             ...this.activeFormModel(),
         });
         method.then(
@@ -260,11 +266,11 @@ export class AuthSourceModalComponent implements OnInit {
     private initialiseForm() {
         if (!this.item()) return;
         const item = this.item();
-        if (item instanceof PlaceOAuthSource) {
+        if ('client_id' in item) {
             this.oauthFormModel.set(generateOAuthSourceForm(item));
-        } else if (item instanceof PlaceSAMLSource) {
+        } else if ('issuer' in item) {
             this.samlFormModel.set(generateSAMLSourceForm(item));
-        } else if (item instanceof PlaceLDAPSource) {
+        } else {
             this.ldapFormModel.set(generateLDAPSourceForm(item));
         }
     }

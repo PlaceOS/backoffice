@@ -56,13 +56,13 @@ const API_KEYS = [
         scopes: ['public'],
         permissions: 'user',
         user_id: 'current',
-        created_at: Date.now() / 1000,
-        updated_at: Date.now() / 1000,
+        created_at: Math.floor(Date.now() / 1000),
+        updated_at: Math.floor(Date.now() / 1000),
     },
 ];
 
 const TENANT = {
-    id: 'tenant-e2e',
+    id: 2,
     name: 'E2E Tenant',
     domain: 'place.tech',
     platform: 'google',
@@ -139,6 +139,27 @@ test.describe('Admin', () => {
             await expect(admin.zoneTreeImportInput).toHaveAttribute(
                 'accept',
                 /text\/csv|\.csv/,
+            );
+        });
+    });
+
+    test.describe('Build Jobs', () => {
+        test('lists the build jobs and cancels one', async ({ page }) => {
+            await admin.gotoSection('build-jobs');
+            const row = await admin.tableRow(
+                'drivers/place/meet.cr',
+                admin.section,
+            );
+            await row.getByRole('button', { name: 'Cancel Build Job' }).click();
+            await page.locator('confirm-modal button[name="accept"]').click();
+
+            await expect(
+                admin.section.locator('[data-row]').filter({
+                    hasText: 'drivers/place/meet.cr',
+                }),
+            ).toHaveCount(0);
+            await expect(admin.section).toContainText(
+                'drivers/place/bookings.cr',
             );
         });
     });

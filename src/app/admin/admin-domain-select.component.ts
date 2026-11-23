@@ -7,7 +7,7 @@ import {
     output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PlaceDomain } from '@placeos/ts-client';
+import { type Domain } from '@placeos/ts-client';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { OptionComponent } from '../ui/controls/option.component';
 import { SelectComponent } from '../ui/controls/select.component';
@@ -56,14 +56,14 @@ export class AdminDomainSelectComponent {
     public readonly all = input(false, { transform: booleanAttribute });
     public readonly field_class = input('no-subscript w-56');
     /** Emits after the user picks a domain */
-    public readonly changed = output<PlaceDomain>();
+    public readonly changed = output<Domain>();
 
     public readonly domain_list = this._data.domain_list;
     public readonly domain = computed(() =>
         this._data.selectedDomain(this.key())(),
     );
 
-    public select(domain: PlaceDomain) {
+    public select(domain: Domain) {
         this._data.setDomain(this.key(), domain);
         this.changed.emit(domain);
     }

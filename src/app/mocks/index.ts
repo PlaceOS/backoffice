@@ -1,4 +1,4 @@
-import { setMockNotFoundHandler } from '@placeos/ts-client';
+import { setMockNotFoundHandler } from '@placeos/ts-client/compat';
 import './backend';
 
 /** Show requests that have no mock, so gaps are easy to find */

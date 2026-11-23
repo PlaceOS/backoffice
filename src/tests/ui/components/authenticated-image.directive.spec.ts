@@ -7,10 +7,9 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AuthenticatedImageDirective } from '../../../app/ui/authenticated-image.directive';
 
-vi.mock('@placeos/ts-client', () => ({
-    apiKey: () => '',
+vi.mock('../../../app/common/placeos', () => ({
     authority: () => ({}),
-    token: () => 'token',
+    setAuthCookie: async () => true,
 }));
 
 const OLD_SOURCE = '/api/engine/v2/uploads/old/url';

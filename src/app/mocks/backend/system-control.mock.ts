@@ -5,11 +5,11 @@
  * `systems/:id/zones`.
  */
 import {
-    MockHttpRequest,
+    type MockHttpRequest,
     mockSystem,
     registerMockEndpoint,
     registerSystem,
-} from '@placeos/ts-client';
+} from '@placeos/ts-client/compat';
 import {
     API,
     MockItem,
@@ -106,11 +106,12 @@ function registerRealtime() {
             const methods = Object.fromEntries(
                 Object.keys(FUNCTIONS).map((name) => [
                     name,
-                    (...args: unknown[]) => execute(system.id, mod, name, args),
+                    (...args: unknown[]) =>
+                        execute(`${system.id}`, mod, name, args),
                 ]),
             );
             (classes[mod.name] ||= []).push({
-                ...stateOf(system.id, mod),
+                ...stateOf(`${system.id}`, mod),
                 ...methods,
             });
         }
@@ -132,7 +133,7 @@ function registerRealtime() {
                 ]),
             ),
         ];
-        registerSystem(system.id, classes);
+        registerSystem(`${system.id}`, classes);
     }
 }
 listenToHandlerChanges(`${API}/systems`)?.subscribe(registerRealtime);

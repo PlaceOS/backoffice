@@ -1,24 +1,24 @@
 import { computed, signal } from '@angular/core';
 import {
-    currentGroups,
-    PlaceCurrentGroup,
-    PlaceModule,
-    PlaceUser,
-    PlaceZone,
-    PlaceZoneQueryOptions,
-    queryGroups,
-    queryModules,
-    QueryResponse,
-    querySystems,
-    queryZones,
+    groups as groups_v7,
+    type GroupsCurrentGroup,
+    type Module,
+    modules as modules_v7,
+    type System,
+    systems as systems_v7,
+    type User,
+    type Zone,
+    zones,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { collectPages, type QueryResponse, staticPage } from './types';
 
 let storage_key = '';
 const selected_id = signal('');
 
 const access = signal<{
-    user: Pick<PlaceUser, 'id' | 'sys_admin' | 'support'> | null;
-    groups: PlaceCurrentGroup[];
+    user: Pick<User, 'id' | 'sys_admin' | 'support'> | null;
+    groups: readonly GroupsCurrentGroup[];
 }>({ user: null, groups: [] });
 
 export const hasSupportRole = computed(
@@ -77,18 +77,6 @@ export function canAccessSection(section: string) {
     return false;
 }
 
-/** Load every page of a query. Throws after 1000 extra pages. */
-export async function collectPages<T>(response: QueryResponse<T>) {
-    let page = await response;
-    const data = [...page.data];
-    for (let i = 0; page.next && i < 1000; i++) {
-        page = await page.next();
-        data.push(...page.data);
-    }
-    if (page.next) throw new Error('Too many resource pages');
-    return data;
-}
-
 /** Id of the latest `loadSupportAccess` call, so stale group lists are dropped */
 let load_version = 0;
 
@@ -102,13 +90,13 @@ function savedGroupId() {
 }
 
 /** Publish the user with their support groups and restore the saved group. */
-function publishAccess(user: PlaceUser, groups: PlaceCurrentGroup[]) {
+function publishAccess(user: User, groups: readonly GroupsCurrentGroup[]) {
     const available = groups
         .filter(
             ({ group, permissions }) =>
-                group.subsystems.includes('support') && permissions > 0,
+                !!group.subsystems?.includes('support') && permissions > 0,
         )
-        .sort((a, b) => a.group.name.localeCompare(b.group.name));
+        .sort((a, b) => (a.group.name ?? '').localeCompare(b.group.name ?? ''));
     access.set({ user, groups: available });
     const saved = savedGroupId();
     selected_id.set(
@@ -126,16 +114,16 @@ function publishAccess(user: PlaceUser, groups: PlaceCurrentGroup[]) {
  * group scopes their first queries, they are published at once and the group
  * list fills in when it arrives.
  */
-export async function loadSupportAccess(user: PlaceUser) {
+export async function loadSupportAccess(user: User) {
     const version = ++load_version;
     const previous = access();
     clearSupportModuleCache();
     storage_key = `BACKOFFICE.support_group.${user.authority_id}.${user.id}`;
     const groups = user.sys_admin
-        ? collectPages(queryGroups({ limit: 1000 })).then((groups) =>
-              groups.map((group) => ({ group, permissions: 255 })),
+        ? collectPages(groups_v7.query({ limit: 1000 }).then(orThrowPage)).then(
+              (groups) => groups.map((group) => ({ group, permissions: 255 })),
           )
-        : currentGroups({ subsystem: 'support' });
+        : groups_v7.current({ subsystem: 'support' }).then(orThrow);
     if (user.sys_admin && !savedGroupId()) {
         // Keep the old list on reconnect so the group picker does not blink
         access.set({
@@ -163,28 +151,30 @@ export function canUseSupportAction(permission: number) {
 }
 
 export function querySupportSystems(
-    options: Parameters<typeof querySystems>[0] = {},
+    options: Parameters<typeof systems_v7.query>[0] = {},
 ) {
     if (
         selected_id() &&
         !hasSupportRole() &&
         !(selected_support_group()?.permissions & 1)
     ) {
-        return Promise.resolve({ data: [], total: 0, next: null });
+        return Promise.resolve(staticPage<System>([]));
     }
-    return querySystems({
-        ...options,
-        ...(isSubsystemUser() ? { subsystem: 'support' } : {}),
-        ...(selected_id() ? { group_id: selected_id() } : {}),
-    });
+    return systems_v7
+        .query({
+            ...options,
+            ...(isSubsystemUser() ? { subsystem: 'support' } : {}),
+            ...(selected_id() ? { group_id: selected_id() } : {}),
+        })
+        .then(orThrowPage);
 }
 
 /** Browse group anchors first; child queries use the selected parent. */
 export function querySupportZones(
-    options: PlaceZoneQueryOptions = {},
-): QueryResponse<PlaceZone> {
+    options: Parameters<typeof zones.query>[0] = {},
+): QueryResponse<Zone> {
     if ((!isSubsystemUser() && !selected_id()) || options.parent_id) {
-        return queryZones(options);
+        return zones.query(options).then(orThrowPage);
     }
     const groups = active_groups().filter(
         ({ permissions }) => hasSupportRole() || !!(permissions & 1),
@@ -193,19 +183,19 @@ export function querySupportZones(
         groups.map(async ({ group }) => {
             // Ask for large pages, as the pages load one after another
             const query = { limit: 1000, ...options, group_id: group.id };
-            return collectPages(queryZones(query));
+            return collectPages(zones.query(query).then(orThrowPage));
         }),
     ).then((results) => {
         const data = [
             ...new Map(results.flat().map((zone) => [zone.id, zone])).values(),
         ];
         data.sort((a, b) => a.name.localeCompare(b.name));
-        return { data, total: data.length, next: null };
+        return staticPage(data);
     });
 }
 
 /** Module set of one support group, shared by list loads and searches */
-let module_cache: { group_id: string; modules: Promise<PlaceModule[]> } | null =
+let module_cache: { group_id: string; modules: Promise<Module[]> } | null =
     null;
 
 /**
@@ -219,18 +209,20 @@ export function clearSupportModuleCache() {
 /** Walk the group's systems for their modules. Stops early once superseded. */
 async function loadGroupModules(entry: {
     group_id: string;
-}): Promise<PlaceModule[]> {
+}): Promise<Module[]> {
     const superseded = () =>
         module_cache !== entry || selected_id() !== entry.group_id;
     const systems = await collectPages(querySupportSystems({ limit: 1000 }));
-    const modules: PlaceModule[] = [];
+    const modules: Module[] = [];
     // Bound concurrent requests when a group contains many systems.
     for (let index = 0; index < systems.length; index += 8) {
         if (superseded()) return [];
         const pages = await Promise.all(
             systems.slice(index, index + 8).map((system) =>
                 collectPages(
-                    queryModules({ control_system_id: system.id }),
+                    modules_v7
+                        .query({ control_system_id: system.id })
+                        .then(orThrowPage),
                 ).catch((error: unknown) => {
                     // A readable group can contain systems without a zone Read grant.
                     if (
@@ -252,18 +244,18 @@ async function loadGroupModules(entry: {
 /**
  * The modules API has no group filter, so list modules through the group's
  * systems. The walk runs once per group and searches filter it in the browser.
- * `queryModules` ignores other filters with `control_system_id`, so only `q`
+ * `modules.query` ignores other filters with `control_system_id`, so only `q`
  * applies here.
  */
 export async function querySupportModules(
-    options: Parameters<typeof queryModules>[0] = {},
-): QueryResponse<PlaceModule> {
+    options: Parameters<typeof modules_v7.query>[0] = {},
+): QueryResponse<Module> {
     if (!selected_id() || options.control_system_id)
-        return queryModules(options);
+        return modules_v7.query(options).then(orThrowPage);
     const group_id = selected_id();
     let entry = module_cache;
     if (entry?.group_id !== group_id) {
-        const next = { group_id, modules: null as Promise<PlaceModule[]> };
+        const next = { group_id, modules: null as Promise<Module[]> };
         module_cache = entry = next;
         next.modules = loadGroupModules(next);
         // A failed walk must not be reused by the next search
@@ -279,5 +271,5 @@ export async function querySupportModules(
                 value?.toLowerCase().includes(search),
             ),
     );
-    return { data, total: data.length, next: null };
+    return staticPage(data);
 }

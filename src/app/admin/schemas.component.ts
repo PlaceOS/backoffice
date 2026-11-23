@@ -1,6 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { create, query, update } from '@placeos/ts-client';
+import {
+    schema as schema_v7,
+    type JsonSchema as JsonSchemaData,
+} from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
 import { notifyError } from '../common/notifications';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -11,11 +15,28 @@ import { SettingsFieldComponent } from '../ui/custom-fields/settings-field.compo
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
+/** A JSON schema, with the schema as the JSON text that the editor shows */
 export interface JsonSchema {
     id?: string;
     name: string;
     description?: string;
     schema: string;
+}
+
+/** The schema for the editor. The server can keep the schema as JSON or as text */
+function editorSchema(data: JsonSchemaData): JsonSchema {
+    const value = data.schema;
+    return {
+        id: data.id ?? undefined,
+        name: data.name || '',
+        description: data.description ?? undefined,
+        schema:
+            typeof value === 'string'
+                ? value || '{}'
+                : value == null
+                  ? '{}'
+                  : JSON.stringify(value),
+    };
 }
 
 @Component({
@@ -156,21 +177,19 @@ export class AdminSchemasComponent implements OnInit {
             );
         }
         let schema_list = this.schema_list();
-        const details = {
-            query_params: {},
-            fn: (_) => _,
-            form_data: schema,
-            path: 'schema',
+        const body = {
+            name: schema.name,
+            description: schema.description,
+            schema: schema.schema,
         };
         let new_schema: JsonSchema;
         try {
-            new_schema = await (schema.id
-                ? update<JsonSchema>({
-                      ...details,
-                      id: schema.id,
-                      method: 'patch',
-                  })
-                : create<JsonSchema>({ ...details }));
+            const saved = await (
+                schema.id
+                    ? schema_v7.update({ id: schema.id, body })
+                    : schema_v7.create({ body })
+            ).then(orThrow);
+            new_schema = editorSchema(saved);
         } catch (err) {
             return notifyError(
                 `Failed to save schema. Error: ${describeError(err)}`,
@@ -191,17 +210,10 @@ export class AdminSchemasComponent implements OnInit {
     }
 
     public async loadSchemas() {
-        const schema_list = await query<JsonSchema>({
-            query_params: {},
-            fn: (_) =>
-                ({
-                    name: _.name || '',
-                    schema: _.schema || '{}',
-                    ..._,
-                }) as JsonSchema,
-            path: 'schema',
-        })
-            .then((_) => _.data as JsonSchema[])
+        const schema_list = await schema_v7
+            .query({})
+            .then(orThrowPage)
+            .then((_) => _.data.map(editorSchema))
             .catch((err) => {
                 notifyError(
                     `Failed to load schemas. Error: ${describeError(err)}`,

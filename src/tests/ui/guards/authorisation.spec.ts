@@ -19,12 +19,10 @@ vi.mock('../../../app/common/support-access', () => ({
 }));
 
 const connection = await vi.hoisted(async () => {
-    const { createSignal } = await import(
-        '@placeos/ts-client/dist/index.es.js'
-    );
-    return createSignal(true);
+    const { signal } = await import('@angular/core');
+    return signal(true);
 });
-vi.mock('@placeos/ts-client', () => ({ onlineState: () => connection }));
+vi.mock('../../../app/common/placeos', () => ({ online: connection }));
 vi.mock('../../../app/users/users.service', () => ({
     BackofficeUsersService: class {},
 }));
@@ -120,8 +118,10 @@ describe.each([
         const router = TestBed.inject(Router);
         const settled = vi.fn();
         const result = canActivate(new ActivatedRouteSnapshot()).then(settled);
-        await vi.advanceTimersByTimeAsync(100);
+        // The connection wait has no time limit, so 2 minutes offline is not a denial
+        await vi.advanceTimersByTimeAsync(2 * 60 * 1000);
         expect(settled).not.toHaveBeenCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
         connection.set(true);
         await vi.advanceTimersByTimeAsync(100);
         expect(settled).not.toHaveBeenCalled();

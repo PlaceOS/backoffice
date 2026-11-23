@@ -6,10 +6,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DialogEvent } from '../../app/common/types';
 import { DuplicateModalComponent } from '../../app/overlays/duplicate-modal.component';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
 class Item {
     id: string;
     name: string;

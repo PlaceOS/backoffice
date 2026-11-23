@@ -9,12 +9,9 @@ import {
     signal,
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
-import {
-    PlaceZone,
-    addZone as addZoneRequest,
-    showZone,
-    updateZone as updateZoneRequest,
-} from '@placeos/ts-client';
+import { Zone, zones } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
+import { ACTIONS } from '../common/actions';
 import { subtreeFilter } from '../common/hierarchy';
 import { querySupportZones as queryZones } from '../common/support-access';
 
@@ -310,7 +307,7 @@ const TIMEZONE_OPTION_LIMIT = 50;
 export class ZoneFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, ZoneFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceZone; readonly?: string }>(DIALOG_DATA);
+    private _data = inject<{ item: Zone; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'ZONES';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -346,15 +343,16 @@ export class ZoneFormComponent implements OnInit {
         });
     }
 
-    private readonly _excludeSubtree = subtreeFilter((id) => showZone(id));
+    private readonly _excludeSubtree = subtreeFilter((id) =>
+        zones.show({ id }).then(orThrow),
+    );
     /** Query function for zones. Hides this zone's descendants to prevent cycles */
     public readonly query_fn = (_: string) =>
         queryZones({ q: _ }).then((resp) =>
-            this._excludeSubtree(resp.data as PlaceZone[], this.formModel().id),
+            this._excludeSubtree(resp.data as Zone[], this.formModel().id),
         );
     /** Function to exclude zones */
-    public readonly exclude = (zone: PlaceZone) =>
-        zone.id === this.formModel().id;
+    public readonly exclude = (zone: Zone) => zone.id === this.formModel().id;
 
     public ngOnInit(): void {
         this.updateZone();
@@ -374,13 +372,9 @@ export class ZoneFormComponent implements OnInit {
                 // effect keeps in sync. Strip it so we never POST `parent_zone: null`.
                 const { parent_zone: _parent_zone, ...form_value } =
                     this.formModel();
-                const form_item = mergeFormItem(
-                    this._data.item,
-                    form_value,
-                ) as unknown as PlaceZone;
-                return form_item.id
-                    ? updateZoneRequest(form_item.id, form_item)
-                    : addZoneRequest(form_item);
+                return ACTIONS.zones.save(
+                    mergeFormItem(this._data.item, form_value),
+                );
             },
         );
     }
@@ -389,7 +383,10 @@ export class ZoneFormComponent implements OnInit {
     private async updateZone() {
         const parent_id = this.formModel().parent_id;
         if (!parent_id) return;
-        const zone = await showZone(parent_id).catch(() => null);
+        const zone = await zones
+            .show({ id: parent_id })
+            .then(orThrow)
+            .catch(() => null);
         // Keep the user's choice if they changed the picker while loading
         if (!zone || this.form.parent_zone().dirty()) return;
         this.formModel.update((value) => ({ ...value, parent_zone: zone }));

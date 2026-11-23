@@ -10,18 +10,18 @@ import {
 import { FormsModule } from '@angular/forms';
 import { FormField, form, submit } from '@angular/forms/signals';
 import {
-    PlaceTrigger,
-    SignagePlaylist,
-    cleanObject,
-    querySignagePlaylists,
-    showSignagePlaylist,
+    playlist as playlist_v7,
+    type Playlist,
+    type TriggerInstance,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { getInvalidSignalFields } from '../common/forms';
+import { cleanObject } from '../common/general';
 import { HotkeysService } from '../common/hotkeys.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
-import { DialogEvent, Identity } from '../common/types';
+import { DialogEvent } from '../common/types';
 import { generateTriggerSettingsFormModel } from '../triggers/triggers.utilities';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -191,7 +191,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, SystemTriggerFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceTrigger; readonly?: string }>(
+    private _data = inject<{ item: TriggerInstance; readonly?: string }>(
         DIALOG_DATA,
     );
     private _hotkey = inject(HotkeysService);
@@ -210,12 +210,15 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     public readonly playlist_names = signal<Record<string, string>>({});
 
     public readonly query_fn = (q: string) =>
-        querySignagePlaylists({ q, limit: 20 }).then((resp) => resp.data);
-    public readonly exclude_fn = (playlist: SignagePlaylist) =>
+        playlist_v7
+            .query({ q, limit: 20 })
+            .then(orThrowPage)
+            .then((resp) => resp.data);
+    public readonly exclude_fn = (playlist: Playlist) =>
         this.formModel().playlists.includes(playlist.id);
 
     /** Add the selected playlist from the search field to the trigger */
-    public readonly addPlaylist = (playlist: SignagePlaylist | null) => {
+    public readonly addPlaylist = (playlist: Playlist | null) => {
         if (!playlist?.id) return;
         this.playlist_names.update((names) => ({
             ...names,
@@ -253,14 +256,9 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
             );
         }
         const item = this._data.item;
-        const item_json = item.toJSON ? item.toJSON() : item;
-        const form_item = (
-            item.id
-                ? cleanObject({ ...item_json, ...this.formModel() }, [
-                      undefined,
-                  ])
-                : { ...item_json, ...this.formModel() }
-        ) as Identity;
+        const form_item = item.id
+            ? cleanObject({ ...item, ...this.formModel() }, [undefined])
+            : { ...item, ...this.formModel() };
         // System trigger uses external save - emit action event
         this.event.emit({ reason: 'action', metadata: form_item });
     }
@@ -269,7 +267,10 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     private async _loadPlaylistNames() {
         const playlists = await Promise.all(
             this.formModel().playlists.map((id) =>
-                showSignagePlaylist(id).catch(() => null),
+                playlist_v7
+                    .show({ id })
+                    .then(orThrow)
+                    .catch(() => null),
             ),
         );
         const names: Record<string, string> = {};

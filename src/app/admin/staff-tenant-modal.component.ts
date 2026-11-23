@@ -9,10 +9,17 @@ import {
     submit,
     validate,
 } from '@angular/forms/signals';
-import { cleanObject, PlaceDomain, post, put } from '@placeos/ts-client';
+import { type Domain, type JsonValue } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
+import {
+    TenantResponder,
+    tenants as tenants_v7,
+} from '@placeos/ts-client/staff';
 import { getInvalidSignalFields } from '../common/forms';
+import { cleanObject } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { toBody } from '../common/placeos';
 import { HashMap } from '../common/types';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { OptionComponent } from '../ui/controls/option.component';
@@ -59,8 +66,32 @@ const OFFICE_CREDENTIALS = [
     'conference_type',
 ];
 
+/** The string fields of a JSON object, such as the credentials of a tenant */
+function stringFields(value: JsonValue | null | undefined): HashMap<string> {
+    const fields: HashMap<string> = {};
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return fields;
+    }
+    for (const [key, field] of Object.entries(value)) {
+        if (typeof field === 'string') fields[key] = field;
+    }
+    return fields;
+}
+
+/** The number fields of a JSON object, such as the booking limits of a tenant */
+function numberFields(value: JsonValue | null | undefined): HashMap<number> {
+    const fields: HashMap<number> = {};
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return fields;
+    }
+    for (const [key, field] of Object.entries(value)) {
+        if (typeof field === 'number') fields[key] = field;
+    }
+    return fields;
+}
+
 interface StaffTenantFormModel {
-    id: string;
+    id: number | null;
     domain: string;
     name: string;
     email_domain: string;
@@ -87,7 +118,7 @@ const MINUTE_OPTIONS = Array.from({ length: 12 }, (_, step) => step * 5);
 
 export interface StaffTenantModalData {
     tenant?: PlaceTenant;
-    domain?: PlaceDomain;
+    domain?: Domain;
 }
 
 @Component({
@@ -583,10 +614,7 @@ export class StaffTenantModalComponent {
     public readonly domain = this._data.domain;
     public readonly loading = signal('');
     // The backend stores a cleared config as `{ app_id: '' }`, so check app_id
-    public readonly show_outlook = model(
-        !!((this.tenant || {}) as { outlook_config?: HashMap }).outlook_config
-            ?.app_id,
-    );
+    public readonly show_outlook = model(!!this.tenant?.outlook_config?.app_id);
     public readonly name_map = FIELD_NAME_MAPPING;
     public readonly outlook_fields = [
         'app_id',
@@ -796,7 +824,7 @@ export class StaffTenantModalComponent {
         if (!Object.keys(value.credentials as HashMap).length) {
             delete value.credentials;
         }
-        const data = cleanObject(
+        const data: Record<string, unknown> = cleanObject(
             {
                 ...(this.tenant || {}),
                 ...value,
@@ -806,10 +834,12 @@ export class StaffTenantModalComponent {
         // staff-api ignores null, so send an empty config to clear it.
         // It is stored as `{ app_id: '' }`, which reads as off.
         if (!this.show_outlook()) data.outlook_config = {};
-        const call = this.tenant?.id
-            ? put(`/api/staff/v1/tenants/${this.tenant.id}`, data)
-            : post('/api/staff/v1/tenants', data);
-        const tenant = await call.catch((__) => null);
+        const body = toBody(TenantResponder, data);
+        const call =
+            this.tenant?.id != null
+                ? tenants_v7.update({ id: this.tenant.id, body })
+                : tenants_v7.create({ body });
+        const tenant = await call.then(orThrow).catch((__) => null);
         this.loading.set('');
         if (!tenant) return notifyError(i18n('ADMIN.TENANTS_SAVE_ERROR'));
         notifySuccess(i18n('ADMIN.TENANTS_SAVE_SUCCESS'));
@@ -839,10 +869,10 @@ export class StaffTenantModalComponent {
     }
 
     private generateFormModel(): StaffTenantFormModel {
-        const limits = this.tenant?.booking_limits || {};
-        const credentials = this.tenant?.credentials || {};
+        const limits = numberFields(this.tenant?.booking_limits);
+        const credentials = stringFields(this.tenant?.credentials);
         return {
-            id: this.tenant?.id || '',
+            id: this.tenant?.id ?? null,
             domain: this.tenant?.domain || this.domain?.domain || 'localhost',
             name: this.tenant?.name || '',
             email_domain: this.tenant?.email_domain || '',
@@ -865,10 +895,7 @@ export class StaffTenantModalComponent {
                 user_agent: 'PlaceOS',
                 ...credentials,
             },
-            outlook_config: {
-                ...(((this.tenant || {}) as { outlook_config?: HashMap })
-                    .outlook_config || {}),
-            },
+            outlook_config: { ...this.tenant?.outlook_config },
         };
     }
 }

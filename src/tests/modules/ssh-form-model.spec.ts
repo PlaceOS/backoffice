@@ -1,17 +1,15 @@
-import { PlaceDriver, PlaceDriverRole, PlaceModule } from '@placeos/ts-client';
-import { describe, expect, it, vi } from 'vitest';
+import { Driver, Module } from '@placeos/ts-client';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
+import { describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import { generateDriverFormModel } from '../../app/drivers/drivers.utilities';
 import { generateModuleFormModel } from '../../app/modules/modules.utilities';
-
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 
 describe('editing SSH resources', () => {
     it('keeps the SSH driver role when opening the form', () => {
         expect(
             generateDriverFormModel(
-                new PlaceDriver({ role: PlaceDriverRole.SSH }),
+                newItem(Driver, { role: PlaceDriverRole.SSH }),
             ).role,
         ).toBe(PlaceDriverRole.SSH);
     });
@@ -19,7 +17,7 @@ describe('editing SSH resources', () => {
     it('keeps the SSH module role when opening the form', () => {
         expect(
             generateModuleFormModel(
-                new PlaceModule({ role: PlaceDriverRole.SSH }),
+                newItem(Module, { role: PlaceDriverRole.SSH }),
             ).role,
         ).toBe(PlaceDriverRole.SSH);
     });

@@ -1,25 +1,25 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
-import { PlaceUser, onlineState } from '@placeos/ts-client';
-import {
-    waitForClientSignalValue,
-    waitForSignalValue,
-} from '../../common/signals';
+import { type User } from '@placeos/ts-client';
+import { online } from '../../common/placeos';
+import { waitForSignalValue } from '../../common/signals';
 import { hasSupportSubsystem } from '../../common/support-access';
 import { BackofficeUsersService } from '../../users/users.service';
 
 /**
  * Route guard that waits for the connection and the user, then admits the
  * user when `allowed` returns true. Other users go to `/unauthorised`.
+ * The connection wait has no time limit, because a sign-in or a network
+ * drop can take longer than a minute. The user load has the 60 s limit.
  */
 function authorisedGuard(
-    allowed: (user: PlaceUser, route: ActivatedRouteSnapshot) => boolean,
+    allowed: (user: User, route: ActivatedRouteSnapshot) => boolean,
 ): CanActivateFn {
     return async (route) => {
         const router = inject(Router);
         const users = inject(BackofficeUsersService);
-        await waitForClientSignalValue(onlineState(), (_) => _);
-        const user: PlaceUser = await waitForSignalValue(
+        await waitForSignalValue(online, (_) => _, 50, Infinity);
+        const user: User = await waitForSignalValue(
             users.user,
             (_) => !!_,
         ).catch(() => null);

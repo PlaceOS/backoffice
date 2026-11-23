@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { apiEndpoint, get } from '@placeos/ts-client';
+import { root } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { VERSION } from '../../env/version';
 import { notifyError, notifySuccess } from '../common/notifications';
@@ -199,7 +200,7 @@ export class PlaceDetailsComponent implements OnInit {
     private _dialog = inject(Dialog);
 
     /** Current details about the API */
-    public readonly api_details = signal([] as PlaceServiceDetails[]);
+    public readonly api_details = signal<readonly PlaceServiceDetails[]>([]);
     public readonly changelog_data = signal('');
     public readonly backend_version = signal('');
     public readonly backoffice_logs = signal('');
@@ -243,27 +244,33 @@ export class PlaceDetailsComponent implements OnInit {
     }
 
     public async loadApiDetails() {
-        const details = await get(`${apiEndpoint()}/cluster/versions`).catch(
-            (err) =>
+        const details = await root
+            .clusterVersion()
+            .then(orThrow)
+            .catch((err) => {
                 notifyError(
                     i18n('ADMIN.BACKEND_SERVICES_ERROR', {
                         error: describeError(err),
                     }),
-                ),
-        );
-        this.api_details.set((details as PlaceServiceDetails[]) || []);
+                );
+                return [];
+            });
+        this.api_details.set(details);
     }
 
     public async loadPlatformDetails() {
         void this.loadBackofficeChangelog();
-        const platform = await get(`${apiEndpoint()}/platform`).catch((err) => {
-            notifyError(
-                i18n('ADMIN.BACKEND_SERVICES_ERROR', {
-                    error: describeError(err),
-                }),
-            );
-            return null;
-        });
+        const platform = await root
+            .platformInfo()
+            .then(orThrow)
+            .catch((err) => {
+                notifyError(
+                    i18n('ADMIN.BACKEND_SERVICES_ERROR', {
+                        error: describeError(err),
+                    }),
+                );
+                return null;
+            });
         if (!platform) return;
         const { changelog, version } = platform;
         this.changelog_data.set(

@@ -19,9 +19,11 @@ import {
 } from '@angular/router';
 
 import { Dialog } from '@angular/cdk/dialog';
-import { authority, queryApplications } from '@placeos/ts-client';
+import { oauth_applications } from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
+import { authority, backofficeConfig } from '../common/placeos';
 import { SettingsService } from '../common/settings.service';
 import {
     canAccessSection,
@@ -502,11 +504,11 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     }
 
     public get alerts_url(): string {
-        return authority()?.config?.backoffice?.alerts_url;
+        return backofficeConfig().alerts_url;
     }
 
     public get metrics_url(): string {
-        return authority()?.config?.backoffice?.metrics_url;
+        return backofficeConfig().metrics_url;
     }
 
     public switchGroup() {
@@ -555,9 +557,10 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         );
         const active_authority = authority();
         if (!active_authority?.id) return;
-        const response = await queryApplications({
-            authority_id: active_authority.id,
-        } as Record<string, unknown>).catch(() => null);
+        const response = await oauth_applications
+            .query({ authority_id: active_authority.id })
+            .then(orThrowPage)
+            .catch(() => null);
         this.show_application_picker.set(
             !!(response?.data || []).find((app) =>
                 isSupportedRedirectUri(app?.redirect_uri),

@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { PlaceApplication, PlaceDomain } from '@placeos/ts-client';
+import { type Application } from '@placeos/ts-client';
 
 import { copyToClipboard } from '../common/general';
 import { i18n } from '../common/locale.service';
@@ -210,20 +210,20 @@ export class DomainApplicationsComponent {
     public readonly removeApplication = (item) =>
         this._service.deleteApplication(item);
 
-    public readonly scopeList = (item: PlaceApplication): string[] =>
+    public readonly scopeList = (item: Application): string[] =>
         `${item.scopes || ''}`.split(/\s+/).filter((_) => !!_);
 
-    public get item(): PlaceDomain {
-        return this._service.active_item as PlaceDomain;
+    public get item() {
+        return this._service.active_item;
     }
 
-    public copySecret(item: PlaceApplication) {
+    public copySecret(item: Application) {
         this.setShowSecret(item.id, false);
         copyToClipboard(item.secret);
         notifySuccess(i18n('DOMAINS.COPIED_SECRET'));
     }
 
-    public setShowSecret(id: string, value: boolean): void {
+    public setShowSecret(id: number, value: boolean): void {
         // Every row listens for window mouseup, so skip rows with no change
         if (!!this.show_secret()[id] === value) return;
         this.show_secret.update((state) => ({ ...state, [id]: value }));

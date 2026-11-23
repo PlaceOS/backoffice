@@ -1,28 +1,25 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { provideZonelessChangeDetection, signal } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceTrigger, PlaceZone } from '@placeos/ts-client';
+import {
+    system_triggers,
+    Trigger,
+    TriggerInstance,
+    triggers,
+    Zone,
+    zones,
+} from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
+import { newItem } from '../../app/common/placeos';
 import { TriggerStateService } from '../../app/triggers/trigger-state.service';
 
 const mocks = vi.hoisted(() => ({
-    updateTrigger: vi.fn(),
-    showZone: vi.fn(),
-    updateZone: vi.fn(),
-    removeSystemTrigger: vi.fn(),
     confirm: vi.fn(),
     replaceItem: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    updateTrigger: mocks.updateTrigger,
-    showZone: mocks.showZone,
-    updateZone: mocks.updateZone,
-    removeSystemTrigger: mocks.removeSystemTrigger,
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 vi.mock('../../app/common/item.service', () => ({
     ActiveItemService: class {},
 }));
@@ -44,7 +41,7 @@ vi.mock('../../app/ui/forms/trigger-condition-modal.component', () => ({
 }));
 
 describe('trigger actions and instances', () => {
-    const trigger = new PlaceTrigger({
+    const trigger = newItem(Trigger, {
         id: 'template-1',
         actions: {
             functions: [
@@ -60,7 +57,7 @@ describe('trigger actions and instances', () => {
     });
     const [power_on, power_off, mute] = trigger.actions.functions;
     const [ops, facilities] = trigger.actions.mailers;
-    const saved = new PlaceTrigger({ id: 'template-1' });
+    const saved = newItem(Trigger, { id: 'template-1' });
     let service: TriggerStateService;
 
     beforeEach(() => {
@@ -70,9 +67,9 @@ describe('trigger actions and instances', () => {
             close: vi.fn(),
             loading: vi.fn(),
         });
-        mocks.updateTrigger.mockResolvedValue(saved);
-        mocks.updateZone.mockResolvedValue(new PlaceZone());
-        mocks.removeSystemTrigger.mockResolvedValue(undefined);
+        vi.mocked(triggers.update).mockResolvedValue(mockReply(saved));
+        vi.mocked(zones.update).mockResolvedValue(mockReply(newItem(Zone)));
+        vi.mocked(system_triggers.destroy).mockResolvedValue(mockReply(''));
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -80,8 +77,8 @@ describe('trigger actions and instances', () => {
                 {
                     provide: ActiveItemService,
                     useValue: {
-                        item: signal(null),
-                        active_item: trigger,
+                        activeOf: (type: string) =>
+                            type === 'triggers' ? trigger : null,
                         replaceItem: mocks.replaceItem,
                     },
                 },
@@ -93,58 +90,63 @@ describe('trigger actions and instances', () => {
 
     it('saves the new function order and keeps the mailers', async () => {
         await service.reorderAction('function', 0, 2);
-        expect(mocks.updateTrigger).toHaveBeenCalledExactlyOnceWith(
-            'template-1',
-            expect.objectContaining({
+        expect(triggers.update).toHaveBeenCalledExactlyOnceWith({
+            id: 'template-1',
+            body: expect.objectContaining({
                 actions: {
                     functions: [power_off, mute, power_on],
                     mailers: [ops, facilities],
                 },
             }),
-        );
+        });
         expect(mocks.replaceItem).toHaveBeenCalledExactlyOnceWith(saved);
     });
 
     it('removes only the selected mailer', async () => {
         await service.removeAction({ ...facilities });
-        expect(mocks.updateTrigger).toHaveBeenCalledExactlyOnceWith(
-            'template-1',
-            expect.objectContaining({
+        expect(triggers.update).toHaveBeenCalledExactlyOnceWith({
+            id: 'template-1',
+            body: expect.objectContaining({
                 actions: {
                     functions: [power_on, power_off, mute],
                     mailers: [ops],
                 },
             }),
-        );
+        });
         expect(mocks.replaceItem).toHaveBeenCalledExactlyOnceWith(saved);
     });
 
     it('removes a zone instance from the zone trigger list and keeps other triggers', async () => {
-        mocks.showZone.mockResolvedValue(
-            new PlaceZone({
-                id: 'zone-1',
-                triggers: ['other-trigger', 'template-1'],
-            }),
+        vi.mocked(zones.show).mockResolvedValue(
+            mockReply(
+                newItem(Zone, {
+                    id: 'zone-1',
+                    triggers: ['other-trigger', 'template-1'],
+                }),
+            ),
         );
         await service.removeTriggerFromParent(
-            new PlaceTrigger({ id: 'instance-1', zone_id: 'zone-1' }),
+            newItem(TriggerInstance, { id: 'instance-1', zone_id: 'zone-1' }),
         );
-        expect(mocks.updateZone).toHaveBeenCalledExactlyOnceWith(
-            'zone-1',
-            expect.objectContaining({ triggers: ['other-trigger'] }),
-        );
-        expect(mocks.removeSystemTrigger).not.toHaveBeenCalled();
+        expect(zones.update).toHaveBeenCalledExactlyOnceWith({
+            id: 'zone-1',
+            body: { triggers: ['other-trigger'] },
+        });
+        expect(system_triggers.destroy).not.toHaveBeenCalled();
     });
 
     it('removes a system instance by its instance ID', async () => {
         await service.removeTriggerFromParent(
-            new PlaceTrigger({ id: 'instance-1', control_system_id: 'sys-1' }),
+            newItem(TriggerInstance, {
+                id: 'instance-1',
+                control_system_id: 'sys-1',
+            }),
         );
-        expect(mocks.removeSystemTrigger).toHaveBeenCalledExactlyOnceWith(
-            'sys-1',
-            'instance-1',
-        );
-        expect(mocks.showZone).not.toHaveBeenCalled();
-        expect(mocks.updateZone).not.toHaveBeenCalled();
+        expect(system_triggers.destroy).toHaveBeenCalledExactlyOnceWith({
+            sys_id: 'sys-1',
+            trig_id: 'instance-1',
+        });
+        expect(zones.show).not.toHaveBeenCalled();
+        expect(zones.update).not.toHaveBeenCalled();
     });
 });

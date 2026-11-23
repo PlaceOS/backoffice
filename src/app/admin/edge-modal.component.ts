@@ -1,15 +1,17 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
-import { addEdge, PlaceEdge, updateEdge } from '@placeos/ts-client';
+import { Edge, EdgeCreateBody, edges } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
+import { toBody } from '../common/placeos';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface EdgeModalData {
-    edge: PlaceEdge;
+    edge: Edge;
 }
 
 @Component({
@@ -102,7 +104,13 @@ export class EdgeModalComponent implements OnInit {
         if (this.form().invalid()) return;
         this.loading.set('Saving edge node...');
         const edge = { ...this.edge, ...this.formModel() };
-        const method = edge.id ? updateEdge(edge.id, edge) : addEdge(edge);
+        const method = edge.id
+            ? edges
+                  .update({ id: edge.id, body: toBody(Edge, edge) })
+                  .then(orThrow)
+            : edges
+                  .create({ body: toBody(EdgeCreateBody, edge) })
+                  .then(orThrow);
         const new_edge = await method.catch(() => null);
         this.loading.set('');
         if (!new_edge) return notifyError(i18n('ADMIN.EDGE_ERROR'));

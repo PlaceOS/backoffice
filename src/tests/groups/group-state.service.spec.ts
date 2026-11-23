@@ -6,15 +6,12 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
-import {
-    PlaceGroup,
-    PlaceGroupUser,
-    PlaceGroupZone,
-    PlaceUser,
-} from '@placeos/ts-client';
+import { Group, GroupUser, GroupZone, User } from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { of, Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
+import { newItem } from '../../app/common/placeos';
 import { GroupStateService } from '../../app/groups/group-state.service';
 
 const mocks = vi.hoisted(() => ({
@@ -31,12 +28,26 @@ const mocks = vi.hoisted(() => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        groups_users: {
+            ...actual.groups_users,
+            create: mocks.addGroupUser,
+            destroy: mocks.removeGroupUser,
+            update: mocks.updateGroupUser,
+            query: mocks.queryGroupUsers,
+        },
+        groups_zones: {
+            ...actual.groups_zones,
+            create: mocks.addGroupZone,
+            destroy: mocks.removeGroupZone,
+            update: mocks.updateGroupZone,
+            query: mocks.queryGroupZones,
+        },
+    };
+});
 vi.mock('../../app/common/item.service', () => ({
     ActiveItemService: class {},
 }));
@@ -59,23 +70,23 @@ vi.mock('../../app/groups/group-permissions-modal.component', () => ({
 }));
 
 describe('group membership actions', () => {
-    const group = new PlaceGroup({
+    const group = newItem(Group, {
         id: 'group-1',
         authority_id: 'domain-1',
         default_permissions: 5,
     });
-    const user = new PlaceGroupUser({
+    const user = newItem(GroupUser, {
         group_id: 'group-1',
         user_id: 'user-1',
         permissions: 17,
     });
-    const zone = new PlaceGroupZone({
+    const zone = newItem(GroupZone, {
         group_id: 'group-1',
         zone_id: 'zone-1',
         permissions: 5,
         deny: true,
     });
-    const active = signal<PlaceGroup | null>(null);
+    const active = signal<Group | null>(null);
     const close = vi.fn();
     const loading = vi.fn();
     const router = {
@@ -87,13 +98,17 @@ describe('group membership actions', () => {
     beforeEach(() => {
         vi.resetAllMocks();
         active.set(null);
-        mocks.queryGroupUsers.mockResolvedValue({ data: [], total: 0 });
-        mocks.queryGroupZones.mockResolvedValue({ data: [], total: 0 });
-        mocks.addGroupUser.mockResolvedValue(user);
-        mocks.removeGroupUser.mockResolvedValue(undefined);
-        mocks.removeGroupZone.mockResolvedValue(undefined);
-        mocks.updateGroupUser.mockResolvedValue(user);
-        mocks.updateGroupZone.mockResolvedValue(zone);
+        mocks.queryGroupUsers.mockResolvedValue(
+            mockPage({ data: [], total: 0 }),
+        );
+        mocks.queryGroupZones.mockResolvedValue(
+            mockPage({ data: [], total: 0 }),
+        );
+        mocks.addGroupUser.mockResolvedValue(mockReply(user));
+        mocks.removeGroupUser.mockResolvedValue(mockReply(''));
+        mocks.removeGroupZone.mockResolvedValue(mockReply(''));
+        mocks.updateGroupUser.mockResolvedValue(mockReply(user));
+        mocks.updateGroupZone.mockResolvedValue(mockReply(zone));
         mocks.confirm.mockResolvedValue({ reason: 'done', close, loading });
         mocks.open.mockReturnValue({ closed: of(undefined) });
         TestBed.configureTestingModule({
@@ -102,7 +117,10 @@ describe('group membership actions', () => {
                 GroupStateService,
                 {
                     provide: ActiveItemService,
-                    useValue: { item: active, active_item: group },
+                    useValue: {
+                        activeOf: (type: string) =>
+                            type === 'groups' ? active() : null,
+                    },
                 },
                 { provide: Dialog, useValue: { open: mocks.open } },
                 { provide: Router, useValue: router },
@@ -112,16 +130,18 @@ describe('group membership actions', () => {
     });
 
     it('loads memberships in name order and uses IDs when names are unavailable', async () => {
-        mocks.queryGroupUsers.mockResolvedValue({
-            data: [
-                new PlaceGroupUser({
-                    user_id: 'z-user',
-                    user: new PlaceUser({ name: 'Zoe' }),
-                }),
-                new PlaceGroupUser({ user_id: 'a-user' }),
-            ],
-            total: 2,
-        });
+        mocks.queryGroupUsers.mockResolvedValue(
+            mockPage({
+                data: [
+                    newItem(GroupUser, {
+                        user_id: 'z-user',
+                        user: newItem(User, { name: 'Zoe' }),
+                    }),
+                    newItem(GroupUser, { user_id: 'a-user' }),
+                ],
+                total: 2,
+            }),
+        );
         active.set(group);
         await TestBed.inject(ApplicationRef).whenStable();
         expect(service.users().map((item) => item.user_id)).toEqual([
@@ -138,10 +158,12 @@ describe('group membership actions', () => {
     it('only counts members until their tab is opened', async () => {
         const url = '/groups/group-1/about';
         router.events.next(new NavigationEnd(1, url, url));
-        mocks.queryGroupUsers.mockResolvedValue({
-            data: [new PlaceGroupUser({ user_id: 'a-user' })],
-            total: 7,
-        });
+        mocks.queryGroupUsers.mockResolvedValue(
+            mockPage({
+                data: [newItem(GroupUser, { user_id: 'a-user' })],
+                total: 7,
+            }),
+        );
         active.set(group);
         await TestBed.inject(ApplicationRef).whenStable();
         expect(service.users()).toEqual([]);
@@ -191,29 +213,31 @@ describe('group membership actions', () => {
     ])(
         'bulk add hides $label: $excluded',
         async ({ id, authority_id, excluded }) => {
-            mocks.queryGroupUsers.mockResolvedValue({ data: [user], total: 1 });
+            mocks.queryGroupUsers.mockResolvedValue(
+                mockPage({ data: [user], total: 1 }),
+            );
             active.set(group);
             await TestBed.inject(ApplicationRef).whenStable();
             expect(
                 service.user_members.exclude(
-                    new PlaceUser({ id, authority_id }),
+                    newItem(User, { id, authority_id }),
                 ),
             ).toBe(excluded);
         },
     );
 
     it('does not send an add request for an unsaved user', async () => {
-        await service.user_members.add(new PlaceUser());
+        await service.user_members.add(newItem(User));
         expect(mocks.addGroupUser).not.toHaveBeenCalled();
     });
 
     it('reports a failed add without claiming success', async () => {
         const error = new Error('Forbidden');
         mocks.addGroupUser.mockRejectedValue(error);
-        await service.user_members.add(new PlaceUser({ id: 'user-1' }));
+        active.set(group);
+        await service.user_members.add(newItem(User, { id: 'user-1' }));
         expect(mocks.addGroupUser).toHaveBeenCalledExactlyOnceWith({
-            group_id: 'group-1',
-            user_id: 'user-1',
+            body: { group_id: 'group-1', user_id: 'user-1' },
         });
         expect(mocks.notifyError).toHaveBeenCalledExactlyOnceWith(
             'GROUPS.USER_ADD_ERROR',
@@ -239,10 +263,10 @@ describe('group membership actions', () => {
 
     it('removes a confirmed user membership with the correct user and group IDs', async () => {
         await service.user_members.remove(user);
-        expect(mocks.removeGroupUser).toHaveBeenCalledExactlyOnceWith(
-            'user-1',
-            'group-1',
-        );
+        expect(mocks.removeGroupUser).toHaveBeenCalledExactlyOnceWith({
+            user_id: 'user-1',
+            group_id: 'group-1',
+        });
         expect(close).toHaveBeenCalledOnce();
         expect(mocks.notifySuccess).toHaveBeenCalledExactlyOnceWith(
             'GROUPS.USER_REMOVE_SUCCESS',
@@ -253,10 +277,10 @@ describe('group membership actions', () => {
         const error = new Error('Forbidden');
         mocks.removeGroupZone.mockRejectedValue(error);
         await service.zone_members.remove(zone);
-        expect(mocks.removeGroupZone).toHaveBeenCalledExactlyOnceWith(
-            'group-1',
-            'zone-1',
-        );
+        expect(mocks.removeGroupZone).toHaveBeenCalledExactlyOnceWith({
+            group_id: 'group-1',
+            zone_id: 'zone-1',
+        });
         expect(close).toHaveBeenCalledOnce();
         expect(mocks.notifyError).toHaveBeenCalledExactlyOnceWith(
             'GROUPS.ZONE_REMOVE_ERROR',
@@ -269,11 +293,11 @@ describe('group membership actions', () => {
             closed: of({ permissions: 0 }),
         });
         await service.user_members.editPermissions(user);
-        expect(mocks.updateGroupUser).toHaveBeenCalledExactlyOnceWith(
-            'user-1',
-            'group-1',
-            { permissions: 0 },
-        );
+        expect(mocks.updateGroupUser).toHaveBeenCalledExactlyOnceWith({
+            user_id: 'user-1',
+            group_id: 'group-1',
+            body: { permissions: 0 },
+        });
     });
 
     it('saves the deny flag and permissions from the zone permissions dialog', async () => {
@@ -281,11 +305,11 @@ describe('group membership actions', () => {
             closed: of({ permissions: 16, deny: false }),
         });
         await service.zone_members.editPermissions(zone);
-        expect(mocks.updateGroupZone).toHaveBeenCalledExactlyOnceWith(
-            'group-1',
-            'zone-1',
-            { permissions: 16, deny: false },
-        );
+        expect(mocks.updateGroupZone).toHaveBeenCalledExactlyOnceWith({
+            group_id: 'group-1',
+            zone_id: 'zone-1',
+            body: { permissions: 16, deny: false },
+        });
     });
 
     it('does not save permissions when either dialog is cancelled', async () => {
@@ -299,21 +323,20 @@ describe('group membership actions', () => {
         mocks.open.mockReturnValue({
             closed: of({
                 items: [
-                    new PlaceUser({ id: 'user-1' }),
-                    new PlaceUser({ id: 'user-2' }),
+                    newItem(User, { id: 'user-1' }),
+                    newItem(User, { id: 'user-2' }),
                 ],
                 permissions: 17,
             }),
         });
         mocks.addGroupUser
-            .mockResolvedValueOnce(user)
+            .mockResolvedValueOnce(mockReply(user))
             .mockRejectedValueOnce(new Error('Forbidden'));
+        active.set(group);
         await service.user_members.bulkAdd();
         expect(mocks.addGroupUser).toHaveBeenCalledTimes(2);
         expect(mocks.addGroupUser).toHaveBeenCalledWith({
-            group_id: 'group-1',
-            user_id: 'user-2',
-            permissions: 17,
+            body: { group_id: 'group-1', user_id: 'user-2', permissions: 17 },
         });
         expect(mocks.notifyError).toHaveBeenCalledExactlyOnceWith(
             'GROUPS.USERS_BULK_ERROR:1',
@@ -327,6 +350,7 @@ describe('group membership actions', () => {
     });
 
     it('starts bulk user permissions at the group default permissions', async () => {
+        active.set(group);
         await service.user_members.bulkAdd();
         expect(mocks.open.mock.calls[0][1].data.permissions).toBe(5);
     });

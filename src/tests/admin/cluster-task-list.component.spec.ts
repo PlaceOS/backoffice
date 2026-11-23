@@ -1,24 +1,19 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import {
-    PlaceCluster,
-    queryClusters,
-    queryProcesses,
-} from '@placeos/ts-client';
+import { cluster } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { PlaceClusterTaskListComponent } from '../../app/admin/cluster-details/cluster-task-list.component';
-
-vi.mock('@placeos/ts-client', () => ({
-    queryClusters: vi.fn(),
-    queryProcesses: vi.fn(),
-    showMetadata: vi.fn(() => Promise.resolve({})),
-    terminateProcess: vi.fn(),
-}));
+import {
+    clusterFromStatus,
+    processFromStatus,
+} from '../../app/admin/cluster-details/cluster.utilities';
+vi.mock('@placeos/ts-client', { spy: true });
 
 describe('PlaceClusterTaskListComponent', () => {
-    it('clears the cluster when the search has no exact id match', async () => {
+    it('clears the cluster when no node has its id', async () => {
         const param_map = convertToParamMap({});
         await TestBed.configureTestingModule({
             imports: [PlaceClusterTaskListComponent],
@@ -40,16 +35,28 @@ describe('PlaceClusterTaskListComponent', () => {
         const component = TestBed.createComponent(
             PlaceClusterTaskListComponent,
         ).componentInstance;
-        component.cluster.set({ id: 'cluster-1' } as PlaceCluster);
-        component.process_list.set([{ id: 'driver_1' }]);
-        vi.mocked(queryClusters).mockResolvedValue({
-            data: [{ id: 'cluster-10' } as PlaceCluster],
-        } as Awaited<ReturnType<typeof queryClusters>>);
+        const node = (id: string) => ({
+            id,
+            uri: '',
+            load: null,
+            status: null,
+        });
+        component.cluster.set(clusterFromStatus(node('cluster-1')));
+        component.process_list.set([
+            processFromStatus('cluster-1', {
+                driver: 'driver_1',
+                local: { modules: [], status: null },
+                edge: {},
+            }),
+        ]);
+        vi.mocked(cluster.nodes).mockResolvedValue(
+            mockReply([node('cluster-10')]),
+        );
 
         await component.loadCluster('cluster-1');
 
         expect(component.cluster()).toBeNull();
         expect(component.process_list()).toEqual([]);
-        expect(queryProcesses).not.toHaveBeenCalled();
+        expect(cluster.show).not.toHaveBeenCalled();
     });
 });

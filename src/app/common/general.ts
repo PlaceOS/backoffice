@@ -1,3 +1,4 @@
+import type { JsonValue } from '@placeos/ts-client';
 import { HashMap, Point } from './types';
 
 /** Available console output streams. */
@@ -372,3 +373,56 @@ If applicable, add screenshots to help explain your problem.
 **Hash:** ${hash}
 **Built:** ${date}
 `;
+
+/**
+ * Delete the keys of `object` with one of `delete_values`. Changes and
+ * returns `object`
+ */
+export function cleanObject<T extends object>(
+    object: T,
+    delete_values: unknown[],
+): T {
+    for (const key of Object.keys(object) as (keyof T)[]) {
+        if (delete_values.includes(object[key])) delete object[key];
+    }
+    return object;
+}
+
+/**
+ * Convert byte values into a display string, e.g. `1.50 KB`
+ * @param bytes Number of bytes
+ * @param si Use powers of 1000, not 1024
+ */
+export function humanReadableByteCount(bytes: number, si = false) {
+    const unit = si ? 1000 : 1024;
+    if (bytes < unit) return bytes + (si ? ' iB' : ' B');
+    const exp = Math.floor(Math.log(bytes) / Math.log(unit));
+    const pre = (si ? 'kMGTPE' : 'KMGTPE').charAt(exp - 1) + (si ? 'iB' : 'B');
+    return (bytes / Math.pow(unit, exp)).toFixed(2) + ' ' + pre;
+}
+
+/**
+ * The `details` of a metadata entry as data. The API can send them as JSON
+ * text, which the 6.x `PlaceMetadata` class parsed. Text that is not JSON
+ * stays as it is. `null` gives `{}`, as in 6.x.
+ */
+export function parseMetadataDetails(details: JsonValue | null): JsonValue {
+    if (typeof details !== 'string') return details ?? {};
+    try {
+        return JSON.parse(details) as JsonValue;
+    } catch {
+        return details;
+    }
+}
+
+/**
+ * The `details` of a metadata entry as an object. Gives `{}` for text that is
+ * not a JSON object, and for other values.
+ */
+export function metadataDetails(details: unknown): Record<string, unknown> {
+    const value =
+        typeof details === 'string' ? parseMetadataDetails(details) : details;
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as Record<string, unknown>)
+        : {};
+}

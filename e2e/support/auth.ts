@@ -6,8 +6,10 @@
  * the SPA starts signed in without driving the login form.
  *
  * ts-client keeps its bearer in `localStorage[${cid}_access_token]` and
- * `_expires_at`, where `cid = Md5(redirect_uri)`. The `_expires_at` we write
- * must be in the future, or ts-client starts a new sign-in mid-test.
+ * `_expires_at`, where `cid = Md5(redirect_uri)`. ts-client 7 reads them only
+ * when the app is trusted (`${cid}_trusted`), so the state sets that too. The
+ * `_expires_at` we write must be in the future, or ts-client starts a new
+ * sign-in mid-test.
  */
 import { request as pw_request } from '@playwright/test';
 import { createHash, randomBytes } from 'crypto';
@@ -118,9 +120,11 @@ export async function mintToken(
     }
 }
 
-/** A storageState that holds ts-client's token keys on the app origin */
+/** A storageState that holds ts-client's token and trust keys on the app origin */
 export function buildStorageState(mint: MintResult, app_url: string) {
     const local_storage = [
+        // Without it, ts-client 7 keeps tokens in memory and ignores these keys
+        { name: `${mint.client_id}_trusted`, value: 'true' },
         { name: `${mint.client_id}_access_token`, value: mint.access_token },
         {
             name: `${mint.client_id}_expires_at`,

@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PlaceZone, queryZones } from '@placeos/ts-client';
+import { type Zone, zones } from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { DialogCloseDirective } from '../ui/controls/dialog';
@@ -106,12 +107,12 @@ import { IconComponent } from '../ui/icon.component';
 })
 export class ZoneTreeExportModalComponent {
     private readonly _dialog_ref =
-        inject<DialogRef<PlaceZone[], ZoneTreeExportModalComponent>>(DialogRef);
-    private readonly _data = inject<{ selected: PlaceZone[] }>(DIALOG_DATA);
+        inject<DialogRef<Zone[], ZoneTreeExportModalComponent>>(DialogRef);
+    private readonly _data = inject<{ selected: Zone[] }>(DIALOG_DATA);
 
-    public readonly selected = signal<PlaceZone[]>(this._data.selected || []);
+    public readonly selected = signal<Zone[]>(this._data.selected || []);
 
-    public set selected_zone(zone: PlaceZone | null) {
+    public set selected_zone(zone: Zone | null) {
         if (!zone) return;
         if (!this.selected().some((_) => _.id === zone.id)) {
             this.selected.update((list) => [...list, zone]);
@@ -122,23 +123,22 @@ export class ZoneTreeExportModalComponent {
         return null;
     }
 
-    public readonly query_fn = (query: string): Promise<PlaceZone[]> =>
-        queryZones({
-            q: query,
-            include_children_count: true,
-            limit: 100,
-        }).then((resp) =>
-            resp.data.map((zone) => {
-                (zone as PlaceZone & { extra?: string }).extra =
-                    `${zone.children_count || 0} children`;
-                return zone;
-            }),
-        );
+    public readonly query_fn = (query: string): Promise<Zone[]> =>
+        zones
+            .query({ q: query, include_children_count: true, limit: 100 })
+            .then(orThrowPage)
+            .then((resp) =>
+                resp.data.map((zone) => {
+                    (zone as Zone & { extra?: string }).extra =
+                        `${zone.children_count || 0} children`;
+                    return zone;
+                }),
+            );
 
-    public readonly exclude_fn = (zone: PlaceZone) =>
+    public readonly exclude_fn = (zone: Zone) =>
         this.selected().some((_) => _.id === zone.id);
 
-    public removeSelected(zone: PlaceZone) {
+    public removeSelected(zone: Zone) {
         this.selected.update((list) => list.filter((_) => _.id !== zone.id));
     }
 

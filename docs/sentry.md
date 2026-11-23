@@ -14,7 +14,9 @@ Backoffice sends errors, performance traces and session replays to
 | User     | The user ID. Backoffice does not send the email or name. |
 | `domain` | Tag with the domain of the authority                     |
 
-Replays mask all text and block all media.
+Replays mask all text and block all media. Sentry does not record console
+output, because error messages can contain text from the server. Clicks,
+navigation and requests stay as breadcrumbs.
 
 Backoffice loads Sentry after the user signs in. Errors that occur before this
 stay in a queue (20 errors maximum). Backoffice sends them when Sentry starts.

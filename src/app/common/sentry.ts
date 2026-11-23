@@ -1,9 +1,10 @@
 import { ErrorHandler, Injectable, Injector, isDevMode } from '@angular/core';
-import { authority, isMock } from '@placeos/ts-client';
+import { CallFailed } from '@placeos/ts-client/compat';
 
 import { VERSION } from '../../env/version';
 import { isHandledChunkLoadError } from './application';
 import { log } from './general';
+import { authority, backofficeConfig, isMock } from './placeos';
 
 /** DSN for deployments that do not set `config.backoffice.sentry_dsn` */
 const DEFAULT_SENTRY_DSN =
@@ -53,9 +54,37 @@ export class SentryReportingErrorHandler implements ErrorHandler {
         if (isMonacoCancellation(error) || isHandledChunkLoadError(error)) {
             return;
         }
-        console.error(error);
-        reportError(error);
+        const reported = withoutBody(error);
+        console.error(reported);
+        reportError(reported);
     }
+}
+
+/** A frame of a V8 stack (`    at fn (url:1:2)`) or a Firefox and Safari stack (`fn@url:1:2`) */
+function isStackFrame(line: string) {
+    return /^\s+at\s/.test(line) || /^[^\s@]*@\S+:\d+:\d+$/.test(line);
+}
+
+/**
+ * A failed API call as an error with its kind and status only. The body of
+ * the response can have personal data.
+ */
+function withoutBody(error: unknown) {
+    if (!(error instanceof CallFailed)) return error;
+    const status = error.status === null ? '' : ` ${error.status}`;
+    const reported = new Error(`API call failed: ${error.error.kind}${status}`);
+    // Keep the frames of the original error, so Sentry shows where it came
+    // from. Cut the stack after the message first: the message can have
+    // lines that look like frames, such as a stack trace of the server. A
+    // stack without the message (Firefox, Safari) has only frames.
+    const stack = error.stack ?? '';
+    const at = error.message ? stack.indexOf(error.message) : -1;
+    const rest = at < 0 ? stack : stack.slice(at + error.message.length);
+    const frames = rest.split('\n').filter(isStackFrame);
+    if (frames.length) {
+        reported.stack = [reported.message, ...frames].join('\n');
+    }
+    return reported;
 }
 
 /**
@@ -63,7 +92,7 @@ export class SentryReportingErrorHandler implements ErrorHandler {
  * to a different DSN, or to `''` or `false` to turn Sentry off.
  */
 export function sentryDsn(): string {
-    const value = authority()?.config?.backoffice?.sentry_dsn;
+    const value: unknown = backofficeConfig().sentry_dsn;
     if (value === undefined || value === null) return DEFAULT_SENTRY_DSN;
     return typeof value === 'string' ? value : '';
 }
@@ -89,8 +118,12 @@ export async function initSentry(injector: Injector, user_id: string) {
         ignoreErrors: [/ResizeObserver loop/],
         integrations: (defaults) => [
             // Angular's global error listeners already send window errors
-            // to the error handler. This prevents duplicate events.
-            ...defaults.filter(({ name }) => name !== 'GlobalHandlers'),
+            // to the error handler. This prevents duplicate events. Console
+            // output is not recorded: error toasts log the message of the
+            // server, which can have personal data.
+            ...defaults.filter(
+                ({ name }) => name !== 'GlobalHandlers' && name !== 'Console',
+            ),
             Sentry.browserTracingIntegration(),
             Sentry.replayIntegration(),
         ],

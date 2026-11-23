@@ -20,7 +20,8 @@ import {
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 
-import { PlaceDriverRole, PlaceModule } from '@placeos/ts-client';
+import type { Module } from '@placeos/ts-client';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
 
 import { NgTemplateOutlet } from '@angular/common';
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -36,12 +37,22 @@ import { SpinnerComponent } from '../controls/spinner.component';
 import { IconComponent } from '../icon.component';
 
 interface SearchItem {
-    id: string;
-    name: string;
-    driver?: { id: string; name: string };
-    email?: string;
-    notes?: string;
-    description?: string;
+    readonly id: string;
+    readonly name: string;
+    readonly driver?: { readonly name: string } | null;
+    readonly email?: string | null;
+    readonly notes?: string | null;
+    readonly description?: string | null;
+}
+
+/** Whether a list item is a module. Only modules have both a driver and an IP */
+function isModule(item: unknown): item is Module {
+    return (
+        !!item &&
+        typeof item === 'object' &&
+        'driver_id' in item &&
+        'ip' in item
+    );
 }
 
 @Component({
@@ -206,7 +217,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     /** Placeholder to display on the form input */
     public readonly placeholder = input<string>(undefined);
     /** Limit available options to these */
-    public readonly options = input<T[]>(undefined);
+    public readonly options = input<readonly T[]>(undefined);
     /** Whether the form field should be disabled */
     public readonly disabled = input<boolean>(false);
     public readonly cva_disabled = signal(false);
@@ -229,7 +240,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     /** Whether item list is loading */
     public readonly loading = model<boolean>(false);
     /** Service used for searching items. A new function queries again */
-    public readonly query_fn = input<(_: string) => Promise<T[]>>(() =>
+    public readonly query_fn = input<(_: string) => Promise<readonly T[]>>(() =>
         Promise.resolve([]),
     );
     /** Currently selected item */
@@ -253,7 +264,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
                     options && options.length > 0
                         ? options
                         : !min_length || trimmed_query.length >= min_length
-                          ? await query_fn(trimmed_query).catch(() => [] as T[])
+                          ? await query_fn(trimmed_query).catch((): T[] => [])
                           : [];
                 const search = trimmed_query.toLowerCase();
                 return list.filter((item: T) =>
@@ -392,7 +403,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
         const map = {};
         const list = this.items || [];
         for (const item of list) {
-            if (item instanceof PlaceModule) {
+            if (isModule(item)) {
                 const detail =
                     item.role === PlaceDriverRole.Service
                         ? item.uri

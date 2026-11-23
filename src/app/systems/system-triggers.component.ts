@@ -1,5 +1,4 @@
 import { Component, computed, inject, model } from '@angular/core';
-import { PlaceTrigger } from '@placeos/ts-client';
 import { copyToClipboard, unique } from '../common/general';
 import { notifySuccess } from '../common/notifications';
 
@@ -234,13 +233,9 @@ export class SystemTriggersComponent {
 
     public readonly triggers = computed(() => {
         const filter = this.filter().toLowerCase();
-        const list = unique(this.service_triggers(), 'id');
+        const list = unique([...this.service_triggers()], 'id');
         return filter
-            ? list.filter((t) =>
-                  (t as PlaceTrigger & { name: string }).name
-                      .toLowerCase()
-                      .includes(filter),
-              )
+            ? list.filter((t) => (t.name || '').toLowerCase().includes(filter))
             : list;
     });
 

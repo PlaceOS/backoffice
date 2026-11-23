@@ -1,16 +1,13 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceTrigger, updateTrigger } from '@placeos/ts-client';
+import { Trigger, triggers } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../../app/common/placeos';
 import { TriggerConditionModalComponent } from '../../../app/ui/forms/trigger-condition-modal.component';
 
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<object>('@placeos/ts-client/dist/index.es.js')),
-    updateTrigger: vi.fn((_: string, trigger: PlaceTrigger) =>
-        Promise.resolve(trigger),
-    ),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 
 vi.mock('../../../app/common/notifications', () => ({
     notifyError: vi.fn(),
@@ -19,16 +16,20 @@ vi.mock('../../../app/common/notifications', () => ({
 
 describe('TriggerConditionModalComponent', () => {
     it('saves an edited time condition in seconds without CRON fields', async () => {
-        const comparison = { left: true, operator: 'equal', right: true };
-        const cron = { type: 'cron', cron: '0 9 * * *', timezone: 'UTC' };
-        const at_time = { type: 'at', time: 1_700_000_000 };
-        const trigger = {
+        const trigger = newItem(Trigger, {
             id: 'trigger-1',
             conditions: {
-                comparisons: [comparison],
-                time_dependents: [cron, at_time],
+                comparisons: [{ left: true, operator: 'equal', right: true }],
+                time_dependents: [
+                    { type: 'cron', cron: '0 9 * * *', timezone: 'UTC' },
+                    { type: 'at', time: 1_700_000_000 },
+                ],
             },
-        } as unknown as PlaceTrigger;
+        });
+        vi.mocked(triggers.update).mockResolvedValue(mockReply(trigger));
+        // The modal gets the conditions as the server sent them
+        const [comparison] = trigger.conditions.comparisons;
+        const [cron, at_time] = trigger.conditions.time_dependents;
         TestBed.configureTestingModule({
             providers: [
                 provideZonelessChangeDetection(),
@@ -51,9 +52,9 @@ describe('TriggerConditionModalComponent', () => {
 
         await modal.save();
 
-        expect(updateTrigger).toHaveBeenCalledWith(
-            'trigger-1',
-            expect.objectContaining({
+        expect(triggers.update).toHaveBeenCalledWith({
+            id: 'trigger-1',
+            body: expect.objectContaining({
                 conditions: {
                     comparisons: [comparison],
                     time_dependents: [
@@ -62,6 +63,6 @@ describe('TriggerConditionModalComponent', () => {
                     ],
                 },
             }),
-        );
+        });
     });
 });

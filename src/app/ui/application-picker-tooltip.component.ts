@@ -1,13 +1,11 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import {
-    authority,
-    PlaceApplication,
-    queryApplications,
-} from '@placeos/ts-client';
+import { type Application, oauth_applications } from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
+import { authority } from '../common/placeos';
 import { CustomTooltipData } from './custom-tooltip.component';
 
 interface SidebarApplication {
-    id: string;
+    id: number;
     name: string;
     redirect_uri: string;
     icon_urls: string[];
@@ -147,9 +145,10 @@ export class ApplicationPickerTooltipComponent implements OnInit {
             this.loading.set(false);
             return;
         }
-        const response = await queryApplications({
-            authority_id: active_authority.id,
-        } as Record<string, unknown>).catch(() => null);
+        const response = await oauth_applications
+            .query({ authority_id: active_authority.id })
+            .then(orThrowPage)
+            .catch(() => null);
         const applications = (response?.data || [])
             .filter((app) => isSupportedRedirectUri(app?.redirect_uri))
             .sort((lhs, rhs) =>
@@ -201,7 +200,7 @@ export class ApplicationPickerTooltipComponent implements OnInit {
         this.page.update((page) => Math.min(this.total_pages() - 1, page + 1));
     }
 
-    private mapApplication(app: PlaceApplication): SidebarApplication {
+    private mapApplication(app: Application): SidebarApplication {
         return {
             id: app.id,
             name: app.name || this.nameFromUri(app.redirect_uri),

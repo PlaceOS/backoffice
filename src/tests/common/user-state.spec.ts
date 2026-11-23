@@ -1,22 +1,20 @@
-import { PlaceUser } from '@placeos/ts-client';
-import { describe, expect, it, vi } from 'vitest';
+import { User } from '@placeos/ts-client';
+import { describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     current_user,
     currentUser,
     setCurrentUser,
 } from '../../app/common/user-state';
 
-vi.mock('@placeos/ts-client', async () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
 describe('current user', () => {
     it('returns a stable empty user until the user is published', () => {
         expect(current_user()).toBeNull();
-        expect(currentUser().id).toBe('');
+        // The empty v7 user has a null id, where the 6.x class had ''
+        expect(currentUser().id).toBeNull();
         expect(currentUser()).toBe(currentUser());
 
-        const user = new PlaceUser({ id: 'user-1' });
+        const user = newItem(User, { id: 'user-1' });
         setCurrentUser(user);
         expect(current_user()).toBe(user);
         expect(currentUser()).toBe(user);

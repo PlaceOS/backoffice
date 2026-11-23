@@ -6,7 +6,7 @@ import {
     signal,
     untracked,
 } from '@angular/core';
-import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
+import { type Zone } from '@placeos/ts-client';
 import { querySupportZones as queryZones } from '../common/support-access';
 
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -70,14 +70,16 @@ import { SystemStateService } from './system-state.service';
             </section>
             @if (zone_issues()) {
                 <div
-                    class="flex item-center border-warning bg-warning/10 mx-4 mb-2 gap-2 overflow-hidden rounded-sm border"
+                    class="item-center border-warning bg-warning/10 mx-4 mb-2 flex gap-2 overflow-hidden rounded-sm border"
                 >
                     <div
                         class="bg-warning text-warning-content flex h-full items-center p-1 text-2xl"
                     >
                         <icon>brightness_alert</icon>
                     </div>
-                    <div class="px-2 py-3 mono text-xs">{{ zone_issues() }}</div>
+                    <div class="mono px-2 py-3 text-xs">
+                        {{ zone_issues() }}
+                    </div>
                 </div>
             }
             <section class="h-1/2 w-full flex-1 overflow-auto px-4">
@@ -199,7 +201,7 @@ export class SystemZonesComponent {
 
     public changed: Record<string, boolean> = {};
     /** ID of a zone that the user wishes to add to the system */
-    public readonly pending_zones = signal<PlaceZone[]>([]);
+    public readonly pending_zones = signal<Zone[]>([]);
     /** ID of a zone that the user wishes to add to the system */
     public readonly zone_order = signal<string[]>([]);
     /** Whether zones for active item are loading */
@@ -234,9 +236,10 @@ export class SystemZonesComponent {
         const item = this.item_signal();
         const zones = this.original_zones();
         if (!item?.email && !item?.map_id) return '';
-        const has_org = zones.find((_) => _.tags.includes('org'));
-        const has_building = zones.find((_) => _.tags.includes('building'));
-        const has_level = zones.find((_) => _.tags.includes('level'));
+        // The zones come from a list load, so `tags` can be `null`
+        const has_org = zones.find((_) => _.tags?.includes('org'));
+        const has_building = zones.find((_) => _.tags?.includes('building'));
+        const has_level = zones.find((_) => _.tags?.includes('level'));
         if (has_org && has_building && has_level) return '';
         const missing = [];
         if (!has_org) missing.push('org');
@@ -255,7 +258,7 @@ export class SystemZonesComponent {
     public readonly query_fn = (_: string) =>
         queryZones({ q: _ }).then((resp) => resp.data);
 
-    public readonly exclude_fn = (zone: PlaceZone, __: string) =>
+    public readonly exclude_fn = (zone: Zone, __: string) =>
         this.item.zones.indexOf(zone.id) >= 0;
 
     public readonly removeZone = (z) =>
@@ -305,8 +308,8 @@ export class SystemZonesComponent {
         });
     }
 
-    public get item(): PlaceSystem {
-        return this._service.active_item as PlaceSystem;
+    public get item() {
+        return this._service.active_item;
     }
 
     public async reorder([previous, current]: [number, number]) {

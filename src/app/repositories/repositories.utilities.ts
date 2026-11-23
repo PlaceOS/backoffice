@@ -1,5 +1,6 @@
 import { required, SchemaFn, validate } from '@angular/forms/signals';
-import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
+import { type Repository } from '@placeos/ts-client';
+import { PlaceRepositoryType } from '@placeos/ts-client/compat';
 
 export interface RepositoryFormModel {
     id: string;
@@ -19,7 +20,7 @@ export interface RepositoryFormModel {
  * Generate repository form defaults.
  */
 export function generateRepositoryFormModel(
-    repository?: PlaceRepository,
+    repository?: Repository,
 ): RepositoryFormModel {
     return {
         id: repository?.id || '',

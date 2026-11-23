@@ -5,39 +5,24 @@ import {
     signal,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceRepository, PlaceRepositoryType } from '@placeos/ts-client';
+import { Repository } from '@placeos/ts-client';
+import { mockReply, PlaceRepositoryType } from '@placeos/ts-client/compat';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
+import { newItem } from '../../app/common/placeos';
 import { RepositoriesStateService } from '../../app/repositories/repositories-state.service';
 
-vi.mock('@placeos/ts-client', () => ({
-    PlaceRepositoryType: {
-        Driver: 'driver',
-        Interface: 'interface',
-    },
-    PlaceRepository: class {
-        public id = '';
-        public folder_name = '';
-        public repo_type = 'driver';
-
-        public get type() {
-            return this.repo_type;
-        }
-
-        constructor(data: Record<string, unknown> = {}) {
-            Object.assign(this, data);
-        }
-    },
-    PlaceDriver: class {
-        constructor(data: Record<string, unknown> = {}) {
-            Object.assign(this, data);
-        }
-    },
-    listRepositoryCommits: vi.fn(() => Promise.resolve([])),
-    listRepositoryDrivers: vi.fn(() => Promise.resolve([])),
-    pullRepositoryChanges: vi.fn(),
-    showRepository: vi.fn(),
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        repositories: {
+            ...actual.repositories,
+            commits: vi.fn(async () => mockReply([])),
+            drivers: vi.fn(async () => mockReply([])),
+        },
+    };
+});
 
 vi.mock('../../app/common/item.service', () => ({
     ActiveItemService: class {},
@@ -56,7 +41,7 @@ vi.mock('../../app/drivers/driver-form.component', () => ({
 }));
 
 describe('RepositoriesStateService', () => {
-    const active_item = signal<PlaceRepository | null>(null);
+    const active_item = signal<Repository | null>(null);
 
     beforeEach(() => {
         active_item.set(null);
@@ -69,6 +54,8 @@ describe('RepositoriesStateService', () => {
                     useValue: {
                         item: active_item.asReadonly(),
                         active_item: null,
+                        activeOf: (type: string) =>
+                            type === 'repositories' ? active_item() : null,
                     },
                 },
                 { provide: Dialog, useValue: {} },
@@ -84,7 +71,7 @@ describe('RepositoriesStateService', () => {
             .mockResolvedValue(new Response('# Changelog\n\n## 1.0.0'));
         vi.stubGlobal('fetch', fetch_mock);
         active_item.set(
-            new PlaceRepository({
+            newItem(Repository, {
                 id: 'interface-1',
                 folder_name: 'concierge',
                 repo_type: PlaceRepositoryType.Interface,
@@ -110,7 +97,7 @@ describe('RepositoriesStateService', () => {
             .mockResolvedValue(new Response('', { status: 404 }));
         vi.stubGlobal('fetch', fetch_mock);
         active_item.set(
-            new PlaceRepository({
+            newItem(Repository, {
                 id: 'interface-1',
                 folder_name: 'concierge',
                 repo_type: PlaceRepositoryType.Interface,
@@ -128,7 +115,7 @@ describe('RepositoriesStateService', () => {
         const fetch_mock = vi.fn();
         vi.stubGlobal('fetch', fetch_mock);
         active_item.set(
-            new PlaceRepository({
+            newItem(Repository, {
                 id: 'driver-1',
                 folder_name: 'drivers',
                 repo_type: PlaceRepositoryType.Driver,

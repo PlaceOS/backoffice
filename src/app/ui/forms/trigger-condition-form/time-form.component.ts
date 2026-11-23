@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FieldTree, FormField } from '@angular/forms/signals';
-import { TriggerTimeConditionType } from '@placeos/ts-client';
+import { TriggerTimeConditionType } from '@placeos/ts-client/compat';
 import { format, setDay, setMonth } from 'date-fns';
 import { numberToPosition } from '../../../common/general';
 import { i18n } from '../../../common/locale.service';

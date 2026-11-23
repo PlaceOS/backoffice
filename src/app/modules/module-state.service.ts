@@ -1,20 +1,20 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    moduleSettings,
-    PlaceModule,
-    PlaceSystem,
-    showDriver,
-    showEdge,
-    showSystem,
-    startModule,
-    stopModule,
+    drivers,
+    edges,
+    type Module,
+    modules,
+    type System,
+    systems,
 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { ActiveItemService } from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { querySupportSystems as querySystems } from '../common/support-access';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
+import { shortModuleError } from './modules.utilities';
 
 @Service()
 export class ModuleStateService {
@@ -25,15 +25,18 @@ export class ModuleStateService {
 
     public readonly loading = this._loading.asReadonly();
     /** Active module */
-    public readonly item = computed(
-        () => this._state.item() as unknown as PlaceModule,
-    );
+    public readonly item = computed(() => this._state.activeOf('modules'));
+    /** Settings of each encryption level of the active module */
+    public readonly settings = computed(() => this.item()?.settings);
 
     private readonly _associated_settings = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceModule)) return [];
-            return moduleSettings(item.id).catch(() => []);
+            if (!item) return [];
+            return modules
+                .settings({ id: item.id })
+                .then(orThrow)
+                .catch(() => []);
         },
     });
     /** Signal for associated settings of the active item */
@@ -44,8 +47,11 @@ export class ModuleStateService {
     private readonly _driver = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceModule)) return null;
-            return showDriver(item.driver_id).catch(() => null);
+            if (!item) return null;
+            return drivers
+                .show({ id: item.driver_id })
+                .then(orThrow)
+                .catch(() => null);
         },
     });
     /** Driver associated with the active module */
@@ -54,8 +60,11 @@ export class ModuleStateService {
     private readonly _system = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceModule) || !item.system_id) return null;
-            return showSystem(item.system_id).catch(() => null);
+            if (!item?.control_system_id) return null;
+            return systems
+                .show({ sys_id: item.control_system_id })
+                .then(orThrow)
+                .catch(() => null);
         },
     });
     /** System associated with the active module */
@@ -64,8 +73,11 @@ export class ModuleStateService {
     private readonly _edge = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceModule) || !item.edge_id) return null;
-            return showEdge(item.edge_id).catch(() => null);
+            if (!item?.edge_id) return null;
+            return edges
+                .show({ id: item.edge_id })
+                .then(orThrow)
+                .catch(() => null);
         },
     });
 
@@ -74,14 +86,16 @@ export class ModuleStateService {
     private readonly _system_list = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceModule))
-                return { data: [] as PlaceSystem[], total: 0 };
+            if (!item) return { data: [] as readonly System[], total: 0 };
             this._loading.set(true);
             try {
                 const response = await querySystems({
                     module_id: item.id,
                 }).catch(
-                    reportLoadError({ data: [] as PlaceSystem[], total: 0 }),
+                    reportLoadError({
+                        data: [] as readonly System[],
+                        total: 0,
+                    }),
                 );
                 return { data: response.data, total: response.total };
             } finally {
@@ -100,21 +114,23 @@ export class ModuleStateService {
             : this._system_list.value()?.total,
     );
 
-    public get active_item(): PlaceModule {
-        return this._state.active_item as PlaceModule;
+    public get active_item() {
+        return this._state.activeOf('modules');
     }
 
     public async toggleModuleState() {
         // Capture before the await as the active module may change
-        const item = this.active_item as PlaceModule & { running: boolean };
+        const item = this.active_item as Module & { running: boolean };
         const running = item.running;
-        const method = running ? stopModule : startModule;
-        const error = await method(item.id)
+        const method = running ? modules.stop : modules.start;
+        const error = await method({ id: item.id })
+            .then(orThrow)
             .then(() => null)
             .catch((err) => err);
         if (error) {
-            if (typeof error === 'string' && error.length < 64) {
-                notifyError(error);
+            const message = shortModuleError(error);
+            if (message) {
+                notifyError(message);
             } else {
                 notifyError(
                     `Failed to ${running ? 'stop' : 'start'} device '${
@@ -127,7 +143,13 @@ export class ModuleStateService {
             return;
         }
         notifySuccess(`Module successfully ${running ? 'stopped' : 'started'}`);
-        item.running = !running;
+        // Show the new state only when the same module is still active.
+        // `active_item` is null in other sections. A new object, so the views
+        // of the active item render again
+        const current = this.active_item;
+        if (current?.id === item.id) {
+            this._state.replaceItem({ ...current, running: !running });
+        }
     }
 
     /** View Results of the execute */

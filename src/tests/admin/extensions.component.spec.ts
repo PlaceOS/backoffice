@@ -1,29 +1,24 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { Domain, domains } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { Subject } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { AdminDataService } from '../../app/admin/admin-data.service';
 import { PlaceExtensionsComponent } from '../../app/admin/extensions.component';
+import { newItem } from '../../app/common/placeos';
 import { DialogEvent } from '../../app/common/types';
 
-vi.mock('@placeos/ts-client', () => ({
-    PlaceDomain: class {
-        constructor(data: object) {
-            Object.assign(this, data);
-        }
-    },
-    showMetadata: vi.fn(() => Promise.resolve({})),
-    updateDomain: vi.fn((_id: string, domain: unknown) =>
-        Promise.resolve(domain),
-    ),
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 
 describe('PlaceExtensionsComponent', () => {
     it('keeps other domain settings when an extension is edited', async () => {
+        vi.mocked(domains.update).mockImplementation(async ({ body }) =>
+            mockReply(newItem(Domain, body)),
+        );
         const domain = signal(
-            new PlaceDomain({
+            newItem(Domain, {
                 id: 'domain-1',
                 config: {
                     theme: 'dark',
@@ -82,9 +77,9 @@ describe('PlaceExtensionsComponent', () => {
         });
         await vi.waitFor(() => expect(ref.close).toHaveBeenCalled());
 
-        expect(updateDomain).toHaveBeenCalledWith(
-            'domain-1',
-            expect.objectContaining({
+        expect(domains.update).toHaveBeenCalledWith({
+            id: 'domain-1',
+            body: expect.objectContaining({
                 config: {
                     theme: 'dark',
                     backoffice: {
@@ -104,6 +99,6 @@ describe('PlaceExtensionsComponent', () => {
                     },
                 },
             }),
-        );
+        });
     });
 });

@@ -1,18 +1,14 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
-import { patch } from '@placeos/ts-client';
+import { configure } from '@placeos/ts-client';
+import {
+    clearEndpointMocks,
+    endpointMocks,
+    mockEndpoint,
+} from '@placeos/ts-client/mock';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SignageAIProviderModalComponent } from '../../app/admin/signage-ai/signage-ai-provider-modal.component';
-
-vi.mock('@placeos/ts-client', () => ({
-    apiEndpoint: vi.fn(() => '/api/engine/v2'),
-    del: vi.fn(() => Promise.resolve({})),
-    get: vi.fn(() => Promise.resolve([])),
-    patch: vi.fn(() => Promise.resolve({})),
-    post: vi.fn(() => Promise.resolve({})),
-    showMetadata: vi.fn(() => Promise.resolve({})),
-}));
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
@@ -21,6 +17,12 @@ vi.mock('../../app/common/notifications', () => ({
 describe('SignageAIProviderModalComponent', () => {
     beforeEach(async () => {
         vi.clearAllMocks();
+        configure({
+            base_url: '',
+            auth: { kind: 'none' },
+            mock: endpointMocks,
+        });
+        clearEndpointMocks();
         await TestBed.configureTestingModule({
             imports: [SignageAIProviderModalComponent],
             providers: [
@@ -75,15 +77,19 @@ describe('SignageAIProviderModalComponent', () => {
                 item: { id: 'provider-1', name: 'OpenAI', provider: 'OPENAI' },
             },
         });
+        const update = vi.fn(() => ({ id: 'provider-1', name: 'OpenAI' }));
+        mockEndpoint('signage_ai_providers.update', update);
         const component = TestBed.createComponent(
             SignageAIProviderModalComponent,
         ).componentInstance;
 
         await component.save();
 
-        expect(patch).toHaveBeenCalledWith(
-            '/api/engine/v2/signage/ai/providers/provider-1',
-            expect.not.objectContaining({ credentials: expect.anything() }),
-        );
+        expect(update).toHaveBeenCalledWith({
+            id: 'provider-1',
+            body: expect.not.objectContaining({
+                credentials: expect.anything(),
+            }),
+        });
     });
 });

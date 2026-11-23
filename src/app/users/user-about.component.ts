@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, computed, inject, resource } from '@angular/core';
-import { PlaceUser, showDomain } from '@placeos/ts-client';
+import { domains, type User } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { RouterLink } from '@angular/router';
 import { ActiveItemService } from '../common/item.service';
@@ -115,10 +116,8 @@ import { TranslatePipe } from '../ui/translate.pipe';
                         {{ 'USERS.NO_GROUPS' | translate }}
                     </div>
                 }
-                <item-timestamps
-                    [created_at]="item.created_at"
-                    [updated_at]="item.updated_at"
-                />
+                <!-- The API sends no update time for a user -->
+                <item-timestamps [created_at]="item.created_at" />
             </div>
         </section>
     `,
@@ -137,14 +136,20 @@ export class UserAboutComponent {
     private _clipboard = inject(Clipboard);
 
     private readonly _domain = resource({
-        params: () => (this._service.item() as PlaceUser)?.authority_id,
+        params: () => this._service.activeOf('users')?.authority_id,
         loader: async ({ params: id }) =>
-            id ? showDomain(id).catch(() => null) : null,
+            id
+                ? domains
+                      .show({ id })
+                      .then(orThrow)
+                      .catch(() => null)
+                : null,
     });
     public readonly domain = computed(() => this._domain.value() || null);
 
-    public get item(): PlaceUser {
-        return (this._service.active_item as PlaceUser) || ({} as PlaceUser);
+    public get item(): User {
+        // An empty user when none is active, so the template can read its fields
+        return this._service.activeOf('users') || ({} as User);
     }
 
     public copyGroup(group: string) {

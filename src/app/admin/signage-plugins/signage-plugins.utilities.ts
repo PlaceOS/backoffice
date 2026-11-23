@@ -1,5 +1,5 @@
 import { required, SchemaFn } from '@angular/forms/signals';
-import { SignagePlugin } from '@placeos/ts-client';
+import { type SignagePlugin } from '@placeos/ts-client';
 
 import {
     PluginLoadedPayload,

@@ -3,10 +3,6 @@ import { ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { DateCalendarComponent } from '../../../app/ui/custom-fields/date-calendar.component';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
 const FROM = new Date(2026, 0, 10).valueOf();
 const TO = new Date(2026, 0, 20).valueOf();
 

@@ -1,7 +1,8 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import { addDomain, PlaceDomain, updateDomain } from '@placeos/ts-client';
+import { Domain } from '@placeos/ts-client';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
@@ -206,9 +207,7 @@ import {
 export class DomainFormComponent {
     private _dialog_ref =
         inject<DialogRef<unknown, DomainFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceDomain; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: Domain; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'DOMAINS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -226,7 +225,7 @@ export class DomainFormComponent {
      * Update the email domains from the chip list.
      * New items that are not valid domains are dropped with an error.
      */
-    public setEmailDomains(list: string[]) {
+    public setEmailDomains(list: readonly string[]) {
         const current = this.formModel().email_domains;
         const email_domains = list.filter(
             (item) => current.includes(item) || isValidDomain(item),
@@ -248,15 +247,10 @@ export class DomainFormComponent {
                 close: () => this._dialog_ref.close(),
             },
             `${this._name}.`,
-            () => {
-                const form_item = mergeFormItem(
-                    this._data.item,
-                    this.formModel(),
-                ) as unknown as PlaceDomain;
-                return form_item.id
-                    ? updateDomain(form_item.id, form_item)
-                    : addDomain(form_item);
-            },
+            () =>
+                ACTIONS.domains.save(
+                    mergeFormItem(this._data.item, this.formModel()),
+                ),
         );
     }
 }

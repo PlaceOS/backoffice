@@ -1,4 +1,5 @@
-import { PlaceDriver, PlaceDriverRole } from '@placeos/ts-client';
+import { type Driver } from '@placeos/ts-client';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
 
 import { max, min, required, SchemaFn, validate } from '@angular/forms/signals';
 import { validateURI } from '../common/validation';
@@ -13,14 +14,14 @@ export interface DriverFormModel {
     module_name: string;
     default_uri: string;
     default_port: number;
-    alert_level: string;
+    alert_level: NonNullable<Driver['alert_level']>;
     class_name: string;
     description: string;
     ignore_connected: boolean;
     settings: string;
 }
 
-export function generateDriverFormModel(driver?: PlaceDriver): DriverFormModel {
+export function generateDriverFormModel(driver?: Driver): DriverFormModel {
     return {
         id: driver?.id || '',
         repository_id: driver?.repository_id || '',
@@ -32,11 +33,37 @@ export function generateDriverFormModel(driver?: PlaceDriver): DriverFormModel {
         default_uri: driver?.default_uri || '',
         default_port: driver?.default_port || 1,
         alert_level: driver?.alert_level || 'medium',
-        class_name: driver?.class_name || '',
+        // The API has no class name. The form fills it from the driver file
+        class_name: '',
         description: driver?.description || '',
         ignore_connected: driver?.ignore_connected || false,
         settings: '',
     };
+}
+
+/** Defaults of a driver, from `repositories.details`. See `PlaceOS/driver` docs/command_line_options.md */
+export interface DriverDetails {
+    descriptive_name?: string;
+    generic_name?: string;
+    tcp_port?: number;
+    udp_port?: number;
+    default_settings?: string;
+    description?: string;
+    uri_base?: string;
+    makebreak?: boolean;
+}
+
+/** Parse the JSON text of `repositories.details`. `null` if it is not an object */
+export function parseDriverDetails(text: string): DriverDetails | null {
+    try {
+        const value: unknown = JSON.parse(text);
+        // The API document has no schema for the details
+        return value && typeof value === 'object' && !Array.isArray(value)
+            ? (value as DriverDetails)
+            : null;
+    } catch {
+        return null;
+    }
 }
 
 export const applyDriverFormSchema: SchemaFn<DriverFormModel> = (path) => {

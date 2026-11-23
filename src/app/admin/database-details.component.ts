@@ -1,24 +1,30 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import {
-    addZone,
-    PlaceSourceResyncStatus,
-    PlaceZone,
-    queryZones,
-    sourceResync,
-    sourceResyncStatus,
+    root,
+    type RootSourceResyncStatus,
+    Zone,
+    zones as zones_v7,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../common/async-handler.class';
 import { mapLimit } from '../common/cascade-delete';
 import { readError } from '../common/errors';
-import { downloadFile, jsonToCsv, parseCSV } from '../common/general';
+import {
+    cleanObject,
+    downloadFile,
+    jsonToCsv,
+    parseCSV,
+} from '../common/general';
 import {
     notifyError,
     notifyInfo,
     notifySuccess,
     notifyWarn,
 } from '../common/notifications';
+import { toBody } from '../common/placeos';
+import { collectPages } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ZoneTreeExportModalComponent } from './zone-tree-export-modal.component';
@@ -55,12 +61,16 @@ const ZONE_TREE_CSV_FIELDS = [
     'triggers',
 ];
 
-function zoneToExportItem(zone: PlaceZone): ZoneTreeExportItem {
-    const data = zone.toJSON ? zone.toJSON() : { ...zone };
+function zoneToExportItem(zone: Zone): ZoneTreeExportItem {
+    // Leave out empty fields, as the `toJSON` of the 6.x class did
+    const data: Record<string, unknown> = cleanObject({ ...zone }, [
+        undefined,
+        null,
+        '',
+    ]);
     data.parent_id = zone.parent_id || '';
     delete data.created_at;
     delete data.updated_at;
-    delete data.version;
     delete data.children_count;
     delete data.count;
     delete data.settings;
@@ -68,33 +78,29 @@ function zoneToExportItem(zone: PlaceZone): ZoneTreeExportItem {
     return data as ZoneTreeExportItem;
 }
 
-function zoneToImportItem(
-    zone: ZoneTreeExportItem,
-    parent_id: string,
-): Partial<PlaceZone> {
-    const data: Record<string, unknown> = { ...zone, parent_id };
+function zoneToImportItem(zone: ZoneTreeExportItem, parent_id: string) {
+    // An empty CSV cell is `''`. Leave it out, so the zone gets the default
+    // value and a number field does not get a string. `toBody` drops `null`
+    // and the fields that a new zone does not have
+    const data: Record<string, unknown> = cleanObject({ ...zone }, ['']);
+    data.parent_id = parent_id;
     delete data.id;
     delete data.created_at;
     delete data.updated_at;
     delete data.version;
     delete data.children_count;
     delete data.count;
-    delete data.settings;
-    delete data.trigger_list;
-    return data as Partial<PlaceZone>;
+    return toBody(Zone, data);
 }
 
-async function queryAllZones(query_params: Record<string, unknown> = {}) {
-    let response = await queryZones({ ...query_params, limit: 500 });
-    const zones = [...response.data];
-    for (let page = 1; response.next; page++) {
-        // A partial export would look complete, so fail instead
-        if (page >= MAX_ZONE_PAGES)
-            throw new Error(`Zone list exceeds ${MAX_ZONE_PAGES} pages`);
-        response = await response.next();
-        zones.push(...response.data);
-    }
-    return zones;
+async function queryAllZones(
+    query_params: Parameters<typeof zones_v7.query>[0] = {},
+) {
+    // A partial export would look complete, so `collectPages` fails instead
+    return collectPages(
+        zones_v7.query({ ...query_params, limit: 500 }).then(orThrowPage),
+        MAX_ZONE_PAGES,
+    );
 }
 
 @Component({
@@ -227,7 +233,7 @@ export class PlaceDatabaseDetailsComponent
     private readonly _dialog = inject(Dialog);
 
     /** Where the last MQTT re-sync got to, if this user may see it */
-    public readonly mqtt_status = signal<PlaceSourceResyncStatus | null>(null);
+    public readonly mqtt_status = signal<RootSourceResyncStatus | null>(null);
     /** Whether a re-sync is being requested */
     private readonly _mqtt_starting = signal(false);
     /** Whether a re-sync is being requested or is running */
@@ -286,7 +292,9 @@ export class PlaceDatabaseDetailsComponent
         }
         this._mqtt_starting.set(true);
         try {
-            this.mqtt_status.set(await sourceResync(clear));
+            this.mqtt_status.set(
+                await root.sourceResync({ clear }).then(orThrow),
+            );
             this._watchMqttStatus();
         } catch (err) {
             if ((err as Response)?.status === 409) {
@@ -303,7 +311,9 @@ export class PlaceDatabaseDetailsComponent
 
     private async _loadMqttStatus() {
         try {
-            this.mqtt_status.set(await sourceResyncStatus());
+            this.mqtt_status.set(
+                await root.sourceResyncStatus({}).then(orThrow),
+            );
             if (this.mqtt_running()) this._watchMqttStatus();
         } catch {
             // not available to this user, or to this version of PlaceOS
@@ -320,9 +330,9 @@ export class PlaceDatabaseDetailsComponent
                 // Skip a tick while hidden or while the last check is in flight
                 if (checking || document.hidden) return;
                 checking = true;
-                let status: PlaceSourceResyncStatus;
+                let status: RootSourceResyncStatus;
                 try {
-                    status = await sourceResyncStatus();
+                    status = await root.sourceResyncStatus({}).then(orThrow);
                 } catch {
                     return;
                 } finally {
@@ -352,7 +362,7 @@ export class PlaceDatabaseDetailsComponent
             panelClass: 'fullscreen-modal',
             width: '100vw',
         });
-        dialog_ref.closed.subscribe((zones?: PlaceZone[]) => {
+        dialog_ref.closed.subscribe((zones?: Zone[]) => {
             if (!zones?.length) return;
             this.exportSelectedZoneTrees(zones);
         });
@@ -379,7 +389,7 @@ export class PlaceDatabaseDetailsComponent
         this.importing_zones.set(false);
     }
 
-    private async exportSelectedZoneTrees(parents: PlaceZone[]) {
+    private async exportSelectedZoneTrees(parents: Zone[]) {
         this.exporting_zones.set(true);
         try {
             const zones = await this.zoneTreeExport(parents);
@@ -400,7 +410,7 @@ export class PlaceDatabaseDetailsComponent
      * The selected zones and every zone beneath them, walked one tree level
      * at a time so parents always come before their children.
      */
-    private async zoneTreeExport(parents: PlaceZone[]) {
+    private async zoneTreeExport(parents: Zone[]) {
         const zones: ZoneTreeExportItem[] = [];
         const visited = new Set<string>();
         let level = parents;
@@ -418,7 +428,7 @@ export class PlaceDatabaseDetailsComponent
                 chunks.push(ids.slice(i, i + PARENT_IDS_PER_QUERY));
             }
             const children = await mapLimit(chunks, ZONE_CONCURRENCY, (chunk) =>
-                queryAllZones({ parent_id: chunk.join(',') }),
+                queryAllZones({ parent_id: chunk }),
             );
             level = children.flat();
         }
@@ -468,9 +478,9 @@ export class PlaceDatabaseDetailsComponent
                     const parent_id = zone.parent_id
                         ? id_map.get(zone.parent_id) || ''
                         : '';
-                    const created_zone = await addZone(
-                        zoneToImportItem(zone, parent_id),
-                    );
+                    const created_zone = await zones_v7
+                        .create({ body: zoneToImportItem(zone, parent_id) })
+                        .then(orThrow);
                     id_map.set(zone.id, created_zone.id);
                     created++;
                 });

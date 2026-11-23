@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { PlaceUser } from '@placeos/ts-client';
+import { type User } from '@placeos/ts-client';
 import { AuthenticatedImageDirective } from './authenticated-image.directive';
 
 @Component({
@@ -47,7 +47,7 @@ import { AuthenticatedImageDirective } from './authenticated-image.directive';
 })
 export class UserAvatarComponent {
     public readonly user = input<
-        (PlaceUser & { photo?: string }) | Record<string, unknown>
+        (User & { photo?: string }) | Record<string, unknown>
     >(undefined);
     public readonly photo_url = computed(() => {
         const user = this.user();

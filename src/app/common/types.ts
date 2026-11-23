@@ -1,4 +1,5 @@
 import { EventEmitter } from '@angular/core';
+import type { Page } from '@placeos/ts-client/compat';
 
 /** Generic Dictionary type */
 export interface HashMap<T = string> {
@@ -49,6 +50,61 @@ export interface AppComponentExtension {
     conditions: ExtensionCondition[];
     /** Icon to draw of the associated tab */
     icon?: ApplicationIcon;
+}
+
+/** A page of a `query` call, from `.then(orThrowPage)` */
+export type QueryResponse<T> = Promise<Page<readonly T[]>>;
+
+/** A page with no next page, from data the app already has */
+export function staticPage<T>(data: readonly T[]): Page<readonly T[]> {
+    return { data, total: data.length, next_offset: null, next: null };
+}
+
+/**
+ * Load every page of a query. Throws when the list does not complete within
+ * `pages_max` pages, or when `next()` gives `null` because the offset did not
+ * move. A partial list must not look complete, for example to a cascade delete.
+ */
+export async function collectPages<T>(
+    response: QueryResponse<T>,
+    pages_max = 1000,
+): Promise<T[]> {
+    let page = await response;
+    const data = [...page.data];
+    for (let pages = 1; page.next && page.data.length; pages++) {
+        if (pages >= pages_max) {
+            throw new Error(
+                `The list did not complete within ${pages_max} pages`,
+            );
+        }
+        const next = page.next();
+        if (!next) throw new Error('The list did not move to the next page');
+        page = await next;
+        data.push(...page.data);
+    }
+    return data;
+}
+
+/** Map the items of a page, and of each page after it */
+export function mapPage<T, U>(
+    page: Page<readonly T[]>,
+    fn: (item: T) => U,
+): Page<readonly U[]> {
+    const next = page.next;
+    return {
+        ...page,
+        data: page.data.map(fn),
+        next: next ? () => next()?.then((_) => mapPage(_, fn)) ?? null : null,
+    };
+}
+
+/** Fields that each PlaceOS item has. Replaces the 6.x `PlaceResource` class */
+export interface PlaceResource {
+    readonly id: string;
+    readonly name: string;
+    readonly created_at?: number;
+    readonly updated_at?: number;
+    readonly version?: number;
 }
 
 /** Generic data type with identification details */

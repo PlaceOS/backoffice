@@ -1,26 +1,30 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
-import { post, put } from '@placeos/ts-client';
+import { configure } from '@placeos/ts-client';
+import {
+    clearEndpointMocks,
+    endpointMocks,
+    mockEndpoint,
+} from '@placeos/ts-client/mock';
+import { TenantResponder } from '@placeos/ts-client/staff';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     StaffTenantModalComponent,
     StaffTenantModalData,
 } from '../../app/admin/staff-tenant-modal.component';
+import { newItem } from '../../app/common/placeos';
 
-vi.mock('@placeos/ts-client', () => ({
-    cleanObject: (value: unknown) => value,
-    post: vi.fn(() => Promise.resolve({ id: 'tenant-new' })),
-    put: vi.fn(() => Promise.resolve({ id: 'tenant-test' })),
-}));
+const create = vi.fn(() => ({ id: 1 }));
+const update = vi.fn(() => ({ id: 7 }));
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
 }));
 
 describe('StaffTenantModalComponent', () => {
-    const tenant = {
-        id: 'tenant-test',
+    const tenant = newItem(TenantResponder, {
+        id: 7,
         name: 'Test Tenant',
         domain: 'localhost',
         email_domain: '',
@@ -29,9 +33,19 @@ describe('StaffTenantModalComponent', () => {
         booking_limits: { desk: 2 },
         booking_range: { desk: 30, parking: 0 },
         booking_period: { desk: 270, parking: 1500 },
-    };
+    });
 
-    beforeEach(() => vi.clearAllMocks());
+    beforeEach(() => {
+        vi.clearAllMocks();
+        configure({
+            base_url: '',
+            auth: { kind: 'none' },
+            mock: endpointMocks,
+        });
+        clearEndpointMocks();
+        mockEndpoint('staff.tenants.create', create);
+        mockEndpoint('staff.tenants.update', update);
+    });
 
     async function createComponent(data: StaffTenantModalData = {}) {
         await TestBed.configureTestingModule({
@@ -69,37 +83,36 @@ describe('StaffTenantModalComponent', () => {
         component.updateCredential('client_id', 'client-id');
 
         await component.save();
-        expect(post).not.toHaveBeenCalled();
+        expect(create).not.toHaveBeenCalled();
 
         component.updateCredential('client_secret', 'secret');
         await component.save();
-        expect(post).toHaveBeenCalledWith(
-            '/api/staff/v1/tenants',
-            expect.objectContaining({
+        expect(create).toHaveBeenCalledWith({
+            body: expect.objectContaining({
                 credentials: {
                     tenant: 'tenant-id',
                     client_id: 'client-id',
                     client_secret: 'secret',
                 },
             }),
-        );
+        });
     });
 
     it('sends an empty Outlook config to clear a saved one', async () => {
-        const outlook_tenant = {
+        const outlook_tenant = newItem(TenantResponder, {
             ...tenant,
             outlook_config: { app_id: 'outlook-app' },
-        };
+        });
         const component = await createComponent({ tenant: outlook_tenant });
         expect(component.show_outlook()).toBe(true);
 
         component.show_outlook.set(false);
         await component.save();
 
-        expect(put).toHaveBeenCalledWith(
-            '/api/staff/v1/tenants/tenant-test',
-            expect.objectContaining({ outlook_config: {} }),
-        );
+        expect(update).toHaveBeenCalledWith({
+            id: 7,
+            body: expect.objectContaining({ outlook_config: {} }),
+        });
     });
 
     it('loads and updates ranges without changing booking count limits', async () => {
@@ -113,13 +126,13 @@ describe('StaffTenantModalComponent', () => {
             { type: 'parking', days: '0' },
         ]);
         await component.save();
-        expect(put).toHaveBeenCalledWith(
-            '/api/staff/v1/tenants/tenant-test',
-            expect.objectContaining({
+        expect(update).toHaveBeenCalledWith({
+            id: 7,
+            body: expect.objectContaining({
                 booking_limits: { desk: 2 },
                 booking_range: { desk: 45, parking: 0 },
             }),
-        );
+        });
     });
 
     it('creates tenants with numeric booking ranges', async () => {
@@ -132,20 +145,19 @@ describe('StaffTenantModalComponent', () => {
         }));
         component.updateBookingRange([{ type: 'desk', days: '30' }]);
         await component.save();
-        expect(post).toHaveBeenCalledWith(
-            '/api/staff/v1/tenants',
-            expect.objectContaining({ booking_range: { desk: 30 } }),
-        );
+        expect(create).toHaveBeenCalledWith({
+            body: expect.objectContaining({ booking_range: { desk: 30 } }),
+        });
     });
 
     it('sends an empty map when all advance limits are removed', async () => {
         const component = await createComponent({ tenant });
         component.updateBookingRange([]);
         await component.save();
-        expect(put).toHaveBeenCalledWith(
-            '/api/staff/v1/tenants/tenant-test',
-            expect.objectContaining({ booking_range: {} }),
-        );
+        expect(update).toHaveBeenCalledWith({
+            id: 7,
+            body: expect.objectContaining({ booking_range: {} }),
+        });
     });
 
     it('revalidates edits from the object list using the same array', async () => {
@@ -180,7 +192,7 @@ describe('StaffTenantModalComponent', () => {
             await component.save();
             expect(component.form.booking_range().invalid()).toBe(true);
         }
-        expect(put).not.toHaveBeenCalled();
+        expect(update).not.toHaveBeenCalled();
     });
 
     it('loads booking periods as days, hours and minutes', async () => {
@@ -199,13 +211,13 @@ describe('StaffTenantModalComponent', () => {
         component.addBookingPeriod();
         component.updateBookingPeriod(2, 'type', ' locker ');
         await component.save();
-        expect(put).toHaveBeenCalledWith(
-            '/api/staff/v1/tenants/tenant-test',
-            expect.objectContaining({
+        expect(update).toHaveBeenCalledWith({
+            id: 7,
+            body: expect.objectContaining({
                 booking_range: { desk: 30, parking: 0 },
                 booking_period: { desk: 135, parking: 2940, locker: 60 },
             }),
-        );
+        });
     });
 
     it('sends an empty map when all booking periods are removed', async () => {
@@ -213,10 +225,10 @@ describe('StaffTenantModalComponent', () => {
         component.removeBookingPeriod(1);
         component.removeBookingPeriod(0);
         await component.save();
-        expect(put).toHaveBeenCalledWith(
-            '/api/staff/v1/tenants/tenant-test',
-            expect.objectContaining({ booking_period: {} }),
-        );
+        expect(update).toHaveBeenCalledWith({
+            id: 7,
+            body: expect.objectContaining({ booking_period: {} }),
+        });
     });
 
     it('keeps stored minutes that are not a multiple of 5 selectable', async () => {
@@ -249,6 +261,6 @@ describe('StaffTenantModalComponent', () => {
             await component.save();
             expect(component.form.booking_period().invalid()).toBe(true);
         }
-        expect(put).not.toHaveBeenCalled();
+        expect(update).not.toHaveBeenCalled();
     });
 });

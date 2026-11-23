@@ -1,9 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import {
-    PlaceModule,
-    PlaceSystem,
-    systemModuleState,
-} from '@placeos/ts-client';
+import { type Module, type System, systems } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
@@ -19,11 +16,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface ModuleStateModalData {
     /** System Data to show the details for */
-    system: PlaceSystem;
+    system: System;
     /** Module to expose the state of */
-    module: PlaceModule;
+    module: Module;
     /** Modules associated with the system */
-    devices: PlaceModule[];
+    devices: Module[];
 }
 
 @Component({
@@ -126,17 +123,17 @@ export class ViewModuleStateModalComponent implements OnInit {
     public readonly device_classes = signal<HashMap<string>>({});
 
     /** System of the selected module */
-    public get system(): PlaceSystem {
+    public get system(): System {
         return this._data.system;
     }
 
     /** Module to view the state of */
-    public get module(): PlaceModule {
+    public get module(): Module {
         return this._data.module;
     }
 
     /** Modules associated with the system */
-    public get devices(): PlaceModule[] {
+    public get devices(): Module[] {
         return this._data.devices || [];
     }
 
@@ -177,11 +174,12 @@ export class ViewModuleStateModalComponent implements OnInit {
             ? +class_parts[class_parts.length - 1]
             : 1;
         try {
-            const state = await systemModuleState(
-                this.system.id,
-                class_parts.slice(0, class_parts.length - 1).join('_'),
-                num,
-            );
+            const state = await systems
+                .state({
+                    sys_id: this.system.id,
+                    module_slug: `${class_parts.slice(0, class_parts.length - 1).join('_')}_${num}`,
+                })
+                .then(orThrow);
             const pre_state =
                 (typeof state === 'string' ? JSON.parse(state) : state) || {};
             Object.keys(pre_state).forEach((key) => {

@@ -9,12 +9,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
-    listRepositoryFiles,
-    PlaceRepository,
-    PlaceRepositoryType,
-    queryRepositories,
+    repositories,
+    type Repository,
     SignagePlugin,
+    type SignagePlugin as SignagePluginV7,
 } from '@placeos/ts-client';
+import {
+    orThrow,
+    orThrowPage,
+    PlaceRepositoryType,
+} from '@placeos/ts-client/compat';
 
 import { DialogRef } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -22,6 +26,7 @@ import { mapLimit } from '../../common/cascade-delete';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { newItem } from '../../common/placeos';
 import { DialogCloseDirective } from '../../ui/controls/dialog';
 import { FormFieldComponent } from '../../ui/controls/form-field.component';
 import { OptionComponent } from '../../ui/controls/option.component';
@@ -165,11 +170,11 @@ export class SignagePluginImportModalComponent
     private readonly _repository_search_el =
         viewChild<ElementRef<HTMLInputElement>>('repository_search');
     private _dialog_ref =
-        inject<DialogRef<SignagePlugin, SignagePluginImportModalComponent>>(
+        inject<DialogRef<SignagePluginV7, SignagePluginImportModalComponent>>(
             DialogRef,
         );
 
-    public readonly repositories = signal<PlaceRepository[]>([]);
+    public readonly repositories = signal<Repository[]>([]);
     public readonly repository_id = signal('');
     public readonly repository_filter = signal('');
     /** Repositories that match the search. The selected one always shows. */
@@ -204,7 +209,9 @@ export class SignagePluginImportModalComponent
 
     public async ngOnInit() {
         try {
-            const { data } = await queryRepositories({ limit: 1000 });
+            const { data } = await repositories
+                .query({ limit: 1000 })
+                .then(orThrowPage);
             this.repositories.set(
                 data.filter(
                     (repo) => repo.repo_type === PlaceRepositoryType.Interface,
@@ -232,9 +239,11 @@ export class SignagePluginImportModalComponent
         this.repository_id.set(id);
         this.probes.set([]);
         this.loading_files.set(true);
-        let files: string[] = [];
+        let files: readonly string[] = [];
         try {
-            files = await listRepositoryFiles(id, { pattern: '*.html' });
+            files = await repositories
+                .files({ id, pattern: '*.html' })
+                .then(orThrow);
         } catch (err) {
             if (!controller.signal.aborted) this._notifyError(err);
         }
@@ -262,7 +271,7 @@ export class SignagePluginImportModalComponent
 
     public selectPlugin(probe: PluginProbe) {
         this._dialog_ref.close(
-            new SignagePlugin({
+            newItem(SignagePlugin, {
                 name: probe.details.plugin.name,
                 uri: probe.uri,
                 plugin_type: probe.details.plugin.type,

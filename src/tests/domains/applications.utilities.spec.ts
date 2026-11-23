@@ -1,4 +1,6 @@
+import { Application } from '@placeos/ts-client';
 import { describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import { generateApplicationFormModel } from '../../app/domains/applications.utilities';
 
 describe('applications.utilities', () => {
@@ -16,15 +18,16 @@ describe('applications.utilities', () => {
         });
 
         it('populates values from an application', () => {
-            const model = generateApplicationFormModel({
-                name: 'Test App',
-                scopes: 'public',
-                subsystems: ['sys-a'],
-                skip_authorization: true,
-                redirect_uri: 'https://example.com/callback',
-                uid: 'client-id',
-                preserve_client_id: true,
-            } as any);
+            const model = generateApplicationFormModel(
+                newItem(Application, {
+                    name: 'Test App',
+                    scopes: 'public',
+                    subsystems: ['sys-a'],
+                    skip_authorization: true,
+                    redirect_uri: 'https://example.com/callback',
+                    uid: 'client-id',
+                }),
+            );
 
             expect(model).toEqual({
                 name: 'Test App',
@@ -33,7 +36,8 @@ describe('applications.utilities', () => {
                 skip_authorization: true,
                 redirect_uri: 'https://example.com/callback',
                 client_id: 'client-id',
-                preserve_client_id: true,
+                // The API has no such field
+                preserve_client_id: false,
             });
         });
     });

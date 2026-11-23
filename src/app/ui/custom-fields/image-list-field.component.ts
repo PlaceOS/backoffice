@@ -111,9 +111,14 @@ import { TranslatePipe } from '../translate.pipe';
                     class="border-base-content/10 /5 bg-base-200 flex h-32 w-36 shrink-0 items-center justify-center rounded-sm border bg-cover bg-center"
                     [style.transform]="'translate(-' + offset() + '00%)'"
                     [appTooltip]="item.error"
+                    [attr.aria-disabled]="
+                        item.error && !item.upload ? 'true' : null
+                    "
                     (click)="retryUpload(item)"
                     [attr.aria-label]="
-                        item.error ? ('COMMON.RETRY' | translate) : null
+                        item.error && item.upload
+                            ? ('COMMON.RETRY' | translate)
+                            : null
                     "
                 >
                     @if (!item.error) {
@@ -126,7 +131,8 @@ import { TranslatePipe } from '../translate.pipe';
                     @if (item.error) {
                         <icon class="text-error text-6xl">warning</icon>
                     }
-                    @if (item.error) {
+                    <!-- A retry only for an upload that started -->
+                    @if (item.error && item.upload) {
                         <div
                             overlay
                             class="text-base-100 hover:bg-base-content hover:bg-opacity-50 absolute inset-0 flex items-center justify-center"
@@ -223,7 +229,7 @@ export class ImageListFieldComponent
     private _uploads = inject(UploadsService);
 
     /** List of images */
-    public list = signal<string[]>([]);
+    public list = signal<readonly string[]>([]);
     /** List of images */
     public readonly upload_ids = signal<number[]>([]);
     private readonly _upload_list = signal<UploadDetails[]>([]);
@@ -244,9 +250,9 @@ export class ImageListFieldComponent
         viewChild<ElementRef<HTMLDivElement>>('image_list');
 
     /** Form control on change handler */
-    private _onChange: (_: string[]) => void;
+    private _onChange: (_: readonly string[]) => void;
     /** Form control on touch handler */
-    private _onTouch: (_: string[]) => void;
+    private _onTouch: (_: readonly string[]) => void;
 
     constructor() {
         super();
@@ -294,12 +300,13 @@ export class ImageListFieldComponent
 
     public addImageUrl(url: string) {
         if (this.disabled()) return;
-        this.setValue(unique([...this.list(), url]) as string[]);
+        this.setValue(unique([...this.list(), url]));
     }
 
     public retryUpload(item: UploadDetails) {
         if (this.disabled()) return;
-        if (item.error) {
+        // An upload that failed before it started has nothing to resume
+        if (item.error && item.upload) {
             item.error = null;
             item.upload.resume();
         }
@@ -332,7 +339,7 @@ export class ImageListFieldComponent
         }
     }
 
-    public setValue(value: string[]) {
+    public setValue(value: readonly string[]) {
         if (this.disabled()) return;
         this.list.set(value);
         if (this._onChange) this._onChange(value);
@@ -343,13 +350,13 @@ export class ImageListFieldComponent
      * Update local value when form control value is changed
      * @param value The new value for the component
      */
-    public writeValue(value: string[]) {
+    public writeValue(value: readonly string[]) {
         this.list.set(value || []);
     }
 
-    public readonly registerOnChange = (fn: (_: string[]) => void) =>
+    public readonly registerOnChange = (fn: (_: readonly string[]) => void) =>
         (this._onChange = fn);
-    public readonly registerOnTouched = (fn: (_: string[]) => void) =>
+    public readonly registerOnTouched = (fn: (_: readonly string[]) => void) =>
         (this._onTouch = fn);
 
     public setDisabledState(disabled: boolean) {

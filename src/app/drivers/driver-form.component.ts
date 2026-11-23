@@ -13,25 +13,22 @@ import {
 import { FormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import {
-    addDriver,
-    addSettings,
-    EncryptionLevel,
-    GitCommitDetails,
-    listRepositoryCommits,
-    listRepositoryDriverDetails,
-    listRepositoryDrivers,
-    PlaceDriver,
-    PlaceDriverDetails,
-    PlaceDriverRole,
-    PlaceRepository,
-    PlaceRepositoryType,
-    PlaceSettings,
-    queryRepositories,
-    showRepository,
-    updateDriver,
+    Driver,
+    type GitRepositoryCommit,
+    repositories,
+    type Repository,
+    settings as settings_v7,
 } from '@placeos/ts-client';
+import {
+    EncryptionLevel,
+    orThrow,
+    orThrowPage,
+    PlaceDriverRole,
+    PlaceRepositoryType,
+} from '@placeos/ts-client/compat';
 
 import * as yaml from 'js-yaml';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
@@ -49,7 +46,9 @@ import { SettingsToggleComponent } from '../ui/settings-toggle.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import {
     applyDriverFormSchema,
+    DriverDetails,
     generateDriverFormModel,
+    parseDriverDetails,
 } from './drivers.utilities';
 
 @Component({
@@ -287,9 +286,7 @@ import {
 export class DriverFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, DriverFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceDriver; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: Driver; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'DRIVERS';
     private _date_pipe = new DatePipe('en');
 
@@ -321,7 +318,7 @@ export class DriverFormComponent implements OnInit {
         { id: 'critical', name: 'COMMON.ALERT_CRITICAL' },
     ];
 
-    public readonly repo = signal<PlaceRepository | null>(null);
+    public readonly repo = signal<Repository | null>(null);
     public readonly driver = signal<{
         id: string;
         name: string;
@@ -337,9 +334,11 @@ export class DriverFormComponent implements OnInit {
         loader: async () => {
             this._setLoadingType('repository', true);
             try {
-                const { data } = await queryRepositories({ limit: 1000 });
+                const { data } = await repositories
+                    .query({ limit: 1000 })
+                    .then(orThrowPage);
                 return data.filter(
-                    (repo) => repo.type === PlaceRepositoryType.Driver,
+                    (repo) => repo.repo_type === PlaceRepositoryType.Driver,
                 );
             } finally {
                 this._setLoadingType('repository', false);
@@ -354,9 +353,10 @@ export class DriverFormComponent implements OnInit {
             if (!repo_id) return [];
             this._setLoadingType('drivers', true);
             try {
-                const list = await listRepositoryDrivers(repo_id, {
-                    limit: 1000,
-                }).catch(() => [] as string[]);
+                const list = await repositories
+                    .drivers({ id: repo_id })
+                    .then(orThrow)
+                    .catch(() => [] as string[]);
                 return list.map((_) => ({
                     id: _,
                     name: _.replace(/\//g, ' > '),
@@ -437,10 +437,15 @@ export class DriverFormComponent implements OnInit {
             repository_id: repo.id,
             file_name: driver.id,
         }));
-        const details = await listRepositoryDriverDetails(repo.id, {
-            driver: `${driver.id}`,
-            commit: `${commit.id}`,
-        }).catch(() => null);
+        const details = await repositories
+            .details({
+                id: repo.id,
+                driver: `${driver.id}`,
+                commit: `${commit.id}`,
+            })
+            .then(orThrow)
+            .then(parseDriverDetails)
+            .catch(() => null);
         if (request_id !== this._details_request()) return;
         if (!details) {
             this.formModel.update((value) => ({
@@ -478,13 +483,9 @@ export class DriverFormComponent implements OnInit {
                     delete form_value.role;
                     delete form_value.class_name;
                 }
-                const form_item = mergeFormItem(
-                    item,
-                    form_value,
-                ) as unknown as PlaceDriver;
-                return form_item.id
-                    ? updateDriver(form_item.id, form_item)
-                    : addDriver(form_item);
+                const form_item = mergeFormItem(item, form_value);
+                // The save drops the form fields that a driver does not have, such as `settings`
+                return ACTIONS.drivers.save(form_item);
             },
             async (item) => {
                 if (!this.formModel().id && this.formModel().settings) {
@@ -497,7 +498,7 @@ export class DriverFormComponent implements OnInit {
         );
     }
 
-    private _applyDriverDetails(details: PlaceDriverDetails) {
+    private _applyDriverDetails(details: DriverDetails) {
         if (details == null) {
             this.loading.set('');
             return;
@@ -549,7 +550,9 @@ export class DriverFormComponent implements OnInit {
         if (!repository_id) return;
         this.loading.set('DRIVERS.DETAILS_LOADING');
         try {
-            const repo = await showRepository(repository_id);
+            const repo = await repositories
+                .show({ id: repository_id })
+                .then(orThrow);
             this.repo.set(repo);
             if (!file_name) return;
             this.driver.set({
@@ -574,28 +577,32 @@ export class DriverFormComponent implements OnInit {
     }
 
     private async newSettings(item: Identity, settings_string: string) {
-        const new_settings = new PlaceSettings({
-            parent_id: item.id as string,
-            settings_string,
-            encryption_level: EncryptionLevel.Support,
-        });
-        await addSettings(new_settings).catch(async (err) => {
-            this.saving.set(null);
-            notifyError(
-                `Error saving settings for ${
-                    item.name || item.id
-                }. Error: ${await readError(err)}`,
-            );
-        });
+        await settings_v7
+            .create({
+                body: {
+                    parent_id: item.id as string,
+                    settings_string,
+                    encryption_level: EncryptionLevel.Support,
+                },
+            })
+            .then(orThrow)
+            .catch(async (err) => {
+                this.saving.set(null);
+                notifyError(
+                    `Error saving settings for ${
+                        item.name || item.id
+                    }. Error: ${await readError(err)}`,
+                );
+            });
     }
 
     private async _loadCommitList(repo_id: string, driver_id: string) {
         this._setLoadingType('commits', true);
         try {
-            const list = await listRepositoryCommits(repo_id, {
-                driver: driver_id,
-                limit: 1000,
-            }).catch(() => [] as GitCommitDetails[]);
+            const list = await repositories
+                .commits({ id: repo_id, driver: driver_id, limit: 1000 })
+                .then(orThrow)
+                .catch(() => [] as GitRepositoryCommit[]);
             return list.map((item) => ({
                 id: item.commit,
                 name: `${item.subject}`,

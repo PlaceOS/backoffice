@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { PlaceRepositoryType } from '@placeos/ts-client';
+import { PlaceRepositoryType } from '@placeos/ts-client/compat';
 import { extensionsForItem } from '../common/api';
 import { i18n } from '../common/locale.service';
 import { ItemShellComponent } from '../ui/item-shell.component';
@@ -28,10 +28,7 @@ export class RepositoriesComponent {
     });
     public readonly is_driver_repo = computed(() => {
         const item = this.item();
-        return (
-            item?.repo_type === PlaceRepositoryType.Driver ||
-            item?.type === PlaceRepositoryType.Driver
-        );
+        return item?.repo_type === PlaceRepositoryType.Driver;
     });
     public readonly extensions = computed(() =>
         extensionsForItem(this.item(), this.name),

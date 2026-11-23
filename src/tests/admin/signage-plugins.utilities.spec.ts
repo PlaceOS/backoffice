@@ -1,4 +1,4 @@
-import type { SignagePlugin } from '@placeos/ts-client';
+import { type SignagePlugin } from '@placeos/ts-client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     generateSignagePluginFormModel,

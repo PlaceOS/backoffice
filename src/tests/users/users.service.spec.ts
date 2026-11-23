@@ -1,18 +1,17 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { NEVER } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SettingsService } from '../../app/common/settings.service';
 import { BackofficeUsersService } from '../../app/users/users.service';
 
 const mocks = vi.hoisted(() => ({ currentUser: vi.fn() }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    currentUser: mocks.currentUser,
-    onlineState: () => NEVER,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        users: { ...actual.users, current: mocks.currentUser },
+    };
+});
 vi.mock('../../app/common/settings.service', () => ({
     SettingsService: class {},
 }));

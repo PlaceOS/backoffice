@@ -8,7 +8,6 @@ import {
     signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PlaceGroupAdMappings } from '@placeos/ts-client';
 import { waitForEvent } from '../common/signals';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
@@ -21,6 +20,7 @@ import {
     GroupPermissionsResult,
 } from './group-permissions-modal.component';
 import {
+    type GroupAdMappings,
     removeAdGroupMapping,
     searchStaffGroups,
     setAdGroupMapping,
@@ -142,7 +142,7 @@ import {
 export class GroupAdGroupsFieldComponent {
     private _dialog = inject(Dialog);
 
-    public readonly mappings = model<PlaceGroupAdMappings>({});
+    public readonly mappings = model<GroupAdMappings>({});
     public readonly default_permissions = input(0);
     /** Unset while the form checks for staff API search */
     public readonly searchable = input<boolean>();
@@ -160,7 +160,7 @@ export class GroupAdGroupsFieldComponent {
         !!this.mappings()[group.id.trim().toLowerCase()];
 
     /** Maps a new AD group with the default permissions. Existing ones are kept */
-    public addGroup(group: StaffDirectoryGroup | null) {
+    public addGroup(group: Pick<StaffDirectoryGroup, 'id' | 'name'> | null) {
         if (!group?.id || this.mappings()[group.id.trim().toLowerCase()]) {
             return;
         }

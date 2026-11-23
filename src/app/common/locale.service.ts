@@ -1,7 +1,8 @@
 import { Service } from '@angular/core';
 
-import { showMetadata } from '@placeos/ts-client';
-import { log } from './general';
+import { metadata } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
+import { log, metadataDetails } from './general';
 
 let _service: LocaleService;
 
@@ -230,11 +231,16 @@ export class LocaleService {
                 delete this._load_promises[locale];
                 return;
             }
+            const name = `locale_${locale}`;
             const locale_override_data = this.zone_id
-                ? await showMetadata(this.zone_id, `locale_${locale}`)
-                : { details: {} };
+                ? (
+                      await metadata
+                          .show({ id: this.zone_id, name })
+                          .then(orThrow)
+                  )[name]
+                : null;
             const override_locale_values = removeNesting(
-                locale_override_data.details as Record<string, unknown>,
+                metadataDetails(locale_override_data?.details),
             );
             this._locale_mappings[locale] = {
                 ...base_locale_values,

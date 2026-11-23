@@ -6,13 +6,8 @@ import {
     OnInit,
     signal,
 } from '@angular/core';
-import {
-    PlaceCluster,
-    PlaceProcess,
-    queryClusters,
-    queryProcesses,
-    terminateProcess,
-} from '@placeos/ts-client';
+import { cluster as cluster_v7 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -33,6 +28,12 @@ import { TooltipDirective } from '../../ui/controls/tooltip.directive';
 import { IconComponent } from '../../ui/icon.component';
 import { SimpleTableComponent } from '../../ui/simple-table.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
+import {
+    clusterFromStatus,
+    PlaceCluster,
+    PlaceProcess,
+    processFromStatus,
+} from './cluster.utilities';
 
 const task_details = {};
 
@@ -195,7 +196,7 @@ export class PlaceClusterTaskListComponent
     /** ID of the process being killed */
     public readonly killing = signal('');
 
-    public readonly process_list = signal([]);
+    public readonly process_list = signal<PlaceProcess[]>([]);
     public readonly filter = signal('');
     private readonly _param_map = toSignal(this._route.paramMap, {
         initialValue: this._route.snapshot.paramMap,
@@ -207,14 +208,6 @@ export class PlaceClusterTaskListComponent
             item.id.toLowerCase().includes(this.filter().toLowerCase()),
         ),
     );
-    public column_list: string[] = [
-        'id',
-        'cpu_usage',
-        'memory_usage',
-        'module_instances',
-        'running',
-    ];
-
     public taskDetails(id: string) {
         if (task_details[id]) return task_details[id];
         const [type, ...path] = id.split('_');
@@ -293,21 +286,24 @@ export class PlaceClusterTaskListComponent
     }
 
     public killProcess(process: PlaceProcess) {
-        return terminateProcess(this.cluster().id, { driver: process.id });
+        return cluster_v7
+            .destroy({ id: this.cluster().id, driver: process.id })
+            .then(orThrow);
     }
 
     public async loadCluster(id: string) {
-        const clusters = await queryClusters({
-            q: id,
-        } as Record<string, string>)
-            .then((_) => _.data)
-            .catch((err) => {
+        // Only the load is needed, for the hostname, so skip the status
+        const clusters = await cluster_v7
+            .nodes({ include_status: false })
+            .then(orThrow)
+            .then((nodes) => nodes.map(clusterFromStatus))
+            .catch((err): PlaceCluster[] => {
                 notifyError(
                     `Failed to load cluster. Error: ${describeError(err)}`,
                 );
                 return [];
             });
-        // The search may return other clusters, so only accept an exact id
+        // The API has no filter by id
         const match = clusters.find((_) => _.id === id) || null;
         this.cluster.set(match);
         if (!match) this.process_list.set([]);
@@ -322,14 +318,17 @@ export class PlaceClusterTaskListComponent
         if (!cluster) return;
         this.loading.set(true);
         // This polls, so only report the first failure in a row
-        const list = await queryProcesses(cluster.id, {
-            include_status: true,
-        })
+        const list = await cluster_v7
+            .show({ id: cluster.id, include_status: true })
+            .then(orThrow)
+            .then((drivers) =>
+                drivers.map((driver) => processFromStatus(cluster.id, driver)),
+            )
             .then((list) => {
                 this._load_failed = false;
                 return list;
             })
-            .catch((error) => {
+            .catch((error): Promise<PlaceProcess[]> | PlaceProcess[] => {
                 if (this._load_failed) return [];
                 this._load_failed = true;
                 return reportLoadError([])(error);

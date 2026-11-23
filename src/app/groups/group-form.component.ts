@@ -11,17 +11,11 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { disabled, form, FormField } from '@angular/forms/signals';
-import {
-    addGroup,
-    cleanObject,
-    PlaceGroup,
-    PlaceGroupAdMappings,
-    queryDomains,
-    queryGroups,
-    showGroup,
-    updateGroup,
-} from '@placeos/ts-client';
+import { domains, Group, groups } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { ACTIONS } from '../common/actions';
 import { onSaveHotkey, submitFormDialog } from '../common/forms';
+import { cleanObject } from '../common/general';
 import { subtreeFilter } from '../common/hierarchy';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
@@ -42,6 +36,7 @@ import {
 import {
     applyGroupFormSchema,
     generateGroupFormModel,
+    type GroupAdMappings,
     hasStaffGroupSearch,
 } from './groups.utilities';
 
@@ -213,7 +208,7 @@ import {
 export class GroupFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, GroupFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceGroup }>(DIALOG_DATA);
+    private _data = inject<{ item: Group }>(DIALOG_DATA);
     private readonly _name = 'GROUPS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -229,12 +224,13 @@ export class GroupFormComponent implements OnInit {
         `${this._name}.${this._data.item.id ? 'EDIT' : 'NEW'}`,
     );
     private readonly _domain_list = resource({
-        loader: async () => (await queryDomains({ limit: 1000 })).data,
+        loader: async () =>
+            (await domains.query({ limit: 1000 }).then(orThrowPage)).data,
     });
     public readonly domain_list = computed(
         () => this._domain_list.value() || [],
     );
-    public readonly parent_group = signal<PlaceGroup | null>(null);
+    public readonly parent_group = signal<Group | null>(null);
     public readonly permission_flags = GROUP_PERMISSION_FLAGS;
     public readonly hasPermission = hasGroupPermission;
     /** Whether AD groups can be found with the staff API */
@@ -242,7 +238,9 @@ export class GroupFormComponent implements OnInit {
         params: () => this.formModel().authority_id,
         loader: ({ params }) => hasStaffGroupSearch(params),
     });
-    private readonly _excludeSubtree = subtreeFilter((id) => showGroup(id));
+    private readonly _excludeSubtree = subtreeFilter((id) =>
+        groups.show({ id }).then(orThrow),
+    );
     private readonly _authority_id = computed(
         () => this.formModel().authority_id,
     );
@@ -254,15 +252,20 @@ export class GroupFormComponent implements OnInit {
     public readonly query_parent_groups = computed(() => {
         const authority_id = this._authority_id();
         return (q: string) =>
-            queryGroups({ q, limit: 20 }).then(({ data }) =>
-                this._excludeSubtree(
-                    data.filter((group) => group.authority_id === authority_id),
-                    this._data.item.id,
-                ),
-            );
+            groups
+                .query({ q, limit: 20 })
+                .then(orThrowPage)
+                .then(({ data }) =>
+                    this._excludeSubtree(
+                        data.filter(
+                            (group) => group.authority_id === authority_id,
+                        ),
+                        this._data.item.id,
+                    ),
+                );
     });
     /** A group can't be its own parent */
-    public readonly exclude_parent_group = (group: PlaceGroup, __: string) =>
+    public readonly exclude_parent_group = (group: Group, __: string) =>
         group.id === this._data.item.id;
 
     constructor() {
@@ -273,7 +276,7 @@ export class GroupFormComponent implements OnInit {
         this.loadParentGroup();
     }
 
-    public setParentGroup(group: PlaceGroup | null) {
+    public setParentGroup(group: Group | null) {
         this.parent_group.set(group);
         this.formModel.update((value) => ({
             ...value,
@@ -299,7 +302,7 @@ export class GroupFormComponent implements OnInit {
         }));
     }
 
-    public setAdGroupMappings(ad_group_mappings: PlaceGroupAdMappings) {
+    public setAdGroupMappings(ad_group_mappings: GroupAdMappings) {
         this.formModel.update((value) => ({ ...value, ad_group_mappings }));
     }
 
@@ -321,10 +324,8 @@ export class GroupFormComponent implements OnInit {
                         subsystems: form_value.subsystems || [],
                     },
                     ['', undefined],
-                ) as unknown as PlaceGroup;
-                return form_item.id
-                    ? updateGroup(form_item.id, form_item)
-                    : addGroup(form_item);
+                );
+                return ACTIONS.groups.save(form_item);
             },
         );
     }
@@ -332,7 +333,10 @@ export class GroupFormComponent implements OnInit {
     private async loadParentGroup() {
         const parent_id = this.formModel().parent_id;
         if (!parent_id) return;
-        const parent = await showGroup(parent_id).catch(() => null);
+        const parent = await groups
+            .show({ id: parent_id })
+            .then(orThrow)
+            .catch(() => null);
         this.parent_group.set(parent);
     }
 }

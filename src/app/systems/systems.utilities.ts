@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
+import { type System, type Zone } from '@placeos/ts-client';
 
 import { email, required, SchemaFn, validate } from '@angular/forms/signals';
 import * as yaml from 'js-yaml';
@@ -17,29 +17,15 @@ export function validateYAML(control: AbstractControl) {
     return message ? { yaml: message } : null;
 }
 
-function hasInvalidURLArray(value: string[]) {
+function hasInvalidURLArray(value: readonly string[]) {
     if (!value || !Array.isArray(value) || !value.length) {
         return false;
     }
     return value.some((url) => !isValidUrl(url));
 }
 
-function normaliseCameraSnapshotUrls(system?: PlaceSystem): string[] {
-    const snapshot_urls = Array.isArray(system?.camera_snapshot_urls)
-        ? system.camera_snapshot_urls.filter(Boolean)
-        : [];
-    const legacy_snapshot_url = system?.camera_snapshot_url;
-    if (!legacy_snapshot_url) return snapshot_urls;
-    if (!snapshot_urls.length) return [legacy_snapshot_url];
-
-    const start_of_today = Math.floor(
-        new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000,
-    );
-    const should_merge_legacy_url =
-        !system?.updated_at || system.updated_at < start_of_today;
-    return should_merge_legacy_url
-        ? Array.from(new Set([...snapshot_urls, legacy_snapshot_url]))
-        : snapshot_urls;
+function normaliseCameraSnapshotUrls(system?: System): string[] {
+    return (system?.camera_snapshot_urls || []).filter(Boolean);
 }
 
 export interface SystemFormModel {
@@ -50,26 +36,25 @@ export interface SystemFormModel {
     support_url: string;
     timetable_url: string;
     camera_url: string;
-    camera_snapshot_url: string;
-    camera_snapshot_urls: string[];
+    camera_snapshot_urls: readonly string[];
     room_booking_url: string;
     installed_ui_devices: number;
-    features: string[];
-    security_groups: string[];
+    features: readonly string[];
+    security_groups: readonly string[];
     capacity: number;
     bookable: boolean;
     signage: boolean;
     public: boolean;
     description: string;
-    images: string[];
+    images: readonly string[];
     map_id: string;
     timezone: string;
-    zone?: PlaceZone | null;
-    zones: string[];
+    zone?: Zone | null;
+    zones: readonly string[];
 }
 
-export function generateSystemFormModel(system?: PlaceSystem): SystemFormModel {
-    system ||= {} as PlaceSystem;
+export function generateSystemFormModel(system?: System): SystemFormModel {
+    system ||= {} as System;
     return {
         name: system.name || '',
         display_name: system.display_name || '',
@@ -78,27 +63,23 @@ export function generateSystemFormModel(system?: PlaceSystem): SystemFormModel {
         support_url: system.support_url || '',
         timetable_url: system.timetable_url || '',
         camera_url: system.camera_url || '',
-        camera_snapshot_url: '',
         camera_snapshot_urls: normaliseCameraSnapshotUrls(system),
         room_booking_url: system.room_booking_url || '',
         installed_ui_devices: system.installed_ui_devices || 0,
-        features:
-            (typeof system.features === 'string'
-                ? (system.features as string).split(' ')
-                : system.features) || [],
-        security_groups: [...(system.security_groups || [])],
+        features: system.features || [],
+        security_groups: system.security_groups || [],
         capacity: system.capacity || 0,
         bookable: system.bookable || false,
         signage: system.signage || false,
         public: system.public || false,
         description: system.description || '',
-        images: [...(system.images || [])],
+        images: system.images || [],
         map_id: system.map_id || '',
         timezone: system.timezone || '',
         // `null` (not `undefined`) so signal forms materialise the field;
         // otherwise `form.zone` is undefined and its picker never renders.
         zone: null,
-        zones: [...(system.zones || [])],
+        zones: system.zones || [],
     };
 }
 

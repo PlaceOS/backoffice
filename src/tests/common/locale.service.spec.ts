@@ -1,18 +1,30 @@
-import type { PlaceMetadata } from '@placeos/ts-client';
-import { showMetadata } from '@placeos/ts-client';
+import { metadata, type Metadata } from '@placeos/ts-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 // Mock @placeos/ts-client
 vi.mock('@placeos/ts-client', () => ({
-    showMetadata: vi.fn(() => ({
-        toPromise: () => Promise.resolve({ details: {} }),
-    })),
+    metadata: {
+        show: vi.fn(
+            fromV1Mock(
+                () => ({
+                    toPromise: () => Promise.resolve({ details: {} }),
+                }),
+                ['id', 'name'],
+                'data',
+                'name',
+            ),
+        ),
+    },
 }));
 
 // Mock general.ts log function
-vi.mock('../../app/common/general', () => ({
-    log: vi.fn(),
-}));
+vi.mock('../../app/common/general', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return { ...actual, log: vi.fn() };
+});
 
 // We need to import and test the i18n function and setTranslationService
 import {
@@ -203,13 +215,24 @@ describe('LocaleService translations', () => {
 
     it('lets zone metadata replace matching strings and keeps the others', async () => {
         stubLocaleFile({ INBOX: { WELCOME: 'Bonjour', LEAVE: 'Au revoir' } });
-        vi.mocked(showMetadata).mockResolvedValueOnce({
-            details: { INBOX: { WELCOME: 'Salut' } },
-        } as Partial<PlaceMetadata> as PlaceMetadata);
+        vi.mocked(metadata.show).mockImplementationOnce(
+            fromV1Mock(
+                () =>
+                    ({
+                        details: { INBOX: { WELCOME: 'Salut' } },
+                    }) as Partial<Metadata> as Metadata,
+                ['id', 'name'],
+                'data',
+                'name',
+            ),
+        );
         const service = new LocaleService();
         service.zone_id = 'zone-1';
         await service.setLocale('fr');
-        expect(showMetadata).toHaveBeenCalledWith('zone-1', 'locale_fr');
+        expect(metadata.show).toHaveBeenCalledWith({
+            id: 'zone-1',
+            name: 'locale_fr',
+        });
         expect(service.get('INBOX.WELCOME')).toBe('Salut');
         expect(service.get('INBOX.LEAVE')).toBe('Au revoir');
     });

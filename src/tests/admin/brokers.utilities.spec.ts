@@ -1,15 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { AuthType } from '@placeos/ts-client/compat';
+import { describe, expect, it } from 'vitest';
 import { generateBrokerFormModel } from '../../app/admin/brokers.utilities';
-
-const mocks = vi.hoisted(() => ({
-    AuthType: {
-        NoAuth: 'none',
-        UserPassword: 'userpass',
-        Certificate: 'cert',
-    },
-}));
-
-vi.mock('@placeos/ts-client', () => ({ AuthType: mocks.AuthType }));
 
 describe('brokers.utilities', () => {
     describe('generateBrokerFormModel', () => {
@@ -17,9 +8,9 @@ describe('brokers.utilities', () => {
             expect(generateBrokerFormModel()).toEqual({
                 name: '',
                 description: '',
-                auth_type: mocks.AuthType.NoAuth,
+                auth_type: AuthType.UserPassword,
                 host: '',
-                port: 0,
+                port: 1883,
                 tls: false,
                 username: '',
                 password: '',
@@ -32,7 +23,7 @@ describe('brokers.utilities', () => {
             const model = generateBrokerFormModel({
                 name: 'Broker',
                 description: 'MQTT broker',
-                auth_type: mocks.AuthType.UserPassword,
+                auth_type: AuthType.UserPassword,
                 host: 'mqtt.example.com',
                 port: 1883,
                 tls: true,
@@ -44,7 +35,7 @@ describe('brokers.utilities', () => {
 
             expect(model).toMatchObject({
                 name: 'Broker',
-                auth_type: mocks.AuthType.UserPassword,
+                auth_type: AuthType.UserPassword,
                 host: 'mqtt.example.com',
                 port: 1883,
                 tls: true,

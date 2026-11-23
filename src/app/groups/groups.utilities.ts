@@ -1,31 +1,30 @@
 import { required, SchemaFn } from '@angular/forms/signals';
+import { type Group } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import {
-    authority,
-    get,
-    PlaceGroup,
-    PlaceGroupAdMappings,
-} from '@placeos/ts-client';
-import type { PlaceTenant } from '../admin/staff-api.component';
+    groups as staff_groups,
+    tenants,
+    type PlaceCalendarGroup,
+} from '@placeos/ts-client/staff';
+import { authority } from '../common/placeos';
+
+/** AD group id => [name, permissions] */
+export type GroupAdMappings = Record<string, readonly [string, number]>;
 
 export interface GroupFormModel {
     name: string;
     description: string;
     parent_id: string;
     authority_id: string;
-    subsystems: string[];
+    subsystems: readonly string[];
     default_permissions: number;
-    ad_group_mappings: PlaceGroupAdMappings;
+    ad_group_mappings: GroupAdMappings;
 }
 
 /** Directory group returned by the staff API group search */
-export interface StaffDirectoryGroup {
-    id: string;
-    name: string;
-    email?: string;
-    description?: string;
-}
+export type StaffDirectoryGroup = PlaceCalendarGroup;
 
-export function generateGroupFormModel(group?: PlaceGroup): GroupFormModel {
+export function generateGroupFormModel(group?: Group): GroupFormModel {
     return {
         name: group?.name || '',
         description: group?.description || '',
@@ -46,11 +45,11 @@ export const applyGroupFormSchema: SchemaFn<GroupFormModel> = (path) => {
  * IDs are trimmed and lower-cased to match how the API stores them.
  */
 export function setAdGroupMapping(
-    mappings: PlaceGroupAdMappings,
+    mappings: GroupAdMappings,
     id: string,
     name: string,
     permissions: number,
-): PlaceGroupAdMappings {
+): GroupAdMappings {
     const key = id.trim().toLowerCase();
     if (!key) return mappings;
     return { ...mappings, [key]: [name.trim() || key, +permissions || 0] };
@@ -58,9 +57,9 @@ export function setAdGroupMapping(
 
 /** Returns a copy of `mappings` without the AD group `id` */
 export function removeAdGroupMapping(
-    mappings: PlaceGroupAdMappings,
+    mappings: GroupAdMappings,
     id: string,
-): PlaceGroupAdMappings {
+): GroupAdMappings {
     const { [id]: _, ...rest } = mappings;
     return rest;
 }
@@ -75,8 +74,8 @@ export async function hasStaffGroupSearch(authority_id: string) {
     const current = authority();
     if (!current?.id || current.id !== authority_id) return false;
     try {
-        const tenants = (await get('/api/staff/v1/tenants')) as PlaceTenant[];
-        return tenants.some(
+        const list = await tenants.query({}).then(orThrow);
+        return list.some(
             (tenant) =>
                 tenant.domain === current.domain &&
                 tenant.platform === 'office365',
@@ -91,7 +90,5 @@ export async function hasStaffGroupSearch(authority_id: string) {
 
 /** Searches directory groups of the current domain's staff API tenant */
 export async function searchStaffGroups(q: string) {
-    return (await get(
-        `/api/staff/v1/groups?q=${encodeURIComponent(q)}`,
-    )) as StaffDirectoryGroup[];
+    return staff_groups.query({ q }).then(orThrow);
 }

@@ -1,17 +1,17 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
+    signage_plugins,
     SignagePlugin,
-    addSignagePlugin,
-    querySignagePlugins,
-    removeSignagePlugin,
-    updateSignagePlugin,
+    type SignagePlugin as SignagePluginV7,
 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { newItem, toBody } from '../../common/placeos';
 import { DialogEvent } from '../../common/types';
 import { confirmAndRun } from '../../overlays/confirm-modal.component';
 import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
@@ -213,7 +213,7 @@ export class AdminSignagePluginsComponent
     private _dialog = inject(Dialog);
 
     public readonly loading = signal(false);
-    public readonly plugins = signal<SignagePlugin[]>([]);
+    public readonly plugins = signal<SignagePluginV7[]>([]);
 
     public ngOnInit(): void {
         this.loadPlugins();
@@ -222,7 +222,7 @@ export class AdminSignagePluginsComponent
     /** Open the import wizard, then the new plugin form with the selected plugin details */
     public importPlugin(): void {
         const ref = this._dialog.open<
-            SignagePlugin,
+            SignagePluginV7,
             void,
             SignagePluginImportModalComponent
         >(SignagePluginImportModalComponent);
@@ -234,14 +234,16 @@ export class AdminSignagePluginsComponent
         );
     }
 
-    public newPlugin(item = new SignagePlugin()): void {
+    public newPlugin(item = newItem(SignagePlugin)): void {
         const ref = this._dialog.open<DialogEvent>(
             SignagePluginModalComponent,
             {
                 data: {
                     item,
-                    save: (item: Partial<SignagePlugin>) =>
-                        addSignagePlugin(item),
+                    save: (data: Record<string, unknown>) =>
+                        signage_plugins
+                            .create({ body: toBody(SignagePlugin, data) })
+                            .then(orThrow),
                 },
             },
         );
@@ -254,20 +256,25 @@ export class AdminSignagePluginsComponent
         );
     }
 
-    public testPlugin(item: SignagePlugin): void {
+    public testPlugin(item: SignagePluginV7): void {
         this._dialog.open(SignagePluginTestModalComponent, {
             data: { item },
         });
     }
 
-    public editPlugin(item: SignagePlugin): void {
+    public editPlugin(item: SignagePluginV7): void {
         const ref = this._dialog.open<DialogEvent>(
             SignagePluginModalComponent,
             {
                 data: {
                     item,
-                    save: (updated: Partial<SignagePlugin>) =>
-                        updateSignagePlugin(item.id, updated),
+                    save: (updated: Record<string, unknown>) =>
+                        signage_plugins
+                            .update({
+                                id: item.id,
+                                body: toBody(SignagePlugin, updated),
+                            })
+                            .then(orThrow),
                 },
             },
         );
@@ -280,7 +287,7 @@ export class AdminSignagePluginsComponent
         );
     }
 
-    public async deletePlugin(item: SignagePlugin): Promise<void> {
+    public async deletePlugin(item: SignagePluginV7): Promise<void> {
         if (!item) return;
         const removed = await confirmAndRun(
             this._dialog,
@@ -291,7 +298,8 @@ export class AdminSignagePluginsComponent
             },
             {
                 loading: i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_LOADING'),
-                action: () => removeSignagePlugin(item.id),
+                action: () =>
+                    signage_plugins.destroy({ id: item.id }).then(orThrow),
                 error: (error) =>
                     i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_ERROR', { error }),
                 success: i18n('ADMIN.SIGNAGE_PLUGINS_REMOVE_SUCCESS'),
@@ -303,7 +311,10 @@ export class AdminSignagePluginsComponent
     public async loadPlugins(): Promise<void> {
         this.loading.set(true);
         try {
-            const plugins = await querySignagePlugins().then((r) => r.data);
+            const plugins = await signage_plugins
+                .query({})
+                .then(orThrowPage)
+                .then((r) => [...r.data]);
             this.plugins.set(plugins);
         } catch (err) {
             notifyError(

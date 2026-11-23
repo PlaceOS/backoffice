@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SignagePlugin } from '@placeos/ts-client';
+import { type SignagePlugin } from '@placeos/ts-client';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';

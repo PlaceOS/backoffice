@@ -10,19 +10,15 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-    listMetadata,
-    PlaceMetadata,
-    PlaceResource,
-    removeMetadata,
-    updateMetadata,
-} from '@placeos/ts-client';
+import { metadata, Metadata as MetadataV7 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { VERSION } from '../../env/version';
 import { AsyncHandler } from '../common/async-handler.class';
 import { describeError, readError } from '../common/errors';
-import { escapeHtml } from '../common/general';
+import { escapeHtml, parseMetadataDetails } from '../common/general';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { HashMap } from '../common/types';
+import { loadMetadataBlocks, newItem } from '../common/placeos';
+import { HashMap, PlaceResource } from '../common/types';
 import { currentUser } from '../common/user-state';
 import { validateJSONString } from '../common/validation';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
@@ -40,9 +36,10 @@ import { DateFromPipe } from './pipes/date-from.pipe';
 import { UserPipe } from './pipes/user.pipe';
 import { TranslatePipe } from './translate.pipe';
 
-interface Metadata extends PlaceMetadata {
+interface Metadata extends MetadataV7 {
     match?: boolean;
-    [key: string]: unknown;
+    /** The block is not saved yet */
+    new?: boolean;
 }
 
 export interface MetadataFormModel {
@@ -105,15 +102,19 @@ function replaceDescTag(inputString, newContent) {
                                 }
                             </div>
                             <div class="flex-1"></div>
-                            <div
-                                class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
-                                [appTooltip]="
-                                    (item.modified_by_id | user | async)?.name
-                                "
-                                appTooltipPosition="left"
-                            >
-                                {{ item.updated_at | dateFrom }}
-                            </div>
+                            <!-- A new block has no update time until it is saved -->
+                            @if (item.updated_at) {
+                                <div
+                                    class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
+                                    [appTooltip]="
+                                        (item.modified_by_id | user | async)
+                                            ?.name
+                                    "
+                                    appTooltipPosition="left"
+                                >
+                                    {{ item.updated_at * 1000 | dateFrom }}
+                                </div>
+                            }
                             <button
                                 class="border-base-300 bg-base-100 flex items-center rounded-full border"
                                 (click)="$event.stopPropagation()"
@@ -287,17 +288,18 @@ export class MetadataDisplayComponent
     public newMetadata() {
         this.metadata.update((l) => {
             l.push({
-                name: `new_field_${Math.floor(Math.random() * 999_999_999)}`,
-                description: '',
+                ...newItem(MetadataV7, {
+                    name: `new_field_${Math.floor(Math.random() * 999_999_999)}`,
+                    details: {},
+                }),
                 new: true,
-                details: {},
-            } as unknown as Metadata);
+            });
             return l;
         });
         this.generateForms();
     }
 
-    public editMetadataDetails(field: PlaceMetadata) {
+    public editMetadataDetails(field: MetadataV7) {
         const form = this.form_map()[field.name];
         this._dialog.open<
             unknown,
@@ -336,7 +338,10 @@ export class MetadataDisplayComponent
             ?.new;
         try {
             // Blocks that were never saved only exist locally
-            if (!is_new) await removeMetadata(this.item().id, { name: field });
+            if (!is_new)
+                await metadata
+                    .destroy({ id: this.item().id, name: field })
+                    .then(orThrow);
         } catch (err) {
             return notifyError(
                 `Error removing old "${field}" metadata. Error: ${await readError(
@@ -358,7 +363,7 @@ export class MetadataDisplayComponent
         if (search) this.show_view.set('');
         this.metadata.update((list) => {
             for (const block of list) {
-                (block as Record<string, unknown>).match =
+                block.match =
                     block.name.toLowerCase().includes(search) ||
                     `${this.form_map()[block.name].name}`
                         .toLowerCase()
@@ -368,7 +373,7 @@ export class MetadataDisplayComponent
         });
     }
 
-    public saveMetadata(field: PlaceMetadata) {
+    public saveMetadata(field: MetadataV7) {
         const form = this.form_map()[field.name];
         if (
             !form.name ||
@@ -398,33 +403,40 @@ export class MetadataDisplayComponent
                       : 'User',
             };
         }
-        updateMetadata(this.item().id, {
-            ...value,
-            description: new_desc,
-            details: data,
-        })
-            .then((item: PlaceMetadata) => {
+        metadata
+            .update({
+                id: this.item().id,
+                body: {
+                    name: value.name,
+                    description: new_desc,
+                    editors: value.editors,
+                    details: data,
+                    // `null` keeps the schema of the block
+                    schema_id: value.schema || null,
+                },
+            })
+            .then(orThrow)
+            .then((item: MetadataV7) => {
                 this.loading.update((m) => ({ ...m, [field.name]: false }));
                 const index = this.metadata().findIndex(
                     (i) => i.name === field.name,
                 );
                 this.edited.update((m) => ({ ...m, [field.name]: false }));
                 if (field.name !== value.name) {
-                    removeMetadata(this.item().id, { name: field.name }).catch(
-                        (err) =>
+                    metadata
+                        .destroy({ id: this.item().id, name: field.name })
+                        .then(orThrow)
+                        .catch((err) =>
                             notifyError(
                                 `Error removing old "${
                                     field.name
                                 }" metadata. Error: ${describeError(err)}`,
                             ),
-                    );
+                        );
                 }
                 if (index >= 0) {
                     this.metadata.update((l) => {
-                        l.splice(index, 1, {
-                            ...item,
-                            new: false,
-                        } as unknown as Metadata);
+                        l.splice(index, 1, { ...item, new: false });
                         return l;
                     });
                 }
@@ -456,17 +468,14 @@ export class MetadataDisplayComponent
                 this.edited.update((m) => ({ ...m, [group.name]: true }));
                 return;
             }
-            const details =
-                typeof group.details === 'string'
-                    ? JSON.parse(group.details)
-                    : group.details;
+            const details = parseMetadataDetails(group.details);
             this.form_map.update((m) => {
                 m[group.name] = {
                     name: group.name,
                     description: group.description,
                     editors: [...(group.editors || [])],
-                    details: JSON.stringify(details || {}, undefined, 4),
-                    schema: group.schema,
+                    details: JSON.stringify(details, undefined, 4),
+                    schema: group.schema_id,
                 };
                 return m;
             });
@@ -500,14 +509,10 @@ export class MetadataDisplayComponent
 
     private async loadMetadata() {
         this.loading_list.set(true);
-        await listMetadata(this.item().id)
-            .then((map) => {
-                this.metadata.set(
-                    Object.keys(map)
-                        .map((key) => map[key])
-                        .sort((a, b) => a.name.localeCompare(b.name))
-                        .filter((m) => !!m),
-                );
+        // The tab count of the item can have loaded the blocks already
+        await loadMetadataBlocks(this.item().id)
+            .then((blocks) => {
+                this.metadata.set(blocks);
                 this.generateForms(true);
             })
             .catch((err) =>
@@ -518,7 +523,7 @@ export class MetadataDisplayComponent
             .finally(() => this.loading_list.set(false));
     }
 
-    public viewMetadataHistory(item: PlaceMetadata) {
+    public viewMetadataHistory(item: MetadataV7) {
         const item_value = this.item();
         this._dialog.open(MetadataHistoryModalComponent, {
             data: {

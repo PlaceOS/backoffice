@@ -3,6 +3,7 @@ import {
     generateLDAPSourceForm,
     generateOAuthSourceForm,
     generateSAMLSourceForm,
+    newSAMLSourceBody,
 } from '../../app/domains/auth-sources.utilities';
 
 describe('auth-sources.utilities', () => {
@@ -77,5 +78,17 @@ describe('auth-sources.utilities', () => {
             auth_method: 'ssl',
             base: 'dc=example,dc=com',
         });
+    });
+
+    it('leaves the empty values out of a new SAML source, so the API gives its defaults', () => {
+        expect(
+            newSAMLSourceBody({
+                name: 'SSO',
+                name_identifier_format: '',
+                request_attributes: [],
+                attribute_statements: {},
+                uid_attribute: 'mail',
+            }),
+        ).toEqual({ name: 'SSO', uid_attribute: 'mail' });
     });
 });

@@ -8,7 +8,10 @@ import {
     viewChild,
 } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { SignagePlugin } from '@placeos/ts-client';
+import {
+    SignagePlugin,
+    type SignagePlugin as SignagePluginV7,
+} from '@placeos/ts-client';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { AsyncHandler } from '../../common/async-handler.class';
@@ -17,6 +20,7 @@ import { getInvalidSignalFields } from '../../common/forms';
 import { HotkeysService } from '../../common/hotkeys.service';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
+import { newItem } from '../../common/placeos';
 import { FormFieldComponent } from '../../ui/controls/form-field.component';
 import { OptionComponent } from '../../ui/controls/option.component';
 import { ProgressBarComponent } from '../../ui/controls/progress-bar.component';
@@ -36,8 +40,9 @@ import {
 } from './signage-plugins.utilities';
 
 export interface SignagePluginModalData {
-    item: SignagePlugin;
-    save: (item: Partial<SignagePlugin>) => Promise<SignagePlugin>;
+    item: SignagePluginV7;
+    /** Saves the plugin. `toBody` keeps the fields of the plugin schema */
+    save: (item: Record<string, unknown>) => Promise<SignagePluginV7>;
 }
 
 @Component({
@@ -269,7 +274,7 @@ export class SignagePluginModalComponent
     public readonly loading = signal<string | null>(null);
     public readonly plugin_uri = computed(() => this.formModel().uri);
 
-    public readonly embed_plugin = signal<SignagePlugin>(null);
+    public readonly embed_plugin = signal<SignagePluginV7>(null);
     public readonly schema = signal<Record<string, unknown>>(null);
     public readonly has_schema = computed(
         () => Object.keys(this.schema() || {}).length > 0,
@@ -353,7 +358,7 @@ export class SignagePluginModalComponent
             this.loading.set(i18n('ADMIN.SIGNAGE_PLUGINS_SAVING'));
             const schema = this.schema();
             const values = this.formModel();
-            const payload: Partial<SignagePlugin> = {
+            const payload: Record<string, unknown> = {
                 ...this._data.item,
                 ...values,
                 params: schema ?? this._data.item?.params ?? {},
@@ -398,7 +403,7 @@ export class SignagePluginModalComponent
         this.schema.set(null);
         this.schema_loading.set(true);
         this.schema_error.set(false);
-        this.embed_plugin.set(new SignagePlugin({ uri }));
+        this.embed_plugin.set(newItem(SignagePlugin, { uri }));
         // Timeout if plugin doesn't respond
         this.timeout(
             'schema_timeout',

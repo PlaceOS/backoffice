@@ -6,7 +6,8 @@ import {
     signal,
     untracked,
 } from '@angular/core';
-import { PlaceSystem, PlaceZone, showZone } from '@placeos/ts-client';
+import { type System, type Zone, zones } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 
 import { ZonesStateService } from './zones-state.service';
 
@@ -254,16 +255,14 @@ export class ZoneAboutComponent {
     /** List of associated systems */
     public readonly systems = this._service.systems;
     /** Selected system */
-    public readonly active_system = signal<PlaceSystem | undefined>(undefined);
+    public readonly active_system = signal<System | undefined>(undefined);
     public readonly item = this._service.item;
     private readonly _item_id = computed(() => this.item()?.id);
-    public readonly parent = signal<PlaceZone | undefined>(undefined);
-    public readonly tag_list = computed(() =>
-        this.item() ? this.item()?.tags : [],
-    );
+    public readonly parent = signal<Zone | undefined>(undefined);
+    public readonly tag_list = computed(() => this.item()?.tags ?? []);
     public readonly requires_parent = computed(() => {
         const item = this.item();
-        if (!item?.tags?.length) return false;
+        if (!item) return false;
         return (
             (item.tags.includes('level') ||
                 item.tags.includes('building') ||
@@ -287,13 +286,16 @@ export class ZoneAboutComponent {
 
     /** Loads the parent zone name. The view shows the parent ID if this fails */
     private async loadParent(parent_id: string) {
-        const zone = await showZone(parent_id).catch((err) => {
-            console.warn(
-                `Failed to load parent zone ${parent_id}:`,
-                describeError(err),
-            );
-            return null;
-        });
+        const zone = await zones
+            .show({ id: parent_id })
+            .then(orThrow)
+            .catch((err) => {
+                console.warn(
+                    `Failed to load parent zone ${parent_id}:`,
+                    describeError(err),
+                );
+                return null;
+            });
         if (this.item()?.parent_id === parent_id && zone) this.parent.set(zone);
     }
 }

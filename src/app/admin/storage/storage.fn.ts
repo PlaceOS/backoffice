@@ -1,80 +1,31 @@
-import { cleanObject, create, query, remove, update } from '@placeos/ts-client';
+import { Storage, storages } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
+import { cleanObject } from '../../common/general';
+import { toBody } from '../../common/placeos';
 
-const PATH = 'storages';
+/** A storage provider for uploads */
+export type PlaceStorage = Storage;
 
-export class PlaceStorage {
-    /** ID of the storage */
-    public readonly id: string;
-    /** ID of the authority the storage is under */
-    public readonly authority_id: string;
-    /** Type of the storage */
-    public readonly storage_type: string;
-    /** Name of the storage */
-    public readonly bucket_name: string;
-    /** Region of the storage */
-    public readonly region: string;
-    /** Access key for the storage */
-    public readonly access_key: string;
-    /** Access secret for the storage */
-    public readonly access_secret: string;
-    /** Endpoint for the storage */
-    public readonly endpoint: string;
-    /** File type extensions to filter out */
-    public readonly ext_filter: string[];
-    /** File MIME type extensions to filter out */
-    public readonly mime_filter: string[];
-    /** Whether the storage is the default */
-    public readonly is_default: boolean;
-
-    constructor(item: Partial<PlaceStorage> = {}) {
-        Object.assign(this, item);
-    }
-}
-
-/** Convert raw server data to an storage object */
-function process(item: Partial<PlaceStorage>) {
-    return new PlaceStorage(item);
-}
-
-export interface StorageQueryParameters {
-    /** ID of the authority the storage is under */
-    auth_id?: string;
-    /** Filter results based on a simple query string */
-    q?: string;
-    /** Number of results to return */
-    limit?: number;
-    /** Number of results to skip */
-    offset?: number;
-}
+export type StorageQueryParameters = Parameters<typeof storages.query>[0];
 
 /**
- * Query the available systems
+ * Query the available storage providers
  * @param query_params Query parameters to add the to request URL
  */
 export function queryStorage(query_params: StorageQueryParameters = {}) {
-    return query({ query_params, fn: process, path: PATH });
+    return storages.query(query_params).then(orThrowPage);
 }
 
 /**
- * Update the storage in the database
+ * Update the storage in the database. The API only has PATCH, so fields
+ * that the data leaves out keep their value
  * @param id ID of the storage
  * @param form_data New values for the storage
- * @param query_params Query parameters to add the to request URL
- * @param method HTTP verb to use on request. Defaults to `patch`
  */
-export function updateStorage(
-    id: string,
-    form_data: Partial<PlaceStorage>,
-    method: 'put' | 'patch' = 'patch',
-) {
-    return update({
-        id,
-        form_data,
-        query_params: {},
-        method,
-        fn: process,
-        path: PATH,
-    });
+export function updateStorage(id: string, form_data: Partial<PlaceStorage>) {
+    return storages
+        .update({ id, body: toBody(Storage, form_data) })
+        .then(orThrow);
 }
 
 /**
@@ -82,28 +33,23 @@ export function updateStorage(
  * @param item New storage data
  * @returns New storage object
  */
-export function saveStorage(item: PlaceStorage) {
-    const data = cleanObject(item, ['', undefined, null]);
-    return item.id ? updateStorage(item.id, data, 'put') : addStorage(data);
+export function saveStorage(item: Partial<PlaceStorage>) {
+    const data = cleanObject({ ...item }, ['', undefined, null]);
+    return item.id ? updateStorage(item.id, data) : addStorage(data);
 }
 
 /**
  * Add a new storage to the database
  * @param form_data Storage data
- * @param query_params Query parameters to add the to request URL
  */
 export function addStorage(form_data: Partial<PlaceStorage>) {
-    return create({ form_data, query_params: {}, fn: process, path: PATH });
+    return storages.create({ body: toBody(Storage, form_data) }).then(orThrow);
 }
 
 /**
  * Remove an storage from the database
  * @param id ID of the storage
- * @param query_params Query parameters to add the to request URL
  */
-export function removeStorage(
-    id: string,
-    query_params: Record<string, unknown> = {},
-) {
-    return remove({ id, query_params, path: PATH });
+export function removeStorage(id: string) {
+    return storages.destroy({ id }).then(orThrow);
 }

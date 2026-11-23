@@ -8,14 +8,11 @@ import {
     signal,
 } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import {
-    addBroker,
-    AuthType,
-    PlaceMQTTBroker,
-    updateBroker,
-} from '@placeos/ts-client';
+import { Broker, brokers } from '@placeos/ts-client';
+import { AuthType, orThrow } from '@placeos/ts-client/compat';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
+import { toBody } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -341,9 +338,7 @@ import {
 export class BrokerFormComponent {
     private _dialog_ref =
         inject<DialogRef<unknown, BrokerFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceMQTTBroker; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: Broker; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'ADMIN.BROKERS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -392,10 +387,11 @@ export class BrokerFormComponent {
                 const form_item = mergeFormItem(
                     this._data.item,
                     this.formModel(),
-                ) as unknown as PlaceMQTTBroker;
+                ) as unknown as Broker;
+                const body = toBody(Broker, form_item);
                 return form_item.id
-                    ? updateBroker(form_item.id, form_item)
-                    : addBroker(form_item);
+                    ? brokers.update({ id: form_item.id, body }).then(orThrow)
+                    : brokers.create({ body }).then(orThrow);
             },
         );
     }

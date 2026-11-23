@@ -100,20 +100,12 @@ test.describe('Users', () => {
             );
         });
 
-        test('AC-USR-004-4: a changed email is kept', async ({ page }) => {
+        test('AC-USR-004-2: the email of a saved user is read-only', async () => {
+            // The API keeps the email of a saved user
             await users.openUser('Chris Anderson');
             await users.openEditModal();
-            await users.field('Email*').fill('chris@place.tech');
-            await users.saveButton.click();
-            await expect(users.dialog).toBeHidden();
 
-            const email = users.tabContent.getByRole('link', {
-                name: 'chris@place.tech',
-            });
-            await expect(email).toBeVisible();
-            await page.reload();
-            await users.waitForItemDetails();
-            await expect(email).toBeVisible();
+            await expect(users.field('Email*')).toBeDisabled();
         });
     });
 

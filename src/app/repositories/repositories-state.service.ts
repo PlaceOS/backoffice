@@ -1,19 +1,17 @@
 import { computed, inject, resource, Service, signal } from '@angular/core';
 import {
-    listRepositoryCommits,
-    listRepositoryDrivers,
-    PlaceDriver,
-    PlaceRepository,
-    PlaceRepositoryType,
-    pullRepositoryChanges,
-    showRepository,
+    Driver,
+    type GitRepositoryCommit,
+    repositories,
 } from '@placeos/ts-client';
+import { orThrow, PlaceRepositoryType } from '@placeos/ts-client/compat';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { describeError } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
+import { newItem } from '../common/placeos';
 import { Identity } from '../common/types';
 import { DriverFormComponent } from '../drivers/driver-form.component';
 
@@ -30,22 +28,19 @@ export class RepositoriesStateService {
     public readonly driver_list_error = this._driver_list_error.asReadonly();
     public readonly commit_error = this._commit_error.asReadonly();
     /** Active repository */
-    public readonly item = computed(
-        () => this._state.item() as unknown as PlaceRepository,
-    );
+    public readonly item = computed(() => this._state.activeOf('repositories'));
 
     private readonly _driver_list = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (
-                !(item instanceof PlaceRepository) ||
-                item.repo_type === PlaceRepositoryType.Interface
-            )
+            if (!item || item.repo_type === PlaceRepositoryType.Interface)
                 return [] as string[];
             this._loading.set(true);
             this._driver_list_error.set('');
             try {
-                return await listRepositoryDrivers(item.id, { limit: 2000 });
+                return await repositories
+                    .drivers({ id: item.id })
+                    .then(orThrow);
             } catch (err) {
                 this._driver_list_error.set(describeError(err));
                 return [];
@@ -63,7 +58,7 @@ export class RepositoriesStateService {
         params: () => {
             const item = this.item();
             if (
-                !(item instanceof PlaceRepository) ||
+                !item ||
                 item.repo_type !== PlaceRepositoryType.Interface ||
                 !item.folder_name
             ) {
@@ -95,13 +90,13 @@ export class RepositoriesStateService {
     private readonly _commit = resource({
         params: () => this.item(),
         loader: async ({ params: item }) => {
-            if (!(item instanceof PlaceRepository)) return 'HEAD';
+            if (!item) return 'HEAD';
             this._commit_error.set('');
-            let details = [];
+            let details: readonly GitRepositoryCommit[] = [];
             try {
-                details = await listRepositoryCommits(item.id, {
-                    count: 1,
-                } as Record<string, unknown>);
+                details = await repositories
+                    .commits({ id: item.id, limit: 1 })
+                    .then(orThrow);
             } catch (err) {
                 this._commit_error.set(describeError(err));
             }
@@ -111,31 +106,34 @@ export class RepositoriesStateService {
     /** Get latest commit for the active repository */
     public readonly commit = computed(() => this._commit.value() || 'HEAD');
 
-    public get active_item(): PlaceRepository {
-        return this._state.active_item as unknown as PlaceRepository;
+    public get active_item() {
+        return this._state.activeOf('repositories');
     }
 
     public async pullLatestCommit() {
-        const commit: unknown = await pullRepositoryChanges(
-            this.active_item.id,
-        ).catch((err) => {
-            notifyError(
-                i18n('REPOS.GIT_PULL_ERROR', {
-                    error: err
-                        ? describeError(err)
-                        : i18n('REPOS.GIT_PULL_TIMEOUT'),
-                }),
-            );
-        });
+        const commit: unknown = await repositories
+            .pull({ id: this.active_item.id })
+            .then(orThrow)
+            .catch((err) => {
+                notifyError(
+                    i18n('REPOS.GIT_PULL_ERROR', {
+                        error: err
+                            ? describeError(err)
+                            : i18n('REPOS.GIT_PULL_TIMEOUT'),
+                    }),
+                );
+            });
         if (!commit) return;
-        const repo = await showRepository(this.active_item.id);
+        const repo = await repositories
+            .show({ id: this.active_item.id })
+            .then(orThrow);
         if (repo) this._state.replaceItem(repo as unknown as Identity);
     }
 
     public async newDriver(driver: string) {
         this._dialog.open(DriverFormComponent, {
             data: {
-                item: new PlaceDriver({
+                item: newItem(Driver, {
                     name: '',
                     module_name: '',
                     repository_id: this.active_item.id,

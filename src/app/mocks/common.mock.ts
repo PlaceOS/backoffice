@@ -1,7 +1,10 @@
 import { WritableSignal, signal } from '@angular/core';
 import { HashMap } from '../common/types';
 
-import { MockHttpRequest, registerMockEndpoint } from '@placeos/ts-client';
+import {
+    type MockHttpRequest,
+    registerMockEndpoint,
+} from '@placeos/ts-client/compat';
 
 /** Domain of the organisation */
 export const DOMAIN = 'place.tech';
@@ -21,7 +24,7 @@ export interface MockChangeSignal<T> extends WritableSignal<T> {
 }
 
 /** Item with an ID, as stored by `generateBasicHandlers` */
-export type MockItem = { id: string } & Record<string, unknown>;
+export type MockItem = { id: string | number } & Record<string, unknown>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ENDPOINT_SIGNALS: HashMap<MockChangeSignal<any[]>> = {};
@@ -156,12 +159,12 @@ export function endpointData(endpoint: string): any[] {
  */
 export function updateItem<T extends MockItem>(
     endpoint: string,
-    id: string,
+    id: string | number,
     changes: Partial<T>,
 ): T {
     const store = listenToHandlerChanges<T>(endpoint);
     const list = store?.() || [];
-    const index = list.findIndex((item) => item.id === id);
+    const index = list.findIndex((item) => `${item.id}` === `${id}`);
     if (index < 0) return notFound();
     const item = { ...list[index], ...changes, updated_at: now() };
     store.set(list.map((old, idx) => (idx === index ? item : old)));
@@ -184,6 +187,8 @@ export interface BasicHandlerOptions<T> {
     prepare?: (item: T) => T;
     /** Prefix of new IDs, e.g. `sys-`. Defaults to `item-` */
     id_prefix?: string;
+    /** Makes the ID of a new item, for APIs with number IDs. Replaces `id_prefix` */
+    new_id?: () => string | number;
 }
 
 /**
@@ -201,6 +206,7 @@ export function generateBasicHandlers<T = MockItem>(
         filter = () => true,
         prepare = (item) => item,
         id_prefix = 'item-',
+        new_id = () => `${id_prefix}${generateID()}`,
     }: BasicHandlerOptions<T> = {},
 ): MockChangeSignal<T[]> {
     ENDPOINT_SIGNALS[endpoint]?.dispose();
@@ -209,7 +215,10 @@ export function generateBasicHandlers<T = MockItem>(
     type Item = T & MockItem;
     const list = () => store() as Item[];
     const indexOf = (event: MockHttpRequest) => {
-        const index = list().findIndex((i) => i.id === event.route_params.id);
+        // Route params are text, and some APIs have number IDs
+        const index = list().findIndex(
+            (i) => `${i.id}` === event.route_params.id,
+        );
         return index >= 0 ? index : notFound();
     };
 
@@ -236,7 +245,7 @@ export function generateBasicHandlers<T = MockItem>(
         callback: (event) => {
             const item = prepare({
                 ...event.body,
-                id: `${id_prefix}${generateID()}`,
+                id: new_id(),
                 created_at: now(),
                 updated_at: now(),
             });
@@ -254,7 +263,7 @@ export function generateBasicHandlers<T = MockItem>(
                 const item = prepare({
                     ...list()[index],
                     ...event.body,
-                    id: event.route_params.id,
+                    id: list()[index].id,
                     updated_at: now(),
                 });
                 store.set(

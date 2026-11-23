@@ -1,20 +1,27 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { mockReply } from '@placeos/ts-client/compat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-    listMetadata: vi.fn(),
-    updateMetadata: vi.fn(),
-    removeMetadata: vi.fn(),
+    show: vi.fn(),
+    update: vi.fn(),
+    destroy: vi.fn(),
     notifyError: vi.fn(),
 }));
 
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<object>('@placeos/ts-client/dist/index.es.js')),
-    listMetadata: mocks.listMetadata,
-    updateMetadata: mocks.updateMetadata,
-    removeMetadata: mocks.removeMetadata,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        metadata: {
+            ...actual.metadata,
+            show: mocks.show,
+            update: mocks.update,
+            destroy: mocks.destroy,
+        },
+    };
+});
 
 vi.mock('../../../app/common/notifications', () => ({
     notifyError: mocks.notifyError,
@@ -26,17 +33,19 @@ import { MetadataDisplayComponent } from '../../../app/ui/metadata-display.compo
 describe('MetadataDisplayComponent', () => {
     beforeEach(() => {
         vi.resetAllMocks();
-        mocks.listMetadata.mockResolvedValue({
-            config: { name: 'config', description: '', details: { a: 1 } },
-        });
-        mocks.removeMetadata.mockResolvedValue(undefined);
+        mocks.show.mockResolvedValue(
+            mockReply({
+                config: { name: 'config', description: '', details: { a: 1 } },
+            }),
+        );
+        mocks.destroy.mockResolvedValue(mockReply(''));
         TestBed.configureTestingModule({
             providers: [provideZonelessChangeDetection()],
         });
     });
 
     it('keeps the original block when saving a rename fails', async () => {
-        mocks.updateMetadata.mockRejectedValue(new Error('500'));
+        mocks.update.mockRejectedValue(new Error('500'));
         const fixture = TestBed.createComponent(MetadataDisplayComponent);
         fixture.componentRef.setInput('item', { id: 'zone-1' });
         await fixture.whenStable();
@@ -47,11 +56,11 @@ describe('MetadataDisplayComponent', () => {
         component.saveMetadata(block);
         await new Promise((resolve) => setTimeout(resolve));
 
-        expect(mocks.updateMetadata).toHaveBeenCalledWith(
-            'zone-1',
-            expect.objectContaining({ name: 'renamed' }),
-        );
-        expect(mocks.removeMetadata).not.toHaveBeenCalled();
+        expect(mocks.update).toHaveBeenCalledWith({
+            id: 'zone-1',
+            body: expect.objectContaining({ name: 'renamed' }),
+        });
+        expect(mocks.destroy).not.toHaveBeenCalled();
         expect(component.metadata().map(({ name }) => name)).toEqual([
             'config',
         ]);

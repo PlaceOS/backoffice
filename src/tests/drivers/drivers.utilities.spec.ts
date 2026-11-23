@@ -1,16 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
+import { describe, expect, it } from 'vitest';
 import { generateDriverFormModel } from '../../app/drivers/drivers.utilities';
-
-const mocks = vi.hoisted(() => ({
-    PlaceDriverRole: {
-        Logic: 3,
-        Device: 4,
-    },
-}));
-
-vi.mock('@placeos/ts-client', () => ({
-    PlaceDriverRole: mocks.PlaceDriverRole,
-}));
 
 describe('drivers.utilities', () => {
     describe('generateDriverFormModel', () => {
@@ -21,7 +11,7 @@ describe('drivers.utilities', () => {
                 file_name: '',
                 commit: '',
                 name: '',
-                role: mocks.PlaceDriverRole.Logic,
+                role: PlaceDriverRole.Logic,
                 module_name: '',
                 default_uri: '',
                 default_port: 1,
@@ -40,7 +30,7 @@ describe('drivers.utilities', () => {
                 file_name: 'driver.rb',
                 commit: 'abc123',
                 name: 'Display Driver',
-                role: mocks.PlaceDriverRole.Device,
+                role: PlaceDriverRole.Device,
                 module_name: 'Display',
                 default_uri: 'tcp://1.2.3.4:23',
                 default_port: 23,
@@ -53,7 +43,7 @@ describe('drivers.utilities', () => {
             expect(model).toMatchObject({
                 id: 'driver-1',
                 repository_id: 'repo-1',
-                role: mocks.PlaceDriverRole.Device,
+                role: PlaceDriverRole.Device,
                 module_name: 'Display',
                 default_port: 23,
                 ignore_connected: true,

@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 
-import { PlaceCluster, queryClusters } from '@placeos/ts-client';
+import { cluster as cluster_v7 } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HashMap } from '../../common/types';
 
@@ -8,6 +9,11 @@ import { RouterModule } from '@angular/router';
 import { IconComponent } from '../../ui/icon.component';
 import { TranslatePipe } from '../../ui/translate.pipe';
 import { AdminClusterNodeComponent } from './cluster-node.component';
+import {
+    clusterFromStatus,
+    PlaceCluster,
+    PlaceClusterLoad,
+} from './cluster.utilities';
 
 @Component({
     selector: 'engine-cluster-details',
@@ -83,9 +89,7 @@ import { AdminClusterNodeComponent } from './cluster-node.component';
 export class PlaceClusterDetailsComponent extends AsyncHandler {
     /** List of available clusters on this instance of engine */
     public cluster_list = signal<PlaceCluster[]>([]);
-    public cluster_nodes = signal<
-        HashMap<Array<PlaceCluster & { hostname?: string }>>
-    >({});
+    public cluster_nodes = signal<HashMap<Array<PlaceClusterLoad>>>({});
     /** Map of clusters to CPU usage history */
     public usage_history: HashMap<
         HashMap<Array<{ id: number; cpu: number; memory: number }>>
@@ -103,38 +107,32 @@ export class PlaceClusterDetailsComponent extends AsyncHandler {
         // Skip a tick while hidden or while the last request is in flight
         if (this.loading() || document.hidden) return;
         this.loading.set(true);
-        const response = await queryClusters({ include_status: false }).catch(
-            () => ({ data: [] as PlaceCluster[] }),
-        );
-        const list = response.data || [];
+        const list = await cluster_v7
+            .nodes({ include_status: false })
+            .then(orThrow)
+            .then((nodes) => nodes.map(clusterFromStatus))
+            .catch((): PlaceCluster[] => []);
         this.cluster_list.set(list);
         const date = Date.now();
         // A new object, so the signal notifies and removed clusters drop out
-        const node_map: HashMap<Array<PlaceCluster & { hostname?: string }>> =
-            {};
+        const node_map: HashMap<Array<PlaceClusterLoad>> = {};
         this.cluster_list().forEach((cluster) => {
             if (!this.usage_history[cluster.id])
                 this.usage_history[cluster.id] = {};
-            const nodes = [cluster, ...cluster.edge_nodes] as Array<
-                PlaceCluster & { hostname?: string }
-            >;
+            const nodes: PlaceClusterLoad[] = [cluster, ...cluster.edge_nodes];
             node_map[cluster.id] = nodes;
             for (const node of nodes) {
-                if (!this.usage_history[cluster.id][node.hostname as string]) {
-                    this.usage_history[cluster.id][node.hostname as string] =
-                        [];
+                if (!this.usage_history[cluster.id][node.hostname]) {
+                    this.usage_history[cluster.id][node.hostname] = [];
                 }
-                const block =
-                    this.usage_history[cluster.id][node.hostname as string];
+                const block = this.usage_history[cluster.id][node.hostname];
                 block.unshift({
                     id: date,
                     cpu: node.total_cpu,
                     memory: node.memory_percentage,
                 });
                 if (block.length > 120) block.pop();
-                this.usage_history[cluster.id][node.hostname as string] = [
-                    ...block,
-                ];
+                this.usage_history[cluster.id][node.hostname] = [...block];
             }
         });
         this.cluster_nodes.set(node_map);

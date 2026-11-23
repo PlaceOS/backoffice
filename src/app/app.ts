@@ -9,7 +9,8 @@ import {
     signal,
 } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
-import { get, invalidateToken, isMock, onlineState } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
+import { tenants } from '@placeos/ts-client/staff';
 
 import {
     ActivatedRoute,
@@ -22,16 +23,16 @@ import { log } from './common/general';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
 import { initSentry } from './common/sentry';
 import { SettingsService } from './common/settings.service';
-import { signalFromClient, waitForSignalValue } from './common/signals';
+import { waitForSignalValue } from './common/signals';
 import { currentUser } from './common/user-state';
 import { BackofficeUsersService } from './users/users.service';
 
-import type { PlaceTenant } from './admin/staff-api.component';
 import {
     localeFromUrl,
     LocaleService,
     setTranslationService,
 } from './common/locale.service';
+import { invalidateToken, isMock, online } from './common/placeos';
 import { ProgressBarComponent } from './ui/controls/progress-bar.component';
 import { installRipple } from './ui/controls/ripple';
 import { ToastOutletComponent } from './ui/controls/toast-outlet.component';
@@ -166,12 +167,9 @@ export class AppComponent implements OnInit {
     public readonly simple = signal(false);
     public readonly update_available = updateAvailable;
 
-    private readonly _client_online = signalFromClient(onlineState());
     private readonly _browser_online = browserOnline();
-    /** Whether PlaceOS is reachable. ts-client only flags auth failures, so also track the network. */
-    public readonly online = computed(
-        () => this._client_online() && this._browser_online(),
-    );
+    /** Whether the session is signed in and the browser is online */
+    public readonly online = computed(() => online() && this._browser_online());
 
     public refreshApplication() {
         location.reload();
@@ -248,13 +246,14 @@ export class AppComponent implements OnInit {
     /** Show one banner for staff tenants with expiring secrets */
     private async _checkTenants() {
         if (!currentUser()?.sys_admin) return;
-        const [tenants, { tenantExpiryBanner }] = await Promise.all([
-            get('/api/staff/v1/tenants').catch(() => []),
+        const [tenant_list, { tenantExpiryBanner }] = await Promise.all([
+            tenants
+                .query({})
+                .then(orThrow)
+                .catch(() => []),
             import('./admin/staff-api.utilities'),
         ]);
-        const banner = tenantExpiryBanner(
-            Array.isArray(tenants) ? (tenants as PlaceTenant[]) : [],
-        );
+        const banner = tenantExpiryBanner(tenant_list);
         if (banner) this._settings.post('banner', banner);
     }
 

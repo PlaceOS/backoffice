@@ -1,4 +1,4 @@
-import { registerMockEndpoint } from '@placeos/ts-client';
+import { registerMockEndpoint } from '@placeos/ts-client/compat';
 import { HashMap } from '../../common/types';
 import {
     API,

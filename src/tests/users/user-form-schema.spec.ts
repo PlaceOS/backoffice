@@ -1,18 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { PlaceUser } from '@placeos/ts-client';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { User } from '@placeos/ts-client';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     generateUserFormModel,
     userFormSchema,
 } from '../../app/users/users.utilities';
 import { createTestForm } from '../common/form-test.helpers';
 
-// Use the browser entry because the client marks its CommonJS entry as ESM.
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
-
-const user = new PlaceUser({
+const user = newItem(User, {
     id: 'user-1',
     authority_id: 'domain-1',
     first_name: 'Alex',
@@ -40,13 +36,14 @@ describe('user form validation', () => {
         ]);
     });
 
-    it('allows an existing user to keep their password and locks the authority', () => {
+    it('allows an existing user to keep their password and locks the authority and email', () => {
         const { fields } = createTestForm(
             generateUserFormModel(user),
             userFormSchema(user),
         );
         expect(fields().valid()).toBe(true);
         expect(fields.authority_id().disabled()).toBe(true);
+        expect(fields.email().disabled()).toBe(true);
         fields.password().value.set('replacement');
         expect(fields.confirm_password().invalid()).toBe(true);
         fields.confirm_password().value.set('replacement');
@@ -55,7 +52,7 @@ describe('user form validation', () => {
 
     it('locks the authority when a subsystem user creates an account', () => {
         const { fields } = createTestForm(
-            generateUserFormModel(new PlaceUser({ authority_id: 'domain-1' })),
+            generateUserFormModel(newItem(User, { authority_id: 'domain-1' })),
             userFormSchema(undefined, true),
         );
         expect(fields.authority_id().disabled()).toBe(true);
@@ -64,7 +61,7 @@ describe('user form validation', () => {
     it('rejects an invalid email or image URL and permits no image', () => {
         const { fields } = createTestForm(
             generateUserFormModel(user),
-            userFormSchema(user),
+            userFormSchema(),
         );
         fields.email().value.set('invalid');
         fields.image().value.set('invalid');
@@ -72,6 +69,7 @@ describe('user form validation', () => {
         expect(fields.image().invalid()).toBe(true);
         fields.email().value.set('alex@example.com');
         fields.image().value.set('');
-        expect(fields().valid()).toBe(true);
+        expect(fields.email().invalid()).toBe(false);
+        expect(fields.image().invalid()).toBe(false);
     });
 });

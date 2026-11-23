@@ -25,7 +25,7 @@ import { TranslatePipe } from '../translate.pipe';
                         <div class="w-10"></div>
                     </div>
                 }
-                @for (item of active_list(); track $index) {
+                @for (item of active_list(); track $index; let row = $index) {
                     <div class="row">
                         @for (field of fields(); track field) {
                             <div class="field" [attr.name]="field">
@@ -36,7 +36,7 @@ import { TranslatePipe } from '../translate.pipe';
                                         [disabled]="disabled()"
                                         [ngModel]="item[field]"
                                         (ngModelChange)="
-                                            updateField($index, field, $event)
+                                            updateField(row, field, $event)
                                         "
                                     />
                                 </app-form-field>
@@ -49,7 +49,7 @@ import { TranslatePipe } from '../translate.pipe';
                             type="button"
                             class="border-error text-error h-12 w-12 rounded-sm border"
                             [disabled]="disabled()"
-                            (click)="removeRow($index)"
+                            (click)="removeRow(row)"
                             [attr.aria-label]="'COMMON.DELETE' | translate"
                         >
                             <icon>delete</icon>

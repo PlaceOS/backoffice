@@ -183,7 +183,7 @@ export class ItemShellComponent {
     public readonly item = input<DisplayItem>(undefined);
     public readonly extra_actions = input<ItemAction[]>([]);
     /** Tag filters for the item list */
-    public readonly filter_options = input<string[]>([]);
+    public readonly filter_options = input<readonly string[]>([]);
     /** Show the bulk add button */
     public readonly bulk = input(false, { transform: booleanAttribute });
     /** Show the debug console */

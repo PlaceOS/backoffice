@@ -1,4 +1,10 @@
-import { describe, expect, it, vi } from 'vitest';
+import { Trigger, TriggerInstance } from '@placeos/ts-client';
+import {
+    TriggerConditionOperator,
+    TriggerTimeConditionType,
+} from '@placeos/ts-client/compat';
+import { describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     buildCronString,
     generateTriggerActionFormModel,
@@ -9,39 +15,47 @@ import {
     validateEmailList,
 } from '../../app/triggers/triggers.utilities';
 
-const mocks = vi.hoisted(() => ({
-    TriggerConditionOperator: {
-        EQ: 'eq',
-    },
-    TriggerTimeConditionType: {
-        CRON: 'cron',
-    },
-}));
-
-vi.mock('@placeos/ts-client', () => ({
-    TriggerConditionOperator: mocks.TriggerConditionOperator,
-    TriggerTimeConditionType: mocks.TriggerTimeConditionType,
-}));
-
 describe('triggers.utilities', () => {
-    it('generates trigger defaults and populated settings', () => {
+    it('generates trigger defaults', () => {
         expect(generateTriggerFormModel()).toEqual({
             name: '',
             description: '',
             enable_webhook: false,
-            supported_methods: [],
+            supported_methods: ['POST'],
             debounce_period: 0,
         });
+    });
 
+    it.each([
+        { name: 'a new trigger gets POST', data: {}, methods: ['POST'] },
+        {
+            name: 'a saved trigger keeps an empty list',
+            data: { id: 'trigger-1', supported_methods: [] },
+            methods: [],
+        },
+        {
+            name: 'a copy keeps its list',
+            data: { id: '', supported_methods: ['GET'] },
+            methods: ['GET'],
+        },
+    ])('webhook methods: $name', ({ data, methods }) => {
         expect(
-            generateTriggerSettingsFormModel({
-                name: 'Trigger',
-                playlists: ['playlist-1'],
-                activated_count: 2,
-                exec_enabled: true,
-                enabled: true,
-                important: true,
-            } as any),
+            generateTriggerFormModel(newItem(Trigger, data)).supported_methods,
+        ).toEqual(methods);
+    });
+
+    it('generates populated trigger settings', () => {
+        expect(
+            generateTriggerSettingsFormModel(
+                newItem(TriggerInstance, {
+                    name: 'Trigger',
+                    playlists: ['playlist-1'],
+                    trigger_count: 2,
+                    exec_enabled: true,
+                    enabled: true,
+                    important: true,
+                }),
+            ),
         ).toMatchObject({
             name: 'Trigger',
             playlists: ['playlist-1'],
@@ -55,7 +69,7 @@ describe('triggers.utilities', () => {
     it('generates comparison and time condition models', () => {
         expect(generateTriggerConditionFormModel()).toMatchObject({
             condition_type: 'compare',
-            operator: mocks.TriggerConditionOperator.EQ,
+            operator: TriggerConditionOperator.EQ,
             time_type: 'at',
             cron: '',
             timezone: '',
@@ -63,13 +77,13 @@ describe('triggers.utilities', () => {
 
         expect(
             generateTriggerConditionFormModel({
-                type: mocks.TriggerTimeConditionType.CRON,
+                type: TriggerTimeConditionType.CRON,
                 cron: '* * * * *',
                 timezone: 'Australia/Sydney',
             } as any),
         ).toMatchObject({
             condition_type: 'time',
-            time_type: mocks.TriggerTimeConditionType.CRON,
+            time_type: TriggerTimeConditionType.CRON,
             cron: '* * * * *',
             timezone: 'Australia/Sydney',
         });

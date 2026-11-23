@@ -12,7 +12,7 @@ describe('users.utilities', () => {
                 staff_id: '',
                 support: false,
                 sys_admin: false,
-                locatable: false,
+                locatable: true,
                 groups: [],
                 password: '',
                 confirm_password: '',

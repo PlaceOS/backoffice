@@ -1,20 +1,14 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceSystem, PlaceZone } from '@placeos/ts-client';
+import { System, systems, Zone } from '@placeos/ts-client';
+import { mockReply } from '@placeos/ts-client/compat';
 import { EMPTY } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import { SystemFormComponent } from '../../app/systems/system-form.component';
 
-const mocks = vi.hoisted(() => ({
-    addSystem: vi.fn(),
-}));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', { spy: true });
 vi.mock('@placeos/cloud-uploads', () =>
     vi.importActual('@placeos/cloud-uploads/dist/index.es.js'),
 );
@@ -29,7 +23,9 @@ vi.mock('../../app/common/notifications', async (importOriginal) => ({
 
 describe('SystemFormComponent', () => {
     it('saves the selected zone as the zone list without the zone field', async () => {
-        mocks.addSystem.mockResolvedValue(new PlaceSystem({ id: 'sys-1' }));
+        vi.mocked(systems.create).mockResolvedValue(
+            mockReply(newItem(System, { id: 'sys-1' })),
+        );
         TestBed.configureTestingModule({
             imports: [SystemFormComponent],
             providers: [
@@ -44,7 +40,7 @@ describe('SystemFormComponent', () => {
                 },
                 {
                     provide: DIALOG_DATA,
-                    useValue: { item: new PlaceSystem({ zones: ['zone-1'] }) },
+                    useValue: { item: newItem(System, { zones: ['zone-1'] }) },
                 },
             ],
         });
@@ -55,13 +51,13 @@ describe('SystemFormComponent', () => {
         component.formModel.update((model) => ({
             ...model,
             name: 'Meeting room',
-            zone: new PlaceZone({ id: 'zone-2' }),
+            zone: newItem(Zone, { id: 'zone-2' }),
         }));
         await fixture.whenStable();
         await component.submit();
 
-        expect(mocks.addSystem).toHaveBeenCalledOnce();
-        const [payload] = mocks.addSystem.mock.calls[0];
+        expect(systems.create).toHaveBeenCalledOnce();
+        const payload = vi.mocked(systems.create).mock.calls[0][0].body;
         expect(payload.zones).toEqual(['zone-2']);
         expect(payload).not.toHaveProperty('zone');
     });

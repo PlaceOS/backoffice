@@ -200,6 +200,61 @@ test.describe('Systems', () => {
             await expect(systems.itemName).toHaveText('KNX BAOS Lighting');
         });
 
+        test('saves an edited module from the modules tab and stays on the system', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE, 'modules');
+            const url = page.url();
+            await systems.tabContent
+                .getByRole('button', { name: 'Edit' })
+                .first()
+                .click();
+            await expect(systems.dialog).toContainText('Edit Module');
+            await systems.dialog
+                .getByRole('textbox', { name: 'Custom Name' })
+                .fill('Edited_Lights');
+            await systems.saveButton.click();
+            await expect(systems.dialog).toBeHidden();
+
+            await expect(page).toHaveURL(url);
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_TITLE);
+            await expect(systems.tabContent).toContainText('Edited_Lights');
+        });
+
+        test('saves a new module from the modules tab and stays on the system', async ({
+            page,
+        }) => {
+            await systems.gotoItem(ACTIVITY_SPACE, 'modules');
+            const url = page.url();
+            await systems.tabContent
+                .getByRole('button', { name: 'Add New' })
+                .click();
+            await expect(systems.dialog).toContainText('New module');
+            await systems.dialog
+                .getByRole('combobox', { name: 'Search...' })
+                .last()
+                .fill('KNX');
+            await page
+                .getByRole('option', { name: /KNX BAOS Lighting/ })
+                .first()
+                .click();
+            await systems.dialog
+                .getByRole('textbox', { name: /IP Address/ })
+                .fill('10.0.0.5');
+            await systems.dialog
+                .getByRole('spinbutton', { name: 'Port Number *' })
+                .fill('12004');
+            await systems.dialog
+                .getByRole('textbox', { name: 'Custom Name' })
+                .fill('Added_Lights');
+            await systems.saveButton.click();
+            await expect(systems.dialog).toBeHidden();
+
+            await expect(page).toHaveURL(url);
+            await expect(systems.itemName).toHaveText(ACTIVITY_SPACE_TITLE);
+            await expect(systems.tabContent).toContainText('Added_Lights');
+        });
+
         test('AC-SYS-006-5: search filters the execute module selector', async ({
             page,
         }) => {

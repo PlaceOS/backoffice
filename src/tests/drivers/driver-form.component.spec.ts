@@ -1,16 +1,18 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Driver, Repository } from '@placeos/ts-client';
 import {
     EncryptionLevel,
-    PlaceDriver,
-    PlaceDriverDetails,
+    mockPage,
+    mockReply,
     PlaceDriverRole,
-    PlaceRepository,
-} from '@placeos/ts-client';
+} from '@placeos/ts-client/compat';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import { DriverFormComponent } from '../../app/drivers/driver-form.component';
+import { type DriverDetails } from '../../app/drivers/drivers.utilities';
 
 const mocks = vi.hoisted(() => ({
     addDriver: vi.fn(),
@@ -20,12 +22,21 @@ const mocks = vi.hoisted(() => ({
     listRepositoryDrivers: vi.fn(),
     queryRepositories: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        drivers: { ...actual.drivers, create: mocks.addDriver },
+        settings: { ...actual.settings, create: mocks.addSettings },
+        repositories: {
+            ...actual.repositories,
+            commits: mocks.listRepositoryCommits,
+            details: mocks.listRepositoryDriverDetails,
+            drivers: mocks.listRepositoryDrivers,
+            query: mocks.queryRepositories,
+        },
+    };
+});
 vi.mock('../../app/common/notifications', async (importOriginal) => ({
     ...(await importOriginal<object>()),
     notifyError: vi.fn(),
@@ -33,8 +44,9 @@ vi.mock('../../app/common/notifications', async (importOriginal) => ({
 }));
 
 const commit = (id: string) => ({ id, name: id, extra: null });
-const details = (values: Partial<PlaceDriverDetails>) =>
-    ({ default_settings: '{}', ...values }) as PlaceDriverDetails;
+/** The reply of `repositories.details`, which gives the details as JSON text */
+const details = (values: DriverDetails) =>
+    mockReply(JSON.stringify({ default_settings: '{}', ...values }));
 
 describe('DriverFormComponent', () => {
     let fixture: ComponentFixture<DriverFormComponent>;
@@ -42,9 +54,9 @@ describe('DriverFormComponent', () => {
 
     beforeEach(async () => {
         vi.resetAllMocks();
-        mocks.listRepositoryCommits.mockResolvedValue([]);
-        mocks.listRepositoryDrivers.mockResolvedValue([]);
-        mocks.queryRepositories.mockResolvedValue({ data: [] });
+        mocks.listRepositoryCommits.mockResolvedValue(mockReply([]));
+        mocks.listRepositoryDrivers.mockResolvedValue(mockReply([]));
+        mocks.queryRepositories.mockResolvedValue(mockPage({ data: [] }));
         TestBed.configureTestingModule({
             imports: [DriverFormComponent],
             providers: [
@@ -57,18 +69,18 @@ describe('DriverFormComponent', () => {
                         keydownEvents: EMPTY,
                     },
                 },
-                { provide: DIALOG_DATA, useValue: { item: new PlaceDriver() } },
+                { provide: DIALOG_DATA, useValue: { item: newItem(Driver) } },
             ],
         });
         fixture = TestBed.createComponent(DriverFormComponent);
         component = fixture.componentInstance;
         await fixture.whenStable();
-        component.repo.set(new PlaceRepository({ id: 'repo-1' }));
+        component.repo.set(newItem(Repository, { id: 'repo-1' }));
         component.driver.set({ id: 'display.cr', name: 'display.cr' });
     });
 
     it('keeps the latest commit when an older details request finishes last', async () => {
-        let resolve_first: (value: PlaceDriverDetails) => void;
+        let resolve_first: (value: ReturnType<typeof details>) => void;
         mocks.listRepositoryDriverDetails
             .mockReturnValueOnce(
                 new Promise((resolve) => (resolve_first = resolve)),
@@ -120,8 +132,10 @@ describe('DriverFormComponent', () => {
     });
 
     it('saves the initial settings of a new driver', async () => {
-        mocks.addDriver.mockResolvedValue(new PlaceDriver({ id: 'driver-1' }));
-        mocks.addSettings.mockResolvedValue({});
+        mocks.addDriver.mockResolvedValue(
+            mockReply(newItem(Driver, { id: 'driver-1' })),
+        );
+        mocks.addSettings.mockResolvedValue(mockReply({}));
         component.formModel.update((model) => ({
             ...model,
             name: 'Display',
@@ -132,7 +146,7 @@ describe('DriverFormComponent', () => {
         await component.submit();
 
         expect(mocks.addSettings).toHaveBeenCalledOnce();
-        expect(mocks.addSettings.mock.calls[0][0]).toMatchObject({
+        expect(mocks.addSettings.mock.calls[0][0].body).toMatchObject({
             parent_id: 'driver-1',
             settings_string: 'volume: 10\n',
             encryption_level: EncryptionLevel.Support,

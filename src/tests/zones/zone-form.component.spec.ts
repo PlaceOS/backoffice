@@ -1,9 +1,11 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PlaceZone } from '@placeos/ts-client';
+import { Zone } from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { EMPTY } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import { ZoneFormComponent } from '../../app/zones/zone-form.component';
 
 const mocks = vi.hoisted(() => ({
@@ -14,15 +16,19 @@ const mocks = vi.hoisted(() => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    addZone: mocks.addZone,
-    updateZone: mocks.updateZone,
-    queryZones: mocks.queryZones,
-    showZone: mocks.showZone,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        zones: {
+            ...actual.zones,
+            create: mocks.addZone,
+            update: mocks.updateZone,
+            query: mocks.queryZones,
+            show: mocks.showZone,
+        },
+    };
+});
 vi.mock('@placeos/cloud-uploads', () =>
     vi.importActual('@placeos/cloud-uploads/dist/index.es.js'),
 );
@@ -43,9 +49,9 @@ describe('saving zones', () => {
     beforeEach(async () => {
         vi.resetAllMocks();
         dialog.disableClose = false;
-        mocks.queryZones.mockResolvedValue({ data: [] });
+        mocks.queryZones.mockResolvedValue(mockPage({ data: [] }));
         mocks.updateZone.mockResolvedValue(
-            new PlaceZone({ id: 'zone-1', name: 'Floor 1' }),
+            mockReply(newItem(Zone, { id: 'zone-1', name: 'Floor 1' })),
         );
         TestBed.configureTestingModule({
             imports: [ZoneFormComponent],
@@ -55,7 +61,7 @@ describe('saving zones', () => {
                 {
                     provide: DIALOG_DATA,
                     useValue: {
-                        item: new PlaceZone({ id: 'zone-1', name: 'Floor 1' }),
+                        item: newItem(Zone, { id: 'zone-1', name: 'Floor 1' }),
                     },
                 },
             ],
@@ -68,18 +74,18 @@ describe('saving zones', () => {
         fixture.componentInstance.form
             .parent_zone()
             .controlValue.set(
-                new PlaceZone({ id: 'building-1', name: 'Building' }),
+                newItem(Zone, { id: 'building-1', name: 'Building' }),
             );
         await fixture.whenStable();
         await fixture.componentInstance.submit();
-        expect(mocks.updateZone).toHaveBeenCalledExactlyOnceWith(
-            'zone-1',
-            expect.objectContaining({
+        expect(mocks.updateZone).toHaveBeenCalledExactlyOnceWith({
+            id: 'zone-1',
+            body: expect.objectContaining({
                 name: 'Floor 1',
                 parent_id: 'building-1',
             }),
-        );
-        expect(mocks.updateZone.mock.calls[0][1]).not.toHaveProperty(
+        });
+        expect(mocks.updateZone.mock.calls[0][0].body).not.toHaveProperty(
             'parent_zone',
         );
         expect(dialog.close).toHaveBeenCalledOnce();
@@ -88,15 +94,15 @@ describe('saving zones', () => {
     it('saves an empty parent ID when the user removes the parent', async () => {
         fixture.componentInstance.form
             .parent_zone()
-            .controlValue.set(new PlaceZone({ id: 'building-1' }));
+            .controlValue.set(newItem(Zone, { id: 'building-1' }));
         await fixture.whenStable();
         fixture.componentInstance.form.parent_zone().controlValue.set(null);
         await fixture.whenStable();
         await fixture.componentInstance.submit();
-        expect(mocks.updateZone).toHaveBeenCalledWith(
-            'zone-1',
-            expect.objectContaining({ parent_id: '' }),
-        );
+        expect(mocks.updateZone).toHaveBeenCalledWith({
+            id: 'zone-1',
+            body: expect.objectContaining({ parent_id: '' }),
+        });
     });
 
     it('blocks saving when the required name is removed', async () => {
@@ -146,7 +152,7 @@ describe('saving zones with a stored parent', () => {
                 {
                     provide: DIALOG_DATA,
                     useValue: {
-                        item: new PlaceZone({
+                        item: newItem(Zone, {
                             id: 'zone-1',
                             name: 'Floor 1',
                             parent_id: 'building-1',
@@ -162,49 +168,51 @@ describe('saving zones with a stored parent', () => {
 
     beforeEach(() => {
         vi.resetAllMocks();
-        mocks.queryZones.mockResolvedValue({ data: [] });
-        mocks.updateZone.mockResolvedValue(new PlaceZone({ id: 'zone-1' }));
+        mocks.queryZones.mockResolvedValue(mockPage({ data: [] }));
+        mocks.updateZone.mockResolvedValue(
+            mockReply(newItem(Zone, { id: 'zone-1' })),
+        );
     });
 
     it('keeps the parent when saving before the parent loads', async () => {
         mocks.showZone.mockReturnValue(new Promise(() => undefined));
         const fixture = await createForm();
         await fixture.componentInstance.submit();
-        expect(mocks.updateZone).toHaveBeenCalledWith(
-            'zone-1',
-            expect.objectContaining({ parent_id: 'building-1' }),
-        );
+        expect(mocks.updateZone).toHaveBeenCalledWith({
+            id: 'zone-1',
+            body: expect.objectContaining({ parent_id: 'building-1' }),
+        });
     });
 
     it('keeps a parent the user picks while the stored parent loads', async () => {
-        let resolveParent: (zone: PlaceZone) => void;
+        let resolveParent: (reply: ReturnType<typeof mockReply<Zone>>) => void;
         mocks.showZone.mockReturnValue(
             new Promise((resolve) => (resolveParent = resolve)),
         );
         const fixture = await createForm();
         fixture.componentInstance.form
             .parent_zone()
-            .controlValue.set(new PlaceZone({ id: 'building-2' }));
+            .controlValue.set(newItem(Zone, { id: 'building-2' }));
         await fixture.whenStable();
-        resolveParent(new PlaceZone({ id: 'building-1' }));
+        resolveParent(mockReply(newItem(Zone, { id: 'building-1' })));
         await fixture.whenStable();
         expect(fixture.componentInstance.formModel().parent_zone?.id).toBe(
             'building-2',
         );
         await fixture.componentInstance.submit();
-        expect(mocks.updateZone).toHaveBeenCalledWith(
-            'zone-1',
-            expect.objectContaining({ parent_id: 'building-2' }),
-        );
+        expect(mocks.updateZone).toHaveBeenCalledWith({
+            id: 'zone-1',
+            body: expect.objectContaining({ parent_id: 'building-2' }),
+        });
     });
 
     it('keeps the parent when the parent fails to load', async () => {
         mocks.showZone.mockRejectedValue(new Error('Forbidden'));
         const fixture = await createForm();
         await fixture.componentInstance.submit();
-        expect(mocks.updateZone).toHaveBeenCalledWith(
-            'zone-1',
-            expect.objectContaining({ parent_id: 'building-1' }),
-        );
+        expect(mocks.updateZone).toHaveBeenCalledWith({
+            id: 'zone-1',
+            body: expect.objectContaining({ parent_id: 'building-1' }),
+        });
     });
 });

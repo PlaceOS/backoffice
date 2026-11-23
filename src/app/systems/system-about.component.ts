@@ -176,12 +176,12 @@ import { SystemStateService } from './system-state.service';
             @let other_settings_value = other_settings();
             <!-- The settings editor is large, so it loads with the settings -->
             @defer (on immediate) {
-                @if (item()?.settings && other_settings_value) {
+                @if (settings() && other_settings_value) {
                     <section>
                         <a-settings-form
                             [id]="item()?.id"
                             [merge]="true"
-                            [settings]="item()?.settings"
+                            [settings]="settings()"
                             [merge_settings]="other_settings_value || []"
                         />
                     </section>
@@ -228,4 +228,5 @@ export class SystemAboutComponent {
     public readonly stop = () => this._service.stopSystem();
 
     public readonly item = this._service.item;
+    public readonly settings = this._service.settings;
 }

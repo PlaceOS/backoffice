@@ -8,14 +8,10 @@ import {
     signal,
 } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
-import {
-    addSystem,
-    PlaceResource,
-    PlaceSystem,
-    updateSystem,
-} from '@placeos/ts-client';
+import { System } from '@placeos/ts-client';
 import { querySupportZones as queryZones } from '../common/support-access';
 
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { TIMEZONES_IANA } from '../common/timezones';
@@ -517,9 +513,7 @@ const TIMEZONE_OPTION_LIMIT = 50;
 export class SystemFormComponent {
     private _dialog_ref =
         inject<DialogRef<unknown, SystemFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceSystem; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: System; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'SYSTEMS';
     public readonly item = signal(this._data.item);
 
@@ -578,34 +572,12 @@ export class SystemFormComponent {
                 // `zone` is UI-only; the backend uses `zones`, which the effect
                 // keeps in sync. Strip it so we never POST `zone: null`.
                 const { zone: _zone, ...form_value } = this.formModel();
-                const form_item = mergeFormItem(
-                    this._data.item as unknown as PlaceResource,
-                    form_value,
-                ) as unknown as PlaceSystem;
-                const processed_item = {
-                    ...form_item,
-                    support_url: this.processURL(
-                        form_item,
-                        form_item.support_url || '',
-                    ),
-                } as unknown as PlaceSystem;
-                return processed_item.id
-                    ? updateSystem(processed_item.id, processed_item)
-                    : addSystem(processed_item);
+                // The save fills the support URL fields and drops the fields
+                // that the API does not take, such as `settings`.
+                return ACTIONS.systems.save(
+                    mergeFormItem(this._data.item, form_value),
+                );
             },
         );
-    }
-
-    private processURL(system: PlaceSystem, url: string): string {
-        for (const key in system) {
-            url = url.replace(
-                new RegExp(`{{${key}}}`, 'g'),
-                `${(system as unknown as Record<string, unknown>)[key]}`,
-            );
-        }
-        url = url.replace(new RegExp(`{{origin}}`, 'g'), location.origin);
-        url = url.replace(new RegExp(`{{host}}`, 'g'), location.host);
-        url = url.replace(new RegExp(`{{pathname}}`, 'g'), location.pathname);
-        return url;
     }
 }

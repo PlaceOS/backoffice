@@ -78,7 +78,7 @@ export function isSecretExpiring(
  * Returns `null` when no secrets expire soon.
  */
 export function tenantExpiryBanner(
-    tenants: PlaceTenant[],
+    tenants: readonly Pick<PlaceTenant, 'id' | 'name' | 'secret_expiry'>[],
     now = Date.now(),
 ): BannerDetails | null {
     const expiring = (tenants || []).filter((_) => isSecretExpiring(_, now));

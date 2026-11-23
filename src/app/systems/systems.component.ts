@@ -1,7 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { PlaceSystem } from '@placeos/ts-client';
 import { extensionsForItem } from '../common/api';
-import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { isSubsystemUser } from '../common/support-access';
 import { ItemShellComponent } from '../ui/item-shell.component';
@@ -23,11 +21,8 @@ import { SystemStateService } from './system-state.service';
 })
 export class SystemsComponent {
     protected _service = inject(SystemStateService);
-    private _item = inject(ActiveItemService);
 
-    public readonly item = computed(
-        () => this._item.active_item$() as PlaceSystem | null,
-    );
+    public readonly item = this._service.item;
     public readonly name = 'systems';
     public readonly counts = this._service.counts;
     public readonly extensions = computed(() =>

@@ -16,11 +16,8 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import {
-    PlaceDriverRole,
-    PlaceModule,
-    PlaceRepository,
-} from '@placeos/ts-client';
+import type { Module, Repository } from '@placeos/ts-client';
+import { PlaceDriverRole } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { HotkeysService } from '../common/hotkeys.service';
 import { ActiveItemService } from '../common/item.service';
@@ -225,6 +222,7 @@ export class ItemSelectionComponent
     /** List of items for the active route */
     public readonly items = computed(() =>
         this._processItems(
+            this._service.type,
             this._service.list() as ({
                 id?: string;
                 name?: string;
@@ -330,7 +328,9 @@ export class ItemSelectionComponent
         );
     }
 
+    /** Add the display name and details of each item of the `type` section */
     private _processItems(
+        type: string,
         list: ({
             id?: string;
             name?: string;
@@ -338,21 +338,24 @@ export class ItemSelectionComponent
             custom_name?: string;
         } & Record<string, unknown>)[],
     ) {
+        // The list has the items of the active section, so `type` gives their type
         for (const item of list) {
-            if (item instanceof PlaceModule) {
+            if (type === 'modules') {
+                const mod = item as unknown as Module;
                 const detail =
-                    item.role === PlaceDriverRole.Service
-                        ? item.uri
-                        : item.role === PlaceDriverRole.Logic
-                          ? item.control_system_id
-                          : item.ip;
+                    mod.role === PlaceDriverRole.Service
+                        ? mod.uri
+                        : mod.role === PlaceDriverRole.Logic
+                          ? mod.control_system_id
+                          : mod.ip;
                 (item as Record<string, unknown>).display_name =
-                    item.custom_name || item.name || '<Unnamed>';
+                    mod.custom_name || mod.name || '<Unnamed>';
                 (item as Record<string, unknown>).extra = detail;
-            } else if (item instanceof PlaceRepository) {
+            } else if (type === 'repositories') {
+                const repo = item as unknown as Repository;
                 (item as Record<string, unknown>).display_name =
-                    item.name || '<Unnamed>';
-                (item as Record<string, unknown>).extra = item.repo_type;
+                    repo.name || '<Unnamed>';
+                (item as Record<string, unknown>).extra = repo.repo_type;
             } else {
                 (item as Record<string, unknown>).display_name =
                     item.display_name ||

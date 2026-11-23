@@ -1,34 +1,23 @@
-import { getUnixTime } from 'date-fns';
+import type { ApiKeyInput, ApiKeysResponse } from '@placeos/ts-client';
 
-export class PlaceAPIKeyDetails {
-    public readonly id: string;
-    public readonly name: string;
-    public readonly user_id: string;
-    public readonly authority_id: string;
-    public readonly description: string;
-    public readonly scopes: string[];
-    public readonly permissions: null | 'user' | 'support' | 'admin';
-    public readonly created_at: number;
-    public readonly updated_at: number;
-    public readonly expires_at?: number;
-    /** Write-only: seconds from creation until the key expires */
-    public readonly ttl?: number;
-    public readonly secret?: string;
-    public readonly x_api_key?: string;
+/** An API key from the server */
+export type PlaceAPIKeyDetails = ApiKeysResponse;
 
-    constructor(_data: Partial<PlaceAPIKeyDetails>) {
-        this.id = _data.id || '';
-        this.name = _data.name || '';
-        this.user_id = _data.user_id || '';
-        this.authority_id = _data.authority_id || '';
-        this.description = _data.description || '';
-        this.permissions = _data.permissions || 'user';
-        this.created_at = _data.created_at || getUnixTime(new Date());
-        this.updated_at = _data.updated_at || getUnixTime(new Date());
-        this.expires_at = _data.expires_at ?? undefined;
-        this.ttl = _data.ttl ?? undefined;
-        this.secret = _data.secret;
-        this.x_api_key = _data.x_api_key || '';
-        this.scopes = _data.scopes || [];
-    }
+/** Permission levels of an API key, as the server sends them */
+export type APIKeyPermission = NonNullable<ApiKeysResponse['permissions']>;
+
+/** The server reads the permissions of a key that it gets as the number of the enum */
+const PERMISSION_NUMBERS: Record<APIKeyPermission, ApiKeyInput['permissions']> =
+    {
+        user: 0,
+        support: 1,
+        admin: 2,
+        admin_support: 3,
+    };
+
+/** The permissions number of a request, or `null` for none */
+export function permissionNumber(
+    permission: string | null | undefined,
+): ApiKeyInput['permissions'] {
+    return PERMISSION_NUMBERS[permission as APIKeyPermission] ?? null;
 }

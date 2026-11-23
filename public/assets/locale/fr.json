@@ -799,7 +799,7 @@
         "BROKERS_HEADER": "Courtiers MQTT",
         "BROKERS_ADD": "Ajouter un courtier MQTT",
         "BROKERS_NEW": "Nouveau courtier MQTT",
-        "BROKERS_EDIT": "Nouveau courtier MQTT",
+        "BROKERS_EDIT": "Modifier le courtier MQTT",
         "BROKERS_REMOVE": "Retirer le courtier MQTT",
         "BROKER_LIST_EMPTY": "Aucun courtier MQTT",
         "BROKERS_FIELD_HOST": "Hôte",

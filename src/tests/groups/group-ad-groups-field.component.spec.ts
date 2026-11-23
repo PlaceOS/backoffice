@@ -5,9 +5,6 @@ import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GroupAdGroupsFieldComponent } from '../../app/groups/group-ad-groups-field.component';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 vi.mock('../../app/groups/group-permissions-modal.component', () => ({
     GroupPermissionsModalComponent: class {},
 }));

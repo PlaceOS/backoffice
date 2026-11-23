@@ -1,7 +1,8 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
-import { post } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
+import { tenants } from '@placeos/ts-client/staff';
 import { notifyError, notifySuccess } from '../common/notifications';
 import { ObjectListFieldComponent } from '../ui/custom-fields/object-list-field.component';
 import { FullscreenModalShellComponent } from '../ui/fullscreen-modal-shell.component';
@@ -62,15 +63,14 @@ export class BookingLimitsModalComponent {
         await submit(this.form, async () => {
             this.loading.set(true);
             const limits = this.formModel().booking_limits || [];
-            const booking_limits = {};
+            const booking_limits: Record<string, number> = {};
             for (const { type, amount } of limits) {
                 booking_limits[type] = +amount || 0;
             }
-            const call = post(
-                `/api/staff/v1/tenants/${this.tenant.id}/limits`,
-                booking_limits,
-            );
-            const resp = await call.catch(() => null);
+            const resp = await tenants
+                .updateLimits({ id: this.tenant.id, body: booking_limits })
+                .then(orThrow)
+                .catch(() => null);
             this.loading.set(false);
             if (!resp) return notifyError('Error saving booking limits.');
             notifySuccess('Saved booking limits.');

@@ -9,8 +9,10 @@ import {
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { listMetadataHistory, PlaceMetadata } from '@placeos/ts-client';
+import { metadata, type Metadata } from '@placeos/ts-client';
+import { orThrow } from '@placeos/ts-client/compat';
 import { describeError } from '../common/errors';
+import { parseMetadataDetails } from '../common/general';
 import { notifyError } from '../common/notifications';
 import { DialogCloseDirective } from '../ui/controls/dialog';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -100,11 +102,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     >
                                         <div class="">
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'mediumDate'
                                             }},
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'shortTime'
                                             }}
                                         </div>
@@ -147,11 +149,11 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                     >
                                         <div class="">
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'mediumDate'
                                             }},
                                             {{
-                                                item.updated_at
+                                                item.updated_at * 1000
                                                     | date: 'shortTime'
                                             }}
                                         </div>
@@ -214,7 +216,7 @@ export class MetadataHistoryModalComponent implements OnInit {
     public readonly parent_name = this._data.parent_name;
     public readonly name = this._data.name;
 
-    public readonly history: WritableSignal<PlaceMetadata[]> = signal([]);
+    public readonly history: WritableSignal<Metadata[]> = signal([]);
 
     public first = null;
     public readonly second = signal(null);
@@ -228,27 +230,34 @@ export class MetadataHistoryModalComponent implements OnInit {
     public readonly second_details = signal('');
 
     public async ngOnInit() {
-        const history = await listMetadataHistory(this._data.id, {
-            name: this._data.name,
-            limit: 5000,
-        }).catch((err) => {
-            notifyError(
-                `Failed to load metadata history. Error: ${describeError(err)}`,
-            );
-            return [] as PlaceMetadata[];
-        });
+        const history = await metadata
+            .history({ id: this._data.id, name: this._data.name, limit: 5000 })
+            .then(orThrow)
+            // The API groups the versions by metadata name. 6.x gave them in one list, last first
+            .then((by_name) => Object.values(by_name).flat().reverse())
+            .catch((err) => {
+                notifyError(
+                    `Failed to load metadata history. Error: ${describeError(err)}`,
+                );
+                return [] as Metadata[];
+            });
         this.history.set(history);
     }
 
-    public select(idx: 0 | 1, item: PlaceMetadata) {
+    public select(idx: 0 | 1, item: Metadata) {
         if (idx === 0) {
-            this.first_details.set(JSON.stringify(item.details, undefined, 4));
+            this.first_details.set(detailsText(item));
             if (this.first === this.second()) {
                 this.second.set(null);
                 this.second_details.set('');
             }
         } else {
-            this.second_details.set(JSON.stringify(item.details, undefined, 4));
+            this.second_details.set(detailsText(item));
         }
     }
+}
+
+/** The details of a version as formatted JSON. JSON text from the API is parsed first */
+function detailsText(item: Metadata) {
+    return JSON.stringify(parseMetadataDetails(item.details), undefined, 4);
 }

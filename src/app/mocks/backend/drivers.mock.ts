@@ -3,9 +3,9 @@ import { API, endpointData, generateBasicHandlers } from '../common.mock';
 import { DRIVERS as DRIVER_DATA } from '../data/drivers';
 
 import {
-    MockHttpRequestHandler,
+    type MockHttpRequestHandler,
     registerMockEndpoint,
-} from '@placeos/ts-client';
+} from '@placeos/ts-client/compat';
 
 const FILTER_FN = (item: Record<string, unknown>, q: HashMap) => {
     if (!q || Object.keys(q).length <= 0) {
@@ -44,32 +44,34 @@ registerMockEndpoint({
     path: `${API}/drivers/:id/recompile`,
     metadata: [],
     method: 'POST',
+    // The API sends plain text, not JSON
+    headers: { 'content-type': 'text/plain' },
     callback: (event) => {
         const driver = endpointData(`${API}/drivers`).find(
             (d) => d.id === event.route_params.id,
         );
-        if (driver) {
-            return { ...driver, compilation_output: 'Compilation successful' };
-        }
+        // The API sends the output of the build as text
+        if (driver) return 'Compilation successful';
         throw { status: 404, message: 'Driver not found' };
     },
-} as MockHttpRequestHandler);
+});
 
 /** Reload driver */
 registerMockEndpoint({
     path: `${API}/drivers/:id/reload`,
     metadata: [],
     method: 'POST',
+    // The API sends plain text, not JSON
+    headers: { 'content-type': 'text/plain' },
     callback: (event) => {
         const driver = endpointData(`${API}/drivers`).find(
             (d) => d.id === event.route_params.id,
         );
-        if (driver) {
-            return driver;
-        }
+        // The API sends the result of the reload as text
+        if (driver) return 'Reloaded';
         throw { status: 404, message: 'Driver not found' };
     },
-} as MockHttpRequestHandler);
+});
 
 /** Get driver README */
 registerMockEndpoint({

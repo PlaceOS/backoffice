@@ -17,7 +17,8 @@ import {
     FormsModule,
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { PlaceSystem, queryModules } from '@placeos/ts-client';
+import { type Module, modules, type System } from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
 import { calculateModuleIndex } from '../../../common/api';
 import { AsyncHandler } from '../../../common/async-handler.class';
 import { FormFieldComponent } from '../../controls/form-field.component';
@@ -101,7 +102,7 @@ export class SelectModuleComponent
     implements OnChanges, ControlValueAccessor
 {
     /** ID of the system to select the module from */
-    public readonly system = input<PlaceSystem>(undefined);
+    public readonly system = input<System>(undefined);
     /** Trigger to refresh modules list */
     public readonly refresh = input<number>(0);
 
@@ -120,17 +121,18 @@ export class SelectModuleComponent
             if (!params.id) return [] as (ModuleLike & { running: boolean })[];
             this.loading.set(true);
             try {
-                const mod_list = await queryModules({
-                    control_system_id: params.id,
-                    limit: 500,
-                    complete: true,
-                } as Record<string, unknown>)
-                    .then(({ data }) => data)
-                    .catch(() => []);
+                const mod_list = await modules
+                    .query({
+                        control_system_id: params.id,
+                        limit: 500,
+                    })
+                    .then(orThrowPage)
+                    .then(({ data }) => [...data])
+                    .catch((): Module[] => []);
+                // The system can come from a list load, without `modules`
+                const order = this.system()?.modules ?? [];
                 mod_list.sort(
-                    (a, b) =>
-                        this.system().modules.indexOf(a.id) -
-                        this.system().modules.indexOf(b.id),
+                    (a, b) => order.indexOf(a.id) - order.indexOf(b.id),
                 );
                 return mod_list.map((mod) => ({
                     id: mod.id,

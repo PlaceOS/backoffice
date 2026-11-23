@@ -1,11 +1,37 @@
 import { required, SchemaFn } from '@angular/forms/signals';
 import {
-    PlaceLDAPSource,
-    PlaceOAuthSource,
-    PlaceSAMLSource,
+    type LdapAuthentication,
+    type OauthAuthentication,
+    type SamlAuthentication,
 } from '@placeos/ts-client';
 
 import { HashMap } from '../common/types';
+
+export type PlaceAuthSource =
+    | OauthAuthentication
+    | SamlAuthentication
+    | LdapAuthentication;
+
+export type AuthSourceType = 'oauth' | 'saml' | 'ldap';
+
+/** A mutable copy of a map of lists from the API, for a form */
+function copyListMap(
+    map: Readonly<Record<string, readonly string[]>> | null | undefined,
+): HashMap<string[]> {
+    return Object.fromEntries(
+        Object.entries(map || {}).map(([key, list]) => [key, [...list]]),
+    );
+}
+
+/**
+ * The type of an auth source from the API. A parsed source has each field
+ * of its schema, so a field that only one type has tells them apart.
+ */
+export function authSourceType(source: PlaceAuthSource): AuthSourceType {
+    if ('issuer' in source) return 'saml';
+    if ('client_id' in source) return 'oauth';
+    return 'ldap';
+}
 
 export interface OAuthSourceFormModel {
     name: string;
@@ -29,7 +55,7 @@ export interface SAMLSourceFormModel {
     idp_sso_target_url: string;
     name_identifier_format: string;
     assertion_consumer_service_url: string;
-    request_attributes: unknown[];
+    request_attributes: readonly unknown[];
     idp_sso_target_url_runtime_params: HashMap;
     uid_attribute: string;
     idp_cert: string;
@@ -57,7 +83,7 @@ export interface LDAPSourceFormModel {
  * @param auth_source Auth source to apply changes to
  */
 export function generateOAuthSourceForm(
-    auth_source?: PlaceOAuthSource,
+    auth_source?: OauthAuthentication,
 ): OAuthSourceFormModel {
     return {
         name: auth_source?.name || '',
@@ -65,12 +91,12 @@ export function generateOAuthSourceForm(
         client_secret: auth_source?.client_secret || '',
         info_mappings: auth_source?.info_mappings || {},
         authorize_params: auth_source?.authorize_params || {},
-        ensure_matching: auth_source?.ensure_matching || {},
+        ensure_matching: copyListMap(auth_source?.ensure_matching),
         site: auth_source?.site || '',
-        authorize_url: auth_source?.authorize_url || '',
+        authorize_url: auth_source?.authorize_url || 'oauth/authorize',
         token_method: auth_source?.token_method || 'post',
         auth_scheme: auth_source?.auth_scheme || 'request_body',
-        token_url: auth_source?.token_url || '',
+        token_url: auth_source?.token_url || 'oauth/token',
         scope: auth_source?.scope || '',
         raw_info_url: auth_source?.raw_info_url || '',
     };
@@ -87,7 +113,7 @@ export function applyOAuthSourceFormSchema(
  * @param auth_source Auth source to apply changes to
  */
 export function generateSAMLSourceForm(
-    auth_source: PlaceSAMLSource,
+    auth_source: SamlAuthentication,
 ): SAMLSourceFormModel {
     if (!auth_source) {
         throw Error('No OAuth source passed to generate form fields');
@@ -99,17 +125,40 @@ export function generateSAMLSourceForm(
         name_identifier_format: auth_source.name_identifier_format || '',
         assertion_consumer_service_url:
             auth_source.assertion_consumer_service_url || '',
-        request_attributes: [...(auth_source.request_attributes || [])],
+        request_attributes: auth_source.request_attributes || [],
         idp_sso_target_url_runtime_params:
             auth_source.idp_sso_target_url_runtime_params || {},
         uid_attribute: auth_source.uid_attribute || '',
         idp_cert: auth_source.idp_cert || '',
         idp_cert_fingerprint: auth_source.idp_cert_fingerprint || '',
         attribute_service_name: auth_source.attribute_service_name || '',
-        attribute_statements: auth_source.attribute_statements || {},
+        attribute_statements: copyListMap(auth_source.attribute_statements),
         idp_slo_target_url: auth_source.idp_slo_target_url || '',
         slo_default_relay_state: auth_source.slo_default_relay_state || '',
     };
+}
+
+/** Whether a form value is an empty string, list or map */
+function isEmptyValue(value: unknown): boolean {
+    if (value === '') return true;
+    if (Array.isArray(value)) return !value.length;
+    return (
+        typeof value === 'object' &&
+        value !== null &&
+        !Object.keys(value).length
+    );
+}
+
+/**
+ * A copy of the body of a new SAML source without its empty values. The API
+ * gives a default for each of these fields, and refuses an empty name
+ * identifier format.
+ */
+export function newSAMLSourceBody<T extends object>(body: T): Partial<T> {
+    // `fromEntries` loses the key types. The entries come from `body`
+    return Object.fromEntries(
+        Object.entries(body).filter(([, value]) => !isEmptyValue(value)),
+    ) as Partial<T>;
 }
 
 export function applySAMLSourceFormSchema(
@@ -126,7 +175,7 @@ export function applySAMLSourceFormSchema(
  * @param auth_source Auth source to apply changes to
  */
 export function generateLDAPSourceForm(
-    auth_source: PlaceLDAPSource,
+    auth_source: LdapAuthentication,
 ): LDAPSourceFormModel {
     if (!auth_source) {
         throw Error('No OAuth source passed to generate form fields');
@@ -134,8 +183,8 @@ export function generateLDAPSourceForm(
     return {
         name: auth_source.name || '',
         host: auth_source.host || '',
-        port: auth_source.port || 0,
-        auth_method: auth_source.auth_method || 'plain',
+        port: auth_source.port || 636,
+        auth_method: auth_source.auth_method || 'ssl',
         uid: auth_source.uid || '',
         base: auth_source.base || '',
         bind_dn: auth_source.bind_dn || '',

@@ -1,15 +1,31 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { TestBed } from '@angular/core/testing';
-import { listRepositoryFiles } from '@placeos/ts-client';
+import { repositories } from '@placeos/ts-client';
 import { describe, expect, it, vi } from 'vitest';
 import { SignagePluginImportModalComponent } from '../../app/admin/signage-plugins/signage-plugin-import-modal.component';
+const { fromV1Mock } = await vi.hoisted(
+    () => import('@placeos/ts-client/compat'),
+);
 
 vi.mock('@placeos/ts-client', () => ({
-    listRepositoryFiles: vi.fn(),
     PlaceRepositoryType: { Interface: 'interface' },
-    queryRepositories: vi.fn(() => Promise.resolve({ data: [] })),
-    showMetadata: vi.fn(() => Promise.resolve({})),
     SignagePlugin: class {},
+    repositories: {
+        files: vi.fn(fromV1Mock(undefined, ['id', '...'])),
+        query: vi.fn(
+            fromV1Mock(() => Promise.resolve({ data: [] }), ['...'], 'page'),
+        ),
+    },
+    metadata: {
+        show: vi.fn(
+            fromV1Mock(
+                () => Promise.resolve({}),
+                ['id', 'name'],
+                'data',
+                'name',
+            ),
+        ),
+    },
 }));
 vi.mock('../../app/admin/signage-plugins/signage-plugins.utilities', () => ({
     probeSignagePlugin: vi.fn(() => Promise.resolve(null)),
@@ -18,8 +34,11 @@ vi.mock('../../app/admin/signage-plugins/signage-plugins.utilities', () => ({
 describe('SignagePluginImportModalComponent', () => {
     it('drops the files of a repository that is no longer selected', async () => {
         const file_lists: Record<string, (files: string[]) => void> = {};
-        vi.mocked(listRepositoryFiles).mockImplementation(
-            (id) => new Promise((resolve) => (file_lists[id] = resolve)),
+        vi.mocked(repositories.files).mockImplementation(
+            fromV1Mock(
+                (id) => new Promise((resolve) => (file_lists[id] = resolve)),
+                ['id', '...'],
+            ),
         );
         await TestBed.configureTestingModule({
             imports: [SignagePluginImportModalComponent],

@@ -1,15 +1,16 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { PlaceResource, PlaceUser } from '@placeos/ts-client';
+import { User } from '@placeos/ts-client';
+import { CallFailed } from '@placeos/ts-client/compat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { notify } from '../../app/common/notifications';
+import { PlaceResource } from '../../app/common/types';
 import { BulkItemModalComponent } from '../../app/overlays/bulk-item-modal/bulk-item-modal.component';
 import { StatusListComponent } from '../../app/overlays/bulk-item-modal/status-list.component';
 
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 vi.mock('../../app/common/notifications', () => ({
+    notify: vi.fn(),
     notifyError: vi.fn(),
     notifyWarn: vi.fn(),
 }));
@@ -31,7 +32,7 @@ describe('bulk item review', () => {
                 {
                     provide: DIALOG_DATA,
                     useValue: {
-                        constr: PlaceUser,
+                        schema: User,
                         name: 'Users',
                         save: vi.fn(),
                     },
@@ -56,7 +57,15 @@ describe('bulk item review', () => {
 describe('bulk item creation', () => {
     it('finishes after a failed save and emits the saved items in list order', async () => {
         const save = vi.fn(async (item: Record<string, unknown>) => {
-            if (item.name === 'B') throw new Error('Name taken');
+            if (item.name === 'B') {
+                throw new CallFailed({
+                    kind: 'http',
+                    status: 422,
+                    message: null,
+                    body: { message: 'Name taken' },
+                    text: null,
+                });
+            }
             // The first save finishes last
             if (item.name === 'A') await new Promise((r) => setTimeout(r, 5));
             return {
@@ -71,6 +80,9 @@ describe('bulk item creation', () => {
         }).overrideComponent(StatusListComponent, {
             set: { template: '', imports: [] },
         });
+        const console_error = vi
+            .spyOn(console, 'error')
+            .mockImplementation(() => undefined);
         const fixture = TestBed.createComponent(StatusListComponent);
         const component = fixture.componentInstance;
         const done = new Promise((resolve) =>
@@ -80,21 +92,33 @@ describe('bulk item creation', () => {
         fixture.componentRef.setInput('list', [
             { id: 'old-a', name: 'A' },
             { id: 'old-b', name: 'B' },
-            { id: 'old-c', name: 'C' },
+            // A blank cell, such as an empty capacity, gets the server default
+            { id: 'old-c', name: 'C', capacity: '' },
         ]);
 
         expect(await done).toEqual([
             { id: 'id-A', name: 'A' },
             { id: 'id-C', name: 'C' },
         ]);
-        expect(save.mock.calls.map(([item]) => item.id)).toEqual(['', '', '']);
+        // Each row saves as a new item, so no ID goes to the save
+        expect(save.mock.calls.every(([item]) => !('id' in item))).toBe(true);
+        expect(save.mock.calls[2][0]).toEqual({ name: 'C' });
         expect(component.is_done()).toBe(true);
         expect(component.completed_count()).toBe(2);
         expect(component.error_count()).toBe(1);
         expect(component.status().map((status) => status())).toEqual([
             'done',
-            'Error: Name taken',
+            'Error: 422 request failed: Name taken',
             'done',
         ]);
+        // The message of the server goes to the toast, not to the console
+        expect(notify).toHaveBeenCalledWith(
+            'error',
+            'Error: 422 request failed: Name taken',
+        );
+        expect(JSON.stringify(console_error.mock.calls)).not.toContain(
+            'Name taken',
+        );
+        console_error.mockRestore();
     });
 });

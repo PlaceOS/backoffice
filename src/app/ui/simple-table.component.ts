@@ -39,7 +39,11 @@ export interface TableColumn {
     show?: boolean;
 }
 
-type TableData<T> = T[] | Signal<T[]> | Subscribable<T[]>;
+/** Rows of the table. 7.x data has `readonly` arrays */
+type TableData<T> =
+    | readonly T[]
+    | Signal<readonly T[]>
+    | Subscribable<readonly T[]>;
 
 /** Sorted column of a table. Null when unsorted. */
 export type TableSort = { key: string; reverse: boolean } | null;
@@ -366,7 +370,7 @@ export class SimpleTableComponent<T = Record<string, unknown>> {
     public readonly sort = model<TableSort>(null);
 
     // Internal signal to hold the actual data array
-    private readonly _data = signal<T[]>([]);
+    private readonly _data = signal<readonly T[]>([]);
 
     // Computed data view with sorting. Returned as is when there is no sort.
     public readonly data_view = computed(() => {

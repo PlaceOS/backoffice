@@ -9,18 +9,15 @@ import {
     signal,
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
-import {
-    PlaceUser,
-    addUser,
-    authority,
-    queryDomains,
-    updateUser,
-} from '@placeos/ts-client';
+import { User, domains as domains_v7 } from '@placeos/ts-client';
+import { orThrowPage } from '@placeos/ts-client/compat';
 import { isSubsystemUser } from '../common/support-access';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
+import { authority } from '../common/placeos';
 import { DialogEvent } from '../common/types';
 import { ChipListComponent } from '../ui/controls/chip-list.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -379,7 +376,7 @@ export class UserFormComponent {
     public readonly isSubsystemUser = isSubsystemUser;
     private _dialog_ref =
         inject<DialogRef<unknown, UserFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceUser; readonly?: string }>(DIALOG_DATA);
+    private _data = inject<{ item: User; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'USERS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -402,7 +399,7 @@ export class UserFormComponent {
         loader: async () =>
             isSubsystemUser()
                 ? [authority()].filter(Boolean)
-                : (await queryDomains()).data,
+                : (await domains_v7.query({}).then(orThrowPage)).data,
     });
     public readonly domain_list = computed(
         () => this._domain_list.value() || [],
@@ -445,8 +442,8 @@ export class UserFormComponent {
                         delete form_item[key];
                     form_item.authority_id = authority()?.id;
                 }
-                const user = form_item as unknown as PlaceUser;
-                return user.id ? updateUser(user.id, user) : addUser(user);
+                // The user body is any JSON, so the save keeps the password fields
+                return ACTIONS.users.save(form_item);
             },
         );
     }

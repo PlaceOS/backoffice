@@ -1,12 +1,12 @@
 import { required, SchemaFn } from '@angular/forms/signals';
-import { PlaceZone } from '@placeos/ts-client';
+import { type Zone } from '@placeos/ts-client';
 
 export interface ZoneFormModel {
     id: string;
     name: string;
-    tags: string[];
+    tags: readonly string[];
     description: string;
-    parent_zone?: PlaceZone | null;
+    parent_zone?: Zone | null;
     parent_id: string;
     location: string;
     display_name: string;
@@ -16,10 +16,10 @@ export interface ZoneFormModel {
     capacity: number;
     map_id: string;
     timezone: string;
-    images: string[];
+    images: readonly string[];
 }
 
-export function generateZoneFormModel(zone?: PlaceZone): ZoneFormModel {
+export function generateZoneFormModel(zone?: Zone): ZoneFormModel {
     return {
         id: zone?.id || '',
         name: zone?.name || '',

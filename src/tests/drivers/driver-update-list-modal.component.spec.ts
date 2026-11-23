@@ -1,21 +1,28 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PlaceDriver } from '@placeos/ts-client';
+import { Driver } from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyError, notifySuccess } from '../../app/common/notifications';
+import { newItem } from '../../app/common/placeos';
 import { DriverUpdateListModalComponent } from '../../app/drivers/driver-update-list-modal.component';
 
 const mocks = vi.hoisted(() => ({
     queryDrivers: vi.fn(),
     updateDriver: vi.fn(),
 }));
-vi.mock('@placeos/ts-client', async () => ({
-    ...(await vi.importActual<typeof import('@placeos/ts-client')>(
-        '@placeos/ts-client/dist/index.es.js',
-    )),
-    ...mocks,
-}));
+vi.mock('@placeos/ts-client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@placeos/ts-client')>();
+    return {
+        ...actual,
+        drivers: {
+            ...actual.drivers,
+            query: mocks.queryDrivers,
+            update: mocks.updateDriver,
+        },
+    };
+});
 vi.mock('../../app/common/notifications', () => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
@@ -23,7 +30,7 @@ vi.mock('../../app/common/notifications', () => ({
 
 /** Driver with an update from `<id>-old` to `<id>-new` */
 const driver = (id: string) =>
-    new PlaceDriver({
+    newItem(Driver, {
         id,
         name: id,
         commit: `${id}-old`,
@@ -41,10 +48,12 @@ describe('DriverUpdateListModalComponent', () => {
 
     beforeEach(async () => {
         vi.resetAllMocks();
-        mocks.queryDrivers.mockResolvedValue({
-            data: ['drv-1', 'drv-2', 'drv-3'].map(driver),
-            total: 3,
-        });
+        mocks.queryDrivers.mockResolvedValue(
+            mockPage({
+                data: ['drv-1', 'drv-2', 'drv-3'].map(driver),
+                total: 3,
+            }),
+        );
         dialog_ref = { close: vi.fn(), disableClose: false };
         TestBed.configureTestingModule({
             imports: [DriverUpdateListModalComponent],
@@ -58,7 +67,7 @@ describe('DriverUpdateListModalComponent', () => {
     });
 
     it('updates only the selected drivers to their advertised commit', async () => {
-        mocks.updateDriver.mockResolvedValue({});
+        mocks.updateDriver.mockResolvedValue(mockReply({}));
         const component = fixture.componentInstance;
         component.toggleDriver('drv-1', true);
         component.toggleDriver('drv-3', true);
@@ -66,9 +75,9 @@ describe('DriverUpdateListModalComponent', () => {
         await component.updateDrivers();
 
         expect(
-            mocks.updateDriver.mock.calls.map(([id, item]) => [
+            mocks.updateDriver.mock.calls.map(([{ id, body }]) => [
                 id,
-                item.commit,
+                body.commit,
             ]),
         ).toEqual([
             ['drv-1', 'drv-1-new'],
@@ -77,10 +86,12 @@ describe('DriverUpdateListModalComponent', () => {
     });
 
     it('reports failed updates and keeps the dialog open', async () => {
-        mocks.updateDriver.mockImplementation(async (id: string) => {
-            if (id === 'drv-2') throw new Error('Build failed');
-            return {};
-        });
+        mocks.updateDriver.mockImplementation(
+            async ({ id }: { id: string }) => {
+                if (id === 'drv-2') throw new Error('Build failed');
+                return mockReply({});
+            },
+        );
         const component = fixture.componentInstance;
         component.toggleAll(true);
 

@@ -18,16 +18,13 @@ import {
     required,
     submit,
 } from '@angular/forms/signals';
-import {
-    PlaceDomain,
-    PlaceUser,
-    queryUsers,
-    showUser,
-} from '@placeos/ts-client';
+import { type Domain, User, users as users_v7 } from '@placeos/ts-client';
+import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { getInvalidSignalFields } from '../../common/forms';
 import { i18n } from '../../common/locale.service';
 import { notifyError } from '../../common/notifications';
+import { newItem } from '../../common/placeos';
 import { DialogEvent } from '../../common/types';
 import {
     AutocompleteComponent,
@@ -45,7 +42,7 @@ import { PlaceAPIKeyDetails } from './api-key-details.class';
 import { APIKeyService } from './api-keys.service';
 
 export interface APIKeyModalData {
-    domain: PlaceDomain;
+    domain: Domain;
     key?: PlaceAPIKeyDetails;
 }
 
@@ -329,10 +326,10 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public readonly formModel = signal<{
         id: string;
         name: string;
-        user?: PlaceUser;
+        user?: User;
         user_id: string;
         description: string;
-        scopes: string[];
+        scopes: readonly string[];
         permissions: string | null;
         expires_at: number | null;
         ttl: number | null;
@@ -356,8 +353,8 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
     public readonly loading = signal('');
     public readonly search_term = signal('');
     public readonly scope_search = signal('');
-    public readonly domain = signal<PlaceDomain>(null);
-    public readonly user_list = signal<PlaceUser[]>([]);
+    public readonly domain = signal<Domain>(null);
+    public readonly user_list = signal<User[]>([]);
     public readonly user_list_loading = signal(false);
     public readonly permissions = computed(() => this.formModel().permissions);
     /** `expires_at` epoch (seconds) formatted for the datetime-local input */
@@ -431,9 +428,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
                 name: key.name,
                 description: key.description,
                 scopes: key.scopes || [],
-                user:
-                    (key as PlaceAPIKeyDetails & { user?: PlaceUser }).user ||
-                    undefined,
+                user: key.user ? newItem(User, key.user) : undefined,
                 user_id: key.user_id,
                 permissions: key.permissions || null,
                 expires_at: key.expires_at ?? null,
@@ -453,7 +448,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         this.loadUsers();
     }
 
-    public selectUser(user: PlaceUser) {
+    public selectUser(user: User) {
         this.formModel.update((value) => ({
             ...value,
             user,
@@ -502,10 +497,19 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         }
     }
 
+    /** Show the assigned user in the input, and load it if the key has only its id */
     public async loadSelectedUser() {
         const { user: selected_user, user_id } = this.formModel();
-        if (!user_id || selected_user) return;
-        const user = await showUser(user_id).catch(() => null);
+        if (selected_user) {
+            this.search_term.set(this._userLabel(selected_user));
+            return;
+        }
+        if (!user_id) return;
+        const user = await users_v7
+            .show({ id: user_id })
+            .then(orThrow)
+            .then((data) => newItem(User, data))
+            .catch(() => null);
         if (!user) return;
         this.formModel.update((value) => ({ ...value, user }));
         this.search_term.set(this._userLabel(user));
@@ -517,11 +521,13 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
             try {
                 const users = this.domain()
                     ? (
-                          await queryUsers({
-                              authority_id: this.domain().id,
-                              q: this.search_term(),
-                          })
-                      ).data
+                          await users_v7
+                              .query({
+                                  authority_id: this.domain().id,
+                                  q: this.search_term(),
+                              })
+                              .then(orThrowPage)
+                      ).data.map((data) => newItem(User, data))
                     : [];
                 this.user_list.set(users);
                 if (
@@ -543,7 +549,7 @@ export class APIKeyModalComponent extends AsyncHandler implements OnInit {
         });
     }
 
-    private _userLabel(user: PlaceUser) {
+    private _userLabel(user: User) {
         return user?.name || user?.email || '';
     }
 }

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { PlaceLDAPSource, PlaceSAMLSource } from '@placeos/ts-client';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { LdapAuthentication, SamlAuthentication } from '@placeos/ts-client';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { newItem } from '../../app/common/placeos';
 import {
     applyLDAPSourceFormSchema,
     applyOAuthSourceFormSchema,
@@ -10,10 +11,6 @@ import {
     generateSAMLSourceForm,
 } from '../../app/domains/auth-sources.utilities';
 import { createTestForm } from '../common/form-test.helpers';
-
-vi.mock('@placeos/ts-client', () =>
-    vi.importActual('@placeos/ts-client/dist/index.es.js'),
-);
 
 describe('authentication source validation', () => {
     beforeEach(() => TestBed.configureTestingModule({}));
@@ -30,7 +27,7 @@ describe('authentication source validation', () => {
 
     it('requires the SAML issuer and sign-in endpoints', () => {
         const { fields } = createTestForm(
-            generateSAMLSourceForm(new PlaceSAMLSource()),
+            generateSAMLSourceForm(newItem(SamlAuthentication)),
             applySAMLSourceFormSchema,
         );
         for (const field of [
@@ -52,7 +49,7 @@ describe('authentication source validation', () => {
 
     it('requires an LDAP host and search base but permits anonymous binding', () => {
         const { fields } = createTestForm(
-            generateLDAPSourceForm(new PlaceLDAPSource()),
+            generateLDAPSourceForm(newItem(LdapAuthentication)),
             applyLDAPSourceFormSchema,
         );
         expect(fields.host().invalid()).toBe(true);

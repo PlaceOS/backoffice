@@ -2,14 +2,14 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { form, FormField, submit } from '@angular/forms/signals';
 import {
-    PlaceSystem,
-    PlaceTrigger,
-    TriggerComparison,
+    type System,
+    Trigger,
     TriggerConditions,
-    TriggerTimeCondition,
-    TriggerTimeConditionType,
-    updateTrigger,
+    TriggerConditionsComparison,
+    TriggerConditionsTimeDependent,
 } from '@placeos/ts-client';
+import { TriggerTimeConditionType } from '@placeos/ts-client/compat';
+import { ACTIONS } from '../../common/actions';
 import { describeError } from '../../common/errors';
 import { i18n } from '../../common/locale.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
@@ -17,6 +17,7 @@ import { DialogEvent, Identity } from '../../common/types';
 import {
     applyTriggerConditionFormSchema,
     generateTriggerConditionFormModel,
+    triggerConditions,
 } from '../../triggers/triggers.utilities';
 import { FormFieldComponent } from '../controls/form-field.component';
 import { OptionComponent } from '../controls/option.component';
@@ -28,11 +29,11 @@ import { TriggerConditionTimeFormComponent } from './trigger-condition-form/time
 
 export interface TriggerConditionData {
     /** Item to add/update the trigger on */
-    system: PlaceSystem;
+    system: System;
     /** Trigger to add/update */
-    trigger: PlaceTrigger;
+    trigger: Trigger;
     /** Trigger Condition to edit */
-    condition?: TriggerComparison | TriggerTimeCondition;
+    condition?: TriggerConditionsComparison | TriggerConditionsTimeDependent;
 }
 
 @Component({
@@ -135,12 +136,12 @@ export class TriggerConditionModalComponent {
     }
 
     /** Template system to use for status variable bindings */
-    public get system(): PlaceSystem {
+    public get system(): System {
         return this._data.system;
     }
 
     /** Template system to use for status variable bindings */
-    public get trigger(): PlaceTrigger {
+    public get trigger(): Trigger {
         return this._data.trigger;
     }
 
@@ -152,16 +153,15 @@ export class TriggerConditionModalComponent {
             ? this.updateComparisons()
             : this.updateTimeDependents());
 
-        const item = await updateTrigger(this.trigger.id, {
-            ...this.trigger,
-            conditions: this.conditions,
-        }).catch((err) =>
-            notifyError(
-                i18n('TRIGGERS.CONDITION_SAVE_ERROR', {
-                    error: describeError(err),
-                }),
-            ),
-        );
+        const item = await ACTIONS.triggers
+            .save({ ...this.trigger, conditions: this.conditions })
+            .catch((err) =>
+                notifyError(
+                    i18n('TRIGGERS.CONDITION_SAVE_ERROR', {
+                        error: describeError(err),
+                    }),
+                ),
+            );
         if (item) {
             this.event.emit({
                 reason: 'done',
@@ -177,8 +177,8 @@ export class TriggerConditionModalComponent {
      * Update the comparison list by replace an exisiting item or add a new item
      */
     private updateComparisons() {
-        const old_values = [...this.trigger.conditions.comparisons];
-        const new_value: TriggerComparison = {
+        const old_values = triggerConditions(this.trigger).comparisons;
+        const new_value: TriggerConditionsComparison = {
             left:
                 typeof this.formModel().left === 'string'
                     ? JSON.parse(this.formModel().left as string)
@@ -201,7 +201,7 @@ export class TriggerConditionModalComponent {
             old_values.push(new_value);
         }
         const updated_conditions = {
-            ...this.trigger.conditions,
+            ...triggerConditions(this.trigger),
             comparisons: old_values,
         };
         this.conditions = updated_conditions;
@@ -211,7 +211,7 @@ export class TriggerConditionModalComponent {
      * Update the time dependent list by replace an exisiting item or add a new item
      */
     private updateTimeDependents() {
-        const old_values = [...(this.trigger.conditions.time_dependents || [])];
+        const old_values = triggerConditions(this.trigger).time_dependents;
         const new_value = {
             type: this.formModel().time_type,
             time: +(this.formModel().time / 1000).toFixed(0),
@@ -231,13 +231,17 @@ export class TriggerConditionModalComponent {
                 (time) => JSON.stringify(time) === old_value,
             );
             if (index >= 0) {
-                old_values.splice(index, 1, new_value as TriggerTimeCondition);
+                old_values.splice(
+                    index,
+                    1,
+                    new_value as TriggerConditionsTimeDependent,
+                );
             }
         } else {
-            old_values.push(new_value as TriggerTimeCondition);
+            old_values.push(new_value as TriggerConditionsTimeDependent);
         }
         const updated_conditions = {
-            ...this.trigger.conditions,
+            ...triggerConditions(this.trigger),
             time_dependents: old_values,
         };
         this.conditions = updated_conditions;

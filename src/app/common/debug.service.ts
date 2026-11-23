@@ -1,14 +1,15 @@
 import { computed, Service, signal } from '@angular/core';
-import {
-    debug,
-    debug_events,
-    ignore,
-    PlaceDebugEvent,
-    PlaceModule,
-} from '@placeos/ts-client';
+import type { DebugMessage, Module } from '@placeos/ts-client';
 import { format } from 'date-fns';
 import { HashMap } from '../common/types';
 import { AsyncHandler } from './async-handler.class';
+import { realtime } from './placeos';
+
+/** A debug message of a bound module */
+export interface DebugEvent extends DebugMessage {
+    /** ID of the module that sent the message */
+    readonly mod_id: string;
+}
 
 export type DebugConsolePosition = 'below' | 'side' | 'floating';
 
@@ -29,9 +30,9 @@ export class PlaceDebugService extends AsyncHandler {
     /** Mapping of module IDs to display names */
     private _module_names: HashMap<string> = {};
     /** List of modules listening to debug events */
-    public readonly bound_modules = signal<PlaceModule[]>([]);
+    public readonly bound_modules = signal<Module[]>([]);
     public readonly module_count = computed(() => this.bound_modules().length);
-    public readonly events = signal<PlaceDebugEvent[]>([]);
+    public readonly events = signal<DebugEvent[]>([]);
     public readonly event_count = computed(() => this.events().length);
     /** Whether debug console is enabled */
     public readonly enabled = signal(false);
@@ -42,18 +43,19 @@ export class PlaceDebugService extends AsyncHandler {
     public readonly is_listening = computed(
         () => this.enabled() && this.bound_modules().length > 0,
     );
-    private readonly _formatted_events = new WeakMap<PlaceDebugEvent, string>();
-    private _pending_events: PlaceDebugEvent[] = [];
+    private readonly _formatted_events = new WeakMap<DebugEvent, string>();
+    private _pending_events: DebugEvent[] = [];
 
     /** Reuse each event's display text until it leaves the retained history. */
     public readonly terminal_lines = computed(() =>
         this.events().map((event) => this.formatEvent(event)),
     );
 
-    private formatEvent(event: PlaceDebugEvent) {
+    private formatEvent(event: DebugEvent) {
         const cached = this._formatted_events.get(event);
         if (cached !== undefined) return cached;
-        const line = `${TERMINAL_COLOURS[event.level?.toLowerCase()] || TERMINAL_COLOURS.debug}${format(Date.now(), 'h:mm a')}, ${this._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>'}, [${event.level.toUpperCase()}]\u001b[0m ${event.message.split('\n').reverse().join('\n')}`;
+        const level = event.level || 'debug';
+        const line = `${TERMINAL_COLOURS[level.toLowerCase()] || TERMINAL_COLOURS.debug}${format(event.received_at_ms, 'h:mm a')}, ${this._module_names[event.mod_id] || event.mod_id || '<UNKNOWN>'}, [${level.toUpperCase()}]\u001b[0m ${event.message.split('\n').reverse().join('\n')}`;
         this._formatted_events.set(event, line);
         return line;
     }
@@ -77,29 +79,17 @@ export class PlaceDebugService extends AsyncHandler {
         return this._module_names;
     }
 
-    constructor() {
-        super();
-        this.subscription(
-            'debug_events',
-            debug_events.subscribe((event) => {
-                if (!event) return;
-                if (
-                    this.bound_modules().find((mod) => mod.id === event.mod_id)
-                ) {
-                    this.formatEvent(event);
-                    this._pending_events.push(event);
-                    if (this._pending_events.length >= 2000) {
-                        this.flushEvents();
-                    } else if (!this._timers['flush_debug']) {
-                        this.timeout(
-                            'flush_debug',
-                            () => this.flushEvents(),
-                            16,
-                        );
-                    }
-                }
-            }),
-        );
+    /** Queue a debug message of a bound module */
+    private addEvent(event: DebugEvent) {
+        if (!this.bound_modules().find((mod) => mod.id === event.mod_id))
+            return;
+        this.formatEvent(event);
+        this._pending_events.push(event);
+        if (this._pending_events.length >= 2000) {
+            this.flushEvents();
+        } else if (!this._timers['flush_debug']) {
+            this.timeout('flush_debug', () => this.flushEvents(), 16);
+        }
     }
 
     /** Clear existing events */
@@ -112,7 +102,7 @@ export class PlaceDebugService extends AsyncHandler {
     /**
      * Whether module is listening for debug events
      */
-    public isListening(module: PlaceModule): boolean {
+    public isListening(module: Module): boolean {
         return !!this.bound_modules().find((mod) => mod.id === module.id);
     }
 
@@ -120,24 +110,24 @@ export class PlaceDebugService extends AsyncHandler {
      * Start listening to debug events for the given module
      * @param module Module to start listening to
      * @param module_name Display name for the module
+     * @param sys System of the module. A shared module has no
+     * `control_system_id`, so give the system that shows it
      */
-    public bind(module: PlaceModule, module_name: string) {
-        if (module) {
-            const parts = module_name.split('_');
-            const index = +parts.splice(parts.length - 1, 1);
-            const options = {
-                sys: module.system_id,
-                mod: module.id,
-                index,
-                name: 'debug',
-            };
+    public bind(
+        module: Module,
+        module_name: string,
+        sys = module?.control_system_id,
+    ) {
+        if (module && sys) {
             this.enabled.set(true);
-            debug(options).then(() => {
-                this.subscription(`debug_${module.id}`, () => ignore(options));
-                this.bound_modules.update((l) => [...l, module]);
-                this._module_names[module.id] = module_name;
-                this._changed.update((value) => value + 1);
-            });
+            const release = realtime().debug(
+                { sys, module_id: module.id },
+                (message) => this.addEvent({ ...message, mod_id: module.id }),
+            );
+            this.subscription(`debug_${module.id}`, release);
+            this.bound_modules.update((l) => [...l, module]);
+            this._module_names[module.id] = module_name;
+            this._changed.update((value) => value + 1);
         }
     }
 
@@ -145,7 +135,7 @@ export class PlaceDebugService extends AsyncHandler {
      * Stop listening to debug events for module
      * @param module Module to stop listening to
      */
-    public unbind(module: PlaceModule) {
+    public unbind(module: Module) {
         if (module) {
             this.unsub(`debug_${module.id}`);
             this.bound_modules.update((l) =>

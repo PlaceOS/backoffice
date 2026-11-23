@@ -8,7 +8,8 @@ import {
     signal,
 } from '@angular/core';
 import { FormField, form } from '@angular/forms/signals';
-import { PlaceTrigger, addTrigger, updateTrigger } from '@placeos/ts-client';
+import { Trigger } from '@placeos/ts-client';
+import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
 import { i18n } from '../common/locale.service';
 import { DialogEvent } from '../common/types';
@@ -163,9 +164,7 @@ import {
 export class TriggerFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, TriggerFormComponent>>(DialogRef);
-    private _data = inject<{ item: PlaceTrigger; readonly?: string }>(
-        DIALOG_DATA,
-    );
+    private _data = inject<{ item: Trigger; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'TRIGGERS';
 
     @Output() public event = new EventEmitter<DialogEvent>();
@@ -198,15 +197,10 @@ export class TriggerFormComponent implements OnInit {
                 close: () => this._dialog_ref.close(),
             },
             `${this._name}.`,
-            () => {
-                const form_item = mergeFormItem(
-                    this._data.item,
-                    this.formModel(),
-                ) as unknown as PlaceTrigger;
-                return form_item.id
-                    ? updateTrigger(form_item.id, form_item)
-                    : addTrigger(form_item);
-            },
+            () =>
+                ACTIONS.triggers.save(
+                    mergeFormItem(this._data.item, this.formModel()),
+                ),
         );
     }
 }
