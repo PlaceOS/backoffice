@@ -79,10 +79,8 @@ export function generateTriggerFormModel(trigger?: Trigger): TriggerFormModel {
         name: trigger?.name || '',
         description: trigger?.description || '',
         enable_webhook: trigger?.enable_webhook || false,
-        // An empty list means the server left the field out
-        supported_methods: trigger?.supported_methods?.length
-            ? trigger.supported_methods
-            : ['POST'],
+        // The server always sends the list. A saved empty list stays empty
+        supported_methods: trigger ? trigger.supported_methods : ['POST'],
         debounce_period: Math.max(0, trigger?.debounce_period || 0),
     };
 }

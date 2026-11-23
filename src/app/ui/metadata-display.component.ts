@@ -102,15 +102,19 @@ function replaceDescTag(inputString, newContent) {
                                 }
                             </div>
                             <div class="flex-1"></div>
-                            <div
-                                class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
-                                [appTooltip]="
-                                    (item.modified_by_id | user | async)?.name
-                                "
-                                appTooltipPosition="left"
-                            >
-                                {{ item.updated_at * 1000 | dateFrom }}
-                            </div>
+                            <!-- A new block has no update time until it is saved -->
+                            @if (item.updated_at) {
+                                <div
+                                    class="border-base-300 rounded-sm border px-2 py-1 font-mono text-[0.625rem] whitespace-nowrap"
+                                    [appTooltip]="
+                                        (item.modified_by_id | user | async)
+                                            ?.name
+                                    "
+                                    appTooltipPosition="left"
+                                >
+                                    {{ item.updated_at * 1000 | dateFrom }}
+                                </div>
+                            }
                             <button
                                 class="border-base-300 bg-base-100 flex items-center rounded-full border"
                                 (click)="$event.stopPropagation()"

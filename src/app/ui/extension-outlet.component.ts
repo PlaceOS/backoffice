@@ -217,9 +217,10 @@ export class ExtensionOutletComponent extends AsyncHandler {
             .show({ id, name: message.name })
             .then(orThrow)
             .then((data) => data[message.name]);
-        // 6.x gave the frame parsed details, also when the API sent JSON text
+        // 6.x gave the frame parsed details, also when the API sent JSON text.
+        // A block that does not exist gives `{}`, as in 6.x
         return parseMetadataDetails(
-            metadata.details,
+            metadata?.details ?? null,
         ) as FrameMessage['content'];
     }
 

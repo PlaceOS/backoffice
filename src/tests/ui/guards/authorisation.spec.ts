@@ -118,8 +118,10 @@ describe.each([
         const router = TestBed.inject(Router);
         const settled = vi.fn();
         const result = canActivate(new ActivatedRouteSnapshot()).then(settled);
-        await vi.advanceTimersByTimeAsync(100);
+        // The connection wait has no time limit, so 2 minutes offline is not a denial
+        await vi.advanceTimersByTimeAsync(2 * 60 * 1000);
         expect(settled).not.toHaveBeenCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
         connection.set(true);
         await vi.advanceTimersByTimeAsync(100);
         expect(settled).not.toHaveBeenCalled();

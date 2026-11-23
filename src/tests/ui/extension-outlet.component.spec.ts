@@ -11,7 +11,7 @@ import {
     ExtensionOutletComponent,
     FrameMessage,
 } from '../../app/ui/extension-outlet.component';
-const { fromV1Mock } = await vi.hoisted(
+const { fromV1Mock, mockReply } = await vi.hoisted(
     () => import('@placeos/ts-client/compat'),
 );
 
@@ -155,6 +155,12 @@ describe('ExtensionOutletComponent', () => {
             status: 'success',
             content: { theme: 'dark' },
         });
+    });
+
+    it('replies with empty details for a block that does not exist', async () => {
+        vi.mocked(metadata.show).mockResolvedValueOnce(mockReply({}));
+        const reply = await send({ action: 'load', name: 'missing' });
+        expect(reply).toMatchObject({ status: 'success', content: {} });
     });
 
     it('replies with an error when a request fails', async () => {

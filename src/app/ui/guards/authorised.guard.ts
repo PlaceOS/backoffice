@@ -9,6 +9,8 @@ import { BackofficeUsersService } from '../../users/users.service';
 /**
  * Route guard that waits for the connection and the user, then admits the
  * user when `allowed` returns true. Other users go to `/unauthorised`.
+ * The connection wait has no time limit, because a sign-in or a network
+ * drop can take longer than a minute. The user load has the 60 s limit.
  */
 function authorisedGuard(
     allowed: (user: User, route: ActivatedRouteSnapshot) => boolean,
@@ -16,14 +18,11 @@ function authorisedGuard(
     return async (route) => {
         const router = inject(Router);
         const users = inject(BackofficeUsersService);
-        const is_online = await waitForSignalValue(online, (_) => _).catch(
-            () => false,
-        );
-        const user: User = !is_online
-            ? null
-            : await waitForSignalValue(users.user, (_) => !!_).catch(
-                  () => null,
-              );
+        await waitForSignalValue(online, (_) => _, 50, Infinity);
+        const user: User = await waitForSignalValue(
+            users.user,
+            (_) => !!_,
+        ).catch(() => null);
         const can_activate = !!user && allowed(user, route);
         if (!can_activate) router.navigate(['/unauthorised']);
         return can_activate;

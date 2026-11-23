@@ -1,4 +1,4 @@
-import { TriggerInstance } from '@placeos/ts-client';
+import { Trigger, TriggerInstance } from '@placeos/ts-client';
 import {
     TriggerConditionOperator,
     TriggerTimeConditionType,
@@ -24,6 +24,12 @@ describe('triggers.utilities', () => {
             supported_methods: ['POST'],
             debounce_period: 0,
         });
+        // A saved trigger keeps an empty list of webhook methods
+        expect(
+            generateTriggerFormModel(
+                newItem(Trigger, { name: 'Hook', supported_methods: [] }),
+            ).supported_methods,
+        ).toEqual([]);
 
         expect(
             generateTriggerSettingsFormModel(

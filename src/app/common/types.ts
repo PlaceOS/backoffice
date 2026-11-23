@@ -60,7 +60,6 @@ export function staticPage<T>(data: readonly T[]): Page<readonly T[]> {
     return { data, total: data.length, next_offset: null, next: null };
 }
 
-/** Map the items of a page, and of each page after it */
 /**
  * Load every page of a query. Throws when the list does not complete within
  * `pages_max` pages, or when `next()` gives `null` because the offset did not
@@ -86,6 +85,7 @@ export async function collectPages<T>(
     return data;
 }
 
+/** Map the items of a page, and of each page after it */
 export function mapPage<T, U>(
     page: Page<readonly T[]>,
     fn: (item: T) => U,
