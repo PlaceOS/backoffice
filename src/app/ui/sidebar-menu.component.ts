@@ -1,6 +1,7 @@
 import {
     afterEveryRender,
     Component,
+    computed,
     ElementRef,
     inject,
     model,
@@ -19,11 +20,9 @@ import {
 } from '@angular/router';
 
 import { Dialog } from '@angular/cdk/dialog';
-import { oauth_applications } from '@placeos/ts-client';
-import { orThrowPage } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../common/async-handler.class';
 import { ActiveItemService } from '../common/item.service';
-import { authority, backofficeConfig } from '../common/placeos';
+import { backofficeConfig } from '../common/placeos';
 import { SettingsService } from '../common/settings.service';
 import {
     canAccessSection,
@@ -34,7 +33,8 @@ import { ApplicationIcon } from '../common/types';
 import { BackofficeUsersService } from '../users/users.service';
 import {
     ApplicationPickerTooltipComponent,
-    isSupportedRedirectUri,
+    loadApplications,
+    sidebar_applications,
 } from './application-picker-tooltip.component';
 import { TooltipDirective } from './controls/tooltip.directive';
 import { CustomTooltipComponent } from './custom-tooltip.component';
@@ -376,7 +376,9 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
     public readonly open = model(true);
     public readonly compact = signal(false);
     public readonly loading_route = signal('');
-    public readonly show_application_picker = signal(false);
+    public readonly show_application_picker = computed(
+        () => !!sidebar_applications()?.length,
+    );
     /** Place of the sliding highlight. With no active link it hides */
     public readonly indicator = signal<IndicatorPlace>(
         { ...last_indicator, animate: false },
@@ -533,7 +535,7 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         return this.loading_route() === route;
     }
 
-    public async ngOnInit() {
+    public ngOnInit() {
         this.subscription(
             'route_load',
             this._router.events.subscribe((event) => {
@@ -555,16 +557,8 @@ export class SidebarMenuComponent extends AsyncHandler implements OnInit {
         this.compact.set(
             localStorage.getItem('BACKOFFICE.SIDEBAR_COMPACT') === 'true',
         );
-        const active_authority = authority();
-        if (!active_authority?.id) return;
-        const response = await oauth_applications
-            .query({ authority_id: active_authority.id })
-            .then(orThrowPage)
-            .catch(() => null);
-        this.show_application_picker.set(
-            !!(response?.data || []).find((app) =>
-                isSupportedRedirectUri(app?.redirect_uri),
-            ),
-        );
+        // Each feature shell makes a new sidebar. Load the list only once,
+        // then the popup refreshes it when it opens
+        if (!sidebar_applications()) loadApplications();
     }
 }

@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { type Application, oauth_applications } from '@placeos/ts-client';
+import { Application, oauth_applications } from '@placeos/ts-client';
 import { orThrowPage } from '@placeos/ts-client/compat';
-import { authority } from '../common/placeos';
+import { authority, newItem } from '../common/placeos';
 import { CustomTooltipData } from './custom-tooltip.component';
 
 interface SidebarApplication {
@@ -9,10 +9,53 @@ interface SidebarApplication {
     name: string;
     redirect_uri: string;
     icon_urls: string[];
-    icon_index: number;
+}
+
+interface ApplicationCache {
+    authority_id: string;
+    list: SidebarApplication[];
 }
 
 const PAGE_SIZE = 9;
+
+const _cache = signal<ApplicationCache | null>(null);
+let _pending: Promise<void> | null = null;
+
+/**
+ * Browser applications of the active authority.
+ * Null until a load for the active authority completes
+ */
+export const sidebar_applications = computed(() => {
+    const cache = _cache();
+    return cache && cache.authority_id === authority()?.id ? cache.list : null;
+});
+
+/**
+ * Loads the browser applications of the active authority into
+ * `sidebar_applications`. Calls during a load share that load.
+ * A failed load keeps the last list
+ */
+export function loadApplications(): Promise<void> {
+    const authority_id = authority()?.id;
+    if (!authority_id) return Promise.resolve();
+    _pending ??= queryApplications(authority_id)
+        .then((list) => _cache.set({ authority_id, list }))
+        .catch(() => undefined)
+        .finally(() => (_pending = null));
+    return _pending;
+}
+
+async function queryApplications(authority_id: string) {
+    const { data } = await oauth_applications
+        .query({ authority_id })
+        .then(orThrowPage);
+    // The API document gives no schema for the list, so parse each item
+    return data
+        .map((app) => newItem(Application, app))
+        .filter((app) => isSupportedRedirectUri(app.redirect_uri))
+        .map(mapApplication)
+        .sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
+}
 
 /** Whether an application redirect URI can open in a browser tab */
 export function isSupportedRedirectUri(uri: string) {
@@ -22,6 +65,52 @@ export function isSupportedRedirectUri(uri: string) {
         return protocol === 'http:' || protocol === 'https:';
     } catch {
         return false;
+    }
+}
+
+function mapApplication(app: Application): SidebarApplication {
+    return {
+        id: app.id,
+        name: app.name || nameFromUri(app.redirect_uri),
+        redirect_uri: app.redirect_uri,
+        icon_urls: faviconUrls(app.redirect_uri),
+    };
+}
+
+function nameFromUri(uri: string) {
+    try {
+        return new URL(uri, location.origin).hostname;
+    } catch {
+        return 'Application';
+    }
+}
+
+function faviconUrls(uri: string) {
+    const path = redirectPath(uri);
+    return [
+        ...['svg', 'png', 'jpg', 'ico'].map(
+            (ext) => `${path}assets/favicon.${ext}`,
+        ),
+        `${path}favicon.ico`,
+    ];
+}
+
+function redirectPath(uri: string) {
+    try {
+        const url = new URL(uri, location.origin);
+        const pathname = url.pathname || '/';
+        const last_segment = pathname
+            .split('/')
+            .filter((_) => !!_)
+            .at(-1);
+        const base_path = pathname.endsWith('/')
+            ? pathname
+            : last_segment?.includes('.')
+              ? pathname.slice(0, pathname.lastIndexOf('/') + 1)
+              : `${pathname}/`;
+        return `${url.origin}${base_path.startsWith('/') ? '' : '/'}${base_path}`;
+    } catch {
+        return '/';
     }
 }
 
@@ -124,13 +213,20 @@ export function isSupportedRedirectUri(uri: string) {
     ],
     imports: [],
 })
+/** Popup with the applications of the active authority. Each open refreshes the list */
 export class ApplicationPickerTooltipComponent implements OnInit {
     private _tooltip = inject(CustomTooltipData, { optional: true });
+    private readonly _refreshing = signal(true);
+    /** Index in `icon_urls` of the icon to show, by application ID */
+    private readonly _icon_index = signal<Record<number, number>>({});
 
     public readonly page_size = PAGE_SIZE;
-    public readonly loading = signal(true);
     public readonly page = signal(0);
-    public readonly applications = signal<SidebarApplication[]>([]);
+    public readonly applications = computed(() => sidebar_applications() ?? []);
+    /** Only without a cached list, so a refresh does not hide the list */
+    public readonly loading = computed(
+        () => this._refreshing() && !sidebar_applications(),
+    );
     public readonly total_pages = computed(() =>
         Math.max(1, Math.ceil(this.applications().length / PAGE_SIZE)),
     );
@@ -140,32 +236,14 @@ export class ApplicationPickerTooltipComponent implements OnInit {
     });
 
     public async ngOnInit() {
-        const active_authority = authority();
-        if (!active_authority?.id) {
-            this.loading.set(false);
-            return;
-        }
-        const response = await oauth_applications
-            .query({ authority_id: active_authority.id })
-            .then(orThrowPage)
-            .catch(() => null);
-        const applications = (response?.data || [])
-            .filter((app) => isSupportedRedirectUri(app?.redirect_uri))
-            .sort((lhs, rhs) =>
-                (lhs.name || this.nameFromUri(lhs.redirect_uri)).localeCompare(
-                    rhs.name || this.nameFromUri(rhs.redirect_uri),
-                ),
-            )
-            .map((app) => this.mapApplication(app));
-        this.applications.set(applications);
-        this.page.set(0);
-        this.loading.set(false);
+        await loadApplications();
+        this._refreshing.set(false);
     }
 
     public readonly close = () => this._tooltip?.close();
 
     public currentIcon(item: SidebarApplication) {
-        return item.icon_urls[item.icon_index] || '';
+        return item.icon_urls[this._icon_index()[item.id] ?? 0] || '';
     }
 
     public uri(uri: string) {
@@ -177,19 +255,13 @@ export class ApplicationPickerTooltipComponent implements OnInit {
     }
 
     public loadNextIcon(item: SidebarApplication) {
-        this.applications.update((applications) =>
-            applications.map((app) =>
-                app.id === item.id
-                    ? {
-                          ...app,
-                          icon_index: Math.min(
-                              app.icon_index + 1,
-                              app.icon_urls.length,
-                          ),
-                      }
-                    : app,
+        this._icon_index.update((indexes) => ({
+            ...indexes,
+            [item.id]: Math.min(
+                (indexes[item.id] ?? 0) + 1,
+                item.icon_urls.length,
             ),
-        );
+        }));
     }
 
     public previousPage() {
@@ -198,52 +270,5 @@ export class ApplicationPickerTooltipComponent implements OnInit {
 
     public nextPage() {
         this.page.update((page) => Math.min(this.total_pages() - 1, page + 1));
-    }
-
-    private mapApplication(app: Application): SidebarApplication {
-        return {
-            id: app.id,
-            name: app.name || this.nameFromUri(app.redirect_uri),
-            redirect_uri: app.redirect_uri,
-            icon_urls: this.faviconUrls(app.redirect_uri),
-            icon_index: 0,
-        };
-    }
-
-    private nameFromUri(uri: string) {
-        try {
-            return new URL(uri, location.origin).hostname;
-        } catch {
-            return 'Application';
-        }
-    }
-
-    private faviconUrls(uri: string) {
-        const path = this.redirectPath(uri);
-        return [
-            ...['svg', 'png', 'jpg', 'ico'].map(
-                (ext) => `${path}assets/favicon.${ext}`,
-            ),
-            `${path}favicon.ico`,
-        ];
-    }
-
-    private redirectPath(uri: string) {
-        try {
-            const url = new URL(uri, location.origin);
-            const pathname = url.pathname || '/';
-            const last_segment = pathname
-                .split('/')
-                .filter((_) => !!_)
-                .at(-1);
-            const base_path = pathname.endsWith('/')
-                ? pathname
-                : last_segment?.includes('.')
-                  ? pathname.slice(0, pathname.lastIndexOf('/') + 1)
-                  : `${pathname}/`;
-            return `${url.origin}${base_path.startsWith('/') ? '' : '/'}${base_path}`;
-        } catch {
-            return '/';
-        }
     }
 }
