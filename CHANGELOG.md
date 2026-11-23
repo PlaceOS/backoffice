@@ -79,6 +79,7 @@ All notable changes to this project will be documented in this file.
 - Toasts use the type that matches what happened
 - Empty uploads and invalid email domains show an error toast
 - Sidebar highlight slides from the last link, not the top
+- Sidebar loads applications once, popup refreshes on open
 
 ### Documentation
 
