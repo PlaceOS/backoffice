@@ -59,6 +59,10 @@ All notable changes to this project will be documented in this file.
 
 - Module menu keeps its module while other rows are hovered
 
+#### Triggers
+
+- A new trigger gets POST as its webhook method again
+
 #### Ui
 
 - Stop the required-marker colour applying to checkboxes

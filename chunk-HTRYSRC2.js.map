@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/env/version.ts"
+  ],
+  "sourcesContent": [
+    "// IMPORTANT: THIS FILE IS AUTO GENERATED! DO NOT MANUALLY EDIT OR CHECKIN!\n/* tslint:disable */\nexport const VERSION = {\n    \"dirty\": false,\n    \"raw\": \"v2610.1-123-g3cc46f03\",\n    \"hash\": \"g3cc46f03\",\n    \"distance\": 123,\n    \"tag\": \"v2610.1\",\n    \"semver\": null,\n    \"suffix\": \"123-g3cc46f03\",\n    \"semverString\": \"\",\n    \"stamp\": \"2611.529\",\n    \"version\": \"0.0.0\",\n    \"time\": 1795395802905\n};\n/* tslint:enable */\n"
+  ],
+  "mappings": ";AAEO,IAAM,UAAU;AAAA,EACnB,SAAS;AAAA,EACT,OAAO;AAAA,EACP,QAAQ;AAAA,EACR,YAAY;AAAA,EACZ,OAAO;AAAA,EACP,UAAU;AAAA,EACV,UAAU;AAAA,EACV,gBAAgB;AAAA,EAChB,SAAS;AAAA,EACT,WAAW;AAAA,EACX,QAAQ;AACZ;",
+  "names": [],
+  "debugId": "53c27f35-b54f-5e4c-96e6-9f5a551b6e41"
+}

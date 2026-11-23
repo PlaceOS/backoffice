@@ -1,14 +1,18 @@
 import {
   authorisedAdminGuard,
   authorisedUserGuard
-} from "./chunk-3YPVYJY7.js";
+} from "./chunk-XZQBWTSC.js";
 import {
   BackofficeUsersService
-} from "./chunk-PSIHSUYG.js";
+} from "./chunk-ZFBS3JV6.js";
 import {
   ProgressBarComponent
-} from "./chunk-DHD7TIH6.js";
-import "./chunk-XSBVNB3I.js";
+} from "./chunk-UXYPWEUF.js";
+import {
+  tenants_exports
+} from "./chunk-KP6LUFKO.js";
+import "./chunk-X3HUV4CQ.js";
+import "./chunk-TVHKFUKR.js";
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -21,40 +25,45 @@ import {
 } from "./chunk-LL56AHAM.js";
 import {
   SettingsService
-} from "./chunk-HOSHIUIS.js";
+} from "./chunk-ZSOHIYWN.js";
 import {
   currentUser
-} from "./chunk-4VR6R4OK.js";
+} from "./chunk-LPAJZMY2.js";
 import {
   VERSION
-} from "./chunk-VVHZ7GAL.js";
+} from "./chunk-HTRYSRC2.js";
 import {
   AsyncHandler
 } from "./chunk-UONBBRS5.js";
 import {
-  signalFromClient,
+  authority,
+  backofficeConfig,
+  getLoadingMessage,
+  invalidateToken,
+  isMock,
+  online,
+  setLoadingMessage,
+  setupPlace
+} from "./chunk-PXU3R4CZ.js";
+import {
   waitForSignalValue
-} from "./chunk-UBUJ7KM4.js";
+} from "./chunk-OTF7M54K.js";
 import {
   TranslatePipe
-} from "./chunk-G7DGN64C.js";
+} from "./chunk-KPU65NDH.js";
 import {
   LocaleService,
   localeFromUrl,
   setTranslationService
-} from "./chunk-JJ65W2TY.js";
+} from "./chunk-MSK6KGG6.js";
+import "./chunk-K7DUQFI6.js";
 import {
-  Cn,
-  J,
-  Mt,
-  Un,
-  _,
-  io,
-  ro
-} from "./chunk-LCM7Z6QA.js";
+  CallFailed,
+  orThrow
+} from "./chunk-4MDDUS4W.js";
 import {
   log
-} from "./chunk-DGKMQHVX.js";
+} from "./chunk-Y2QSYZTA.js";
 import {
   bootstrapApplication
 } from "./chunk-BRT76G6A.js";
@@ -609,46 +618,6 @@ function setLastChunkLoadReloadKey(key) {
   }
 }
 
-// src/app/common/placeos.ts
-var LOADING_MESSAGE = signal(
-  "Loading...",
-  ...ngDevMode ? [{ debugName: "LOADING_MESSAGE" }] : (
-    /* istanbul ignore next */
-    []
-  )
-);
-function getLoadingMessage() {
-  return LOADING_MESSAGE;
-}
-function setLoadingMessage(message) {
-  LOADING_MESSAGE.set(message);
-}
-async function setupPlace(settings) {
-  const protocol = settings.protocol || location.protocol;
-  const host = settings.domain || location.hostname;
-  const port = settings.port || location.port;
-  const url = settings.use_domain ? `${protocol}//${host}:${port}` : location.origin;
-  const route = host.includes("localhost") && !location.pathname.startsWith(settings.route) ? "" : settings.route || "";
-  const mock = settings.mock || location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
-  const config = {
-    auth_type: "auth_code",
-    scope: "public",
-    host: `${host}${port ? ":" + port : ""}`,
-    auth_uri: `${url}/auth/oauth/authorize`,
-    token_uri: `${url}/auth/oauth/token`,
-    redirect_uri: `${location.origin}${route}/oauth-resp.html`,
-    handle_login: !settings.local_login,
-    token_header: true,
-    use_iframe: true,
-    ignore_api_key: settings.ignore_api_key,
-    mock
-  };
-  if (localStorage) {
-    localStorage.setItem("BACKOFFICE.mock", `${!!mock && !location.href.includes("mock=false")}`);
-  }
-  return ro(config);
-}
-
 // src/app/common/sentry.ts
 var DEFAULT_SENTRY_DSN = "https://7941b5b93d7c4712803604891cdfec23@o437082.ingest.sentry.io/5399124";
 var MAX_QUEUED_ERRORS = 20;
@@ -669,8 +638,9 @@ var SentryReportingErrorHandler = class _SentryReportingErrorHandler {
     if (isMonacoCancellation(error) || isHandledChunkLoadError(error)) {
       return;
     }
-    console.error(error);
-    reportError(error);
+    const reported = withoutBody(error);
+    console.error(reported);
+    reportError(reported);
   }
   static \u0275fac = function SentryReportingErrorHandler_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _SentryReportingErrorHandler)();
@@ -682,15 +652,32 @@ var SentryReportingErrorHandler = class _SentryReportingErrorHandler {
     type: Injectable
   }], null, null);
 })();
+function isStackFrame(line) {
+  return /^\s+at\s/.test(line) || /^[^\s@]*@\S+:\d+:\d+$/.test(line);
+}
+function withoutBody(error) {
+  if (!(error instanceof CallFailed))
+    return error;
+  const status = error.status === null ? "" : ` ${error.status}`;
+  const reported = new Error(`API call failed: ${error.error.kind}${status}`);
+  const stack = error.stack ?? "";
+  const at = error.message ? stack.indexOf(error.message) : -1;
+  const rest = at < 0 ? stack : stack.slice(at + error.message.length);
+  const frames = rest.split("\n").filter(isStackFrame);
+  if (frames.length) {
+    reported.stack = [reported.message, ...frames].join("\n");
+  }
+  return reported;
+}
 function sentryDsn() {
-  const value = Mt()?.config?.backoffice?.sentry_dsn;
+  const value = backofficeConfig().sentry_dsn;
   if (value === void 0 || value === null)
     return DEFAULT_SENTRY_DSN;
   return typeof value === "string" ? value : "";
 }
 async function initSentry(injector, user_id) {
   const dsn = sentryDsn();
-  if (!dsn || Un() || location.hostname === "localhost") {
+  if (!dsn || isMock() || location.hostname === "localhost") {
     _queue = null;
     return;
   }
@@ -705,8 +692,10 @@ async function initSentry(injector, user_id) {
     ignoreErrors: [/ResizeObserver loop/],
     integrations: (defaults) => [
       // Angular's global error listeners already send window errors
-      // to the error handler. This prevents duplicate events.
-      ...defaults.filter(({ name }) => name !== "GlobalHandlers"),
+      // to the error handler. This prevents duplicate events. Console
+      // output is not recorded: error toasts log the message of the
+      // server, which can have personal data.
+      ...defaults.filter(({ name }) => name !== "GlobalHandlers" && name !== "Console"),
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration()
     ],
@@ -716,7 +705,7 @@ async function initSentry(injector, user_id) {
   });
   injector.get(Sentry.TraceService);
   Sentry.setUser({ id: user_id });
-  Sentry.setTag("domain", Mt()?.domain || location.hostname);
+  Sentry.setTag("domain", authority()?.domain || location.hostname);
   const handler = Sentry.createErrorHandler({ logErrors: false });
   _reporter = (error) => handler.handleError(error);
   const queued = _queue || [];
@@ -783,9 +772,9 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
   message = getLoadingMessage();
   async ngOnInit() {
     this.loading.set(true);
-    await waitForSignalValue(this._settings.initialised, (_2) => _2).catch(() => null);
+    await waitForSignalValue(this._settings.initialised, (_) => _).catch(() => null);
     this.interval("has_token", () => {
-      if (!Mt() || !J())
+      if (!online())
         return;
       this.loading.set(false);
       this.clearInterval("has_token");
@@ -837,21 +826,21 @@ var GlobalLoadingComponent = class _GlobalLoadingComponent extends AsyncHandler 
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalLoadingComponent, { className: "GlobalLoadingComponent", filePath: "src/app/ui/global-loading.component.ts", lineNumber: 54 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(GlobalLoadingComponent, { className: "GlobalLoadingComponent", filePath: "src/app/ui/global-loading.component.ts", lineNumber: 53 });
 })();
 
 // src/app/app.ts
 var AppComponent_Defer_6_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-QDI6AQBA.js").then((m) => m.ToastOutletComponent)
+  import("./chunk-QUKHUUH5.js").then((m) => m.ToastOutletComponent)
 ];
 var AppComponent_Conditional_1_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-7Q5KGC72.js").then((m) => m.GlobalBannerComponent)
+  import("./chunk-AN6AAGAS.js").then((m) => m.GlobalBannerComponent)
 ];
 var AppComponent_Conditional_1_Conditional_6_Defer_2_DepsFn = () => [
   /* @ts-ignore */
-  import("./chunk-IS7LH53Z.js").then((m) => m.UploadListComponent)
+  import("./chunk-VTXWIGSU.js").then((m) => m.UploadListComponent)
 ];
 var AppComponent_Conditional_9_Defer_2_DepsFn = () => [
   /* @ts-ignore */
@@ -989,11 +978,10 @@ var AppComponent = class _AppComponent {
     )
   );
   update_available = updateAvailable;
-  _client_online = signalFromClient(io());
   _browser_online = browserOnline();
-  /** Whether PlaceOS is reachable. ts-client only flags auth failures, so also track the network. */
+  /** Whether the session is signed in and the browser is online */
   online = computed(
-    () => this._client_online() && this._browser_online(),
+    () => online() && this._browser_online(),
     ...ngDevMode ? [{ debugName: "online" }] : (
       /* istanbul ignore next */
       []
@@ -1017,7 +1005,7 @@ var AppComponent = class _AppComponent {
     setTranslationService(this._locale);
     this.loading.set(true);
     setLoadingMessage("Loading application settings...");
-    const settings_ready = await waitForSignalValue(this._settings.initialised, (_2) => _2).catch(() => false);
+    const settings_ready = await waitForSignalValue(this._settings.initialised, (_) => _).catch(() => false);
     if (!settings_ready)
       return this.onInitError();
     const settings = this._settings.get("composer") || {};
@@ -1026,7 +1014,7 @@ var AppComponent = class _AppComponent {
     setLoadingMessage("Authenticating user...");
     await setupPlace(settings).catch(() => this.onInitError());
     setupCache(this._cache);
-    const user_ready = await waitForSignalValue(this._users.initialised, (_2) => _2, 50, 30 * 1e3).catch(() => false);
+    const user_ready = await waitForSignalValue(this._users.initialised, (_) => _, 50, 30 * 1e3).catch(() => false);
     if (!user_ready)
       return this.onInitError();
     initSentry(this._injector, currentUser().id).catch((error) => log("Init", "Failed to start Sentry", [error], "warn", true));
@@ -1043,21 +1031,21 @@ var AppComponent = class _AppComponent {
     this._checkTenants().catch((error) => log("Init", "Failed to check staff tenants", [error], "warn"));
   }
   onInitError() {
-    if (Un())
+    if (isMock())
       return;
     log("Init", "Failed to initialise user. Restarting application...");
-    Cn();
+    invalidateToken();
     location.reload();
   }
   /** Show one banner for staff tenants with expiring secrets */
   async _checkTenants() {
     if (!currentUser()?.sys_admin)
       return;
-    const [tenants, { tenantExpiryBanner }] = await Promise.all([
-      _("/api/staff/v1/tenants").catch(() => []),
-      import("./chunk-XCNCTG6Q.js")
+    const [tenant_list, { tenantExpiryBanner }] = await Promise.all([
+      tenants_exports.query({}).then(orThrow).catch(() => []),
+      import("./chunk-EMEF4N57.js")
     ]);
-    const banner = tenantExpiryBanner(Array.isArray(tenants) ? tenants : []);
+    const banner = tenantExpiryBanner(tenant_list);
     if (banner)
       this._settings.post("banner", banner);
   }
@@ -1079,9 +1067,9 @@ var AppComponent = class _AppComponent {
       } else {
         const list = navigator.languages || [];
         for (const lang of list) {
-          locale = locales.find((_2) => _2.id === lang)?.id;
+          locale = locales.find((_) => _.id === lang)?.id;
           if (!locale)
-            locale = locales.find((_2) => lang.includes(_2.id))?.id;
+            locale = locales.find((_) => lang.includes(_.id))?.id;
           if (locale) {
             load = this._locale?.setLocale(lang);
             localStorage.setItem("BACKOFFICE.locale", lang);
@@ -1128,11 +1116,11 @@ var AppComponent = class _AppComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadataAsync(AppComponent, () => [
     /* @ts-ignore */
-    import("./chunk-7Q5KGC72.js").then((m) => m.GlobalBannerComponent),
+    import("./chunk-AN6AAGAS.js").then((m) => m.GlobalBannerComponent),
     /* @ts-ignore */
-    import("./chunk-IS7LH53Z.js").then((m) => m.UploadListComponent),
+    import("./chunk-VTXWIGSU.js").then((m) => m.UploadListComponent),
     /* @ts-ignore */
-    import("./chunk-QDI6AQBA.js").then((m) => m.ToastOutletComponent),
+    import("./chunk-QUKHUUH5.js").then((m) => m.ToastOutletComponent),
     /* @ts-ignore */
     import("./chunk-2K7VQOTC.js").then((m) => m.TooltipDirective),
     /* @ts-ignore */
@@ -1238,7 +1226,7 @@ var AppComponent = class _AppComponent {
   });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 154 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app/app.ts", lineNumber: 155 });
 })();
 
 // src/app/ui/unauthorised.component.ts
@@ -1305,55 +1293,55 @@ var appRoutes = [
   {
     path: "modules",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-25ODYHJW.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-AK3IXTYQ.js").then((m) => m.ROUTES)
   },
   {
     path: "domains",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-UYZR5JHN.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-IH2OZJJ7.js").then((m) => m.ROUTES)
   },
   {
     path: "drivers",
     data: { role_only: true },
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-NM7YXJDA.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-S47H57W7.js").then((m) => m.ROUTES)
   },
   {
     path: "groups",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-X3MUEGYC.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-QNYU5AJG.js").then((m) => m.ROUTES)
   },
   {
     path: "systems",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-73E524OV.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-MQKLAUS7.js").then((m) => m.ROUTES)
   },
   {
     path: "repositories",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-EMGZAUZQ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-H57UXIGY.js").then((m) => m.ROUTES)
   },
   {
     path: "triggers",
     data: { role_only: true },
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-WRLTQO2Y.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-7IRPUYJ6.js").then((m) => m.ROUTES)
   },
   {
     path: "users",
     data: { allow_subsystem: true },
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-YZX3APXT.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-RE3AXBYJ.js").then((m) => m.ROUTES)
   },
   {
     path: "zones",
     canActivate: [authorisedUserGuard],
-    loadChildren: () => import("./chunk-ELIEZYNR.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-FXQR7VNV.js").then((m) => m.ROUTES)
   },
   {
     path: "admin",
     canActivate: [authorisedAdminGuard],
-    loadChildren: () => import("./chunk-SPTQ4RWQ.js").then((m) => m.ROUTES)
+    loadChildren: () => import("./chunk-Q43HDRMU.js").then((m) => m.ROUTES)
   },
   { path: "**", redirectTo: "systems" }
 ];
@@ -1400,12 +1388,12 @@ var appConfig = {
 var is_mock = location.href.includes("mock=true") || localStorage.getItem("BACKOFFICE.mock") === "true";
 var bootstrap = async () => {
   if (is_mock) {
-    await import("./chunk-USBC5BBR.js");
+    await import("./chunk-B6MUU64M.js");
   }
   bootstrapApplication(AppComponent, appConfig).catch(
     (err) => console.error(err)
   );
 };
 bootstrap();
-//# debugId=9ad3212f-fd53-5299-9e15-252552e8e7f1
+//# debugId=267f6741-2988-5cbb-a525-e0ae31c7edbe
 //# sourceMappingURL=main.js.map

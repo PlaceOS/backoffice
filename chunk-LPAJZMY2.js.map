@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/common/user-state.ts"
+  ],
+  "sourcesContent": [
+    "import { signal } from '@angular/core';\nimport { User } from '@placeos/ts-client';\nimport { newItem } from './placeos';\n\nconst EMPTY_USER = newItem(User);\n\n/**\n * The signed in user. `BackofficeUsersService` loads it and is the only\n * writer. It lives here so that code which cannot inject that service, such\n * as `SettingsService` (a dependency of it), can still read the user.\n */\nconst _current_user = signal<User>(null);\n\nexport const current_user = _current_user.asReadonly();\n\n/** Publish the signed in user. Only `BackofficeUsersService` calls this. */\nexport function setCurrentUser(user: User) {\n    _current_user.set(user);\n}\n\n/** Get the current user details */\nexport function currentUser() {\n    return _current_user() || EMPTY_USER;\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;AAIA,IAAM,aAAa,QAAQ,yBAAI;AAO/B,IAAM,gBAAgB;EAAa;;;;;;AAE5B,IAAM,eAAe,cAAc,WAAU;AAG9C,SAAU,eAAe,MAAU;AACrC,gBAAc,IAAI,IAAI;AAC1B;AAGM,SAAU,cAAW;AACvB,SAAO,cAAa,KAAM;AAC9B;",
+  "names": [],
+  "debugId": "a3196cfc-6f22-59a3-a35f-a8b79154c3c5"
+}

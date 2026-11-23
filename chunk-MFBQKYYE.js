@@ -1,0 +1,304 @@
+import {
+  DomainStateService
+} from "./chunk-E5SPZ3MM.js";
+import "./chunk-IGVVSBBN.js";
+import {
+  SimpleTableComponent
+} from "./chunk-6KSONSHN.js";
+import "./chunk-6S6AGDRG.js";
+import "./chunk-OQETGTKA.js";
+import "./chunk-RVECXXC5.js";
+import "./chunk-R5EDKAWG.js";
+import "./chunk-MNQC7PXT.js";
+import "./chunk-RSZG7SBF.js";
+import "./chunk-L53BB3NN.js";
+import "./chunk-SYZRTR66.js";
+import "./chunk-WKU6NAJG.js";
+import "./chunk-FF4ADQI6.js";
+import "./chunk-SVCRV2SB.js";
+import "./chunk-23KR5P22.js";
+import "./chunk-ARF53UMV.js";
+import "./chunk-WI4F7QUZ.js";
+import "./chunk-N7V3DZSR.js";
+import "./chunk-ZFBS3JV6.js";
+import {
+  ProgressBarComponent
+} from "./chunk-UXYPWEUF.js";
+import "./chunk-KP6LUFKO.js";
+import "./chunk-X3HUV4CQ.js";
+import "./chunk-TVHKFUKR.js";
+import "./chunk-LL56AHAM.js";
+import "./chunk-V2X4XHND.js";
+import "./chunk-ZSOHIYWN.js";
+import "./chunk-LPAJZMY2.js";
+import "./chunk-HTRYSRC2.js";
+import "./chunk-UONBBRS5.js";
+import "./chunk-PXU3R4CZ.js";
+import "./chunk-OTF7M54K.js";
+import "./chunk-R4757DZB.js";
+import "./chunk-NVRGEP5J.js";
+import "./chunk-CH2YF4Y7.js";
+import "./chunk-O2B7KTSR.js";
+import "./chunk-SSVO7UC4.js";
+import "./chunk-5APMNGCP.js";
+import "./chunk-QSK7KYKQ.js";
+import "./chunk-SQMBYJ2Q.js";
+import "./chunk-762ECDWF.js";
+import {
+  TranslatePipe
+} from "./chunk-KPU65NDH.js";
+import "./chunk-MSK6KGG6.js";
+import "./chunk-K7DUQFI6.js";
+import "./chunk-4MDDUS4W.js";
+import "./chunk-Y2QSYZTA.js";
+import {
+  IconComponent
+} from "./chunk-4FRKWO6Y.js";
+import "./chunk-QY7ZA5QE.js";
+import {
+  TooltipDirective
+} from "./chunk-D65IW4Y5.js";
+import "./chunk-GB3VUBDQ.js";
+import "./chunk-QNK6X2WC.js";
+import "./chunk-BRT76G6A.js";
+import {
+  Component,
+  inject,
+  setClassMetadata,
+  ɵsetClassDebugInfo,
+  ɵɵadvance,
+  ɵɵclassProp,
+  ɵɵdefineComponent,
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵgetCurrentView,
+  ɵɵlistener,
+  ɵɵnextContext,
+  ɵɵpipe,
+  ɵɵpipeBind1,
+  ɵɵproperty,
+  ɵɵpureFunction2,
+  ɵɵpureFunction3,
+  ɵɵreference,
+  ɵɵresetView,
+  ɵɵrestoreView,
+  ɵɵtemplate,
+  ɵɵtemplateRefExtractor,
+  ɵɵtext,
+  ɵɵtextInterpolate,
+  ɵɵtextInterpolate1
+} from "./chunk-6G3VFYSX.js";
+import "./chunk-RQBZITXC.js";
+
+// src/app/domains/domain-authentication.component.ts
+var _c0 = (a0, a1) => ({ key: "name", name: a0, content: a1 });
+var _c1 = (a0, a1) => ({ key: "type", name: a0, size: "6rem", content: a1 });
+var _c2 = (a0, a1) => ({ key: "actions", name: a0, hide_name: true, content: a1, size: "6.5rem", sortable: false });
+var _c3 = (a0, a1, a2) => [a0, a1, a2];
+function DomainAuthenticationComponent_ng_template_12_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 9)(1, "div", 10);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 11);
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const row_r1 = ctx.row;
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(row_r1.name);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(row_r1.id);
+  }
+}
+function DomainAuthenticationComponent_ng_template_14_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 12);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const row_r2 = ctx.row;
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(row_r2.type);
+  }
+}
+function DomainAuthenticationComponent_ng_template_16_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 13)(1, "button", 14);
+    \u0275\u0275pipe(2, "translate");
+    \u0275\u0275listener("click", function DomainAuthenticationComponent_ng_template_16_Template_button_click_1_listener() {
+      const row_r4 = \u0275\u0275restoreView(_r3).row;
+      const ctx_r4 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r4.editAuthSource(row_r4));
+    });
+    \u0275\u0275elementStart(3, "icon");
+    \u0275\u0275text(4, "edit");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(5, "button", 15);
+    \u0275\u0275pipe(6, "translate");
+    \u0275\u0275listener("click", function DomainAuthenticationComponent_ng_template_16_Template_button_click_5_listener() {
+      const row_r4 = \u0275\u0275restoreView(_r3).row;
+      const ctx_r4 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r4.removeAuthSource(row_r4));
+    });
+    \u0275\u0275elementStart(7, "icon");
+    \u0275\u0275text(8, "delete");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    \u0275\u0275advance();
+    \u0275\u0275property("appTooltip", \u0275\u0275pipeBind1(2, 2, "DOMAINS.AUTHENTICATION_EDIT"));
+    \u0275\u0275advance(4);
+    \u0275\u0275property("appTooltip", \u0275\u0275pipeBind1(6, 4, "DOMAINS.AUTHENTICATION_REMOVE"));
+  }
+}
+var DomainAuthenticationComponent = class _DomainAuthenticationComponent {
+  _service = inject(DomainStateService);
+  /** List of auth sources associated with the active domain */
+  auth_sources = this._service.auth_sources;
+  loading = this._service.loading;
+  newAuthSource = () => this._service.editAuthSource();
+  editAuthSource = (source) => this._service.editAuthSource(source);
+  removeAuthSource = (source) => this._service.deleteAuthSource(source);
+  static \u0275fac = function DomainAuthenticationComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _DomainAuthenticationComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DomainAuthenticationComponent, selectors: [["domain-authentication"]], decls: 18, vars: 30, consts: [["name_template", ""], ["type_template", ""], ["actions_template", ""], [1, "flex", "h-full", "w-full", "flex-col"], ["header", "", 1, "p-4"], ["btn", "", 1, "mb-4", "w-full", "sm:w-48", 3, "click"], [1, "h-1/2", "w-full", "flex-1", "overflow-auto", "px-4"], ["mode", "indeterminate", 1, "w-full"], [1, "block", "min-w-160", "text-sm", 3, "data", "columns", "sortable", "empty_message"], [1, "flex", "flex-col", "px-4", "py-2"], [1, "text-sm"], [1, "text-xs", "opacity-30", "select-all"], [1, "mono", "p-4", "text-sm", "uppercase"], [1, "mx-auto", "flex", "items-center", "space-x-2", "p-2"], ["icon", "", "default", "", "ripple", "", 3, "click", "appTooltip"], ["icon", "", "default", "", "error", "", "ripple", "", 3, "click", "appTooltip"]], template: function DomainAuthenticationComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 3)(1, "div", 4)(2, "button", 5);
+      \u0275\u0275listener("click", function DomainAuthenticationComponent_Template_button_click_2_listener() {
+        return ctx.newAuthSource();
+      });
+      \u0275\u0275text(3);
+      \u0275\u0275pipe(4, "translate");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(5, "div", 6);
+      \u0275\u0275element(6, "app-progress-bar", 7)(7, "simple-table", 8);
+      \u0275\u0275pipe(8, "translate");
+      \u0275\u0275pipe(9, "translate");
+      \u0275\u0275pipe(10, "translate");
+      \u0275\u0275pipe(11, "translate");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275template(12, DomainAuthenticationComponent_ng_template_12_Template, 5, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor)(14, DomainAuthenticationComponent_ng_template_14_Template, 2, 1, "ng-template", null, 1, \u0275\u0275templateRefExtractor)(16, DomainAuthenticationComponent_ng_template_16_Template, 9, 6, "ng-template", null, 2, \u0275\u0275templateRefExtractor);
+    }
+    if (rf & 2) {
+      const name_template_r6 = \u0275\u0275reference(13);
+      const type_template_r7 = \u0275\u0275reference(15);
+      const actions_template_r8 = \u0275\u0275reference(17);
+      \u0275\u0275advance(3);
+      \u0275\u0275textInterpolate1(" ", \u0275\u0275pipeBind1(4, 7, "DOMAINS.AUTHENTICATION_NEW"), " ");
+      \u0275\u0275advance(3);
+      \u0275\u0275classProp("invisible", ctx.loading() !== true);
+      \u0275\u0275advance();
+      \u0275\u0275property("data", ctx.auth_sources)("columns", \u0275\u0275pureFunction3(26, _c3, \u0275\u0275pureFunction2(17, _c0, \u0275\u0275pipeBind1(8, 9, "COMMON.FIELD_NAME"), name_template_r6), \u0275\u0275pureFunction2(20, _c1, \u0275\u0275pipeBind1(9, 11, "DOMAINS.FIELD_TYPE"), type_template_r7), \u0275\u0275pureFunction2(23, _c2, \u0275\u0275pipeBind1(10, 13, "COMMON.ACTIONS"), actions_template_r8)))("sortable", true)("empty_message", \u0275\u0275pipeBind1(11, 15, "DOMAINS.AUTHENTICATION_EMPTY"));
+    }
+  }, dependencies: [
+    ProgressBarComponent,
+    TooltipDirective,
+    SimpleTableComponent,
+    IconComponent,
+    TranslatePipe
+  ], styles: ["\n[_nghost-%COMP%] {\n  height: 100%;\n  width: 100%;\n}\n/*# sourceMappingURL=domain-authentication.component.css.map */"] });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DomainAuthenticationComponent, [{
+    type: Component,
+    args: [{ selector: "domain-authentication", template: `
+        <div class="flex h-full w-full flex-col">
+            <div header class="p-4">
+                <button
+                    btn
+                    class="mb-4 w-full sm:w-48"
+                    (click)="newAuthSource()"
+                >
+                    {{ 'DOMAINS.AUTHENTICATION_NEW' | translate }}
+                </button>
+            </div>
+            <div class="h-1/2 w-full flex-1 overflow-auto px-4">
+                <app-progress-bar
+                    mode="indeterminate"
+                    class="w-full"
+                    [class.invisible]="loading() !== true"
+                />
+                <simple-table
+                    class="block min-w-160 text-sm"
+                    [data]="auth_sources"
+                    [columns]="[
+                        {
+                            key: 'name',
+                            name: 'COMMON.FIELD_NAME' | translate,
+                            content: name_template,
+                        },
+                        {
+                            key: 'type',
+                            name: 'DOMAINS.FIELD_TYPE' | translate,
+                            size: '6rem',
+                            content: type_template,
+                        },
+                        {
+                            key: 'actions',
+                            name: 'COMMON.ACTIONS' | translate,
+                            hide_name: true,
+                            content: actions_template,
+                            size: '6.5rem',
+                            sortable: false,
+                        },
+                    ]"
+                    [sortable]="true"
+                    [empty_message]="'DOMAINS.AUTHENTICATION_EMPTY' | translate"
+                />
+            </div>
+        </div>
+        <ng-template #name_template let-row="row">
+            <div class="flex flex-col px-4 py-2">
+                <div class="text-sm">{{ row.name }}</div>
+                <div class="text-xs opacity-30 select-all">{{ row.id }}</div>
+            </div>
+        </ng-template>
+        <ng-template #type_template let-row="row">
+            <div class="mono p-4 text-sm uppercase">{{ row.type }}</div>
+        </ng-template>
+        <ng-template #actions_template let-row="row">
+            <div class="mx-auto flex items-center space-x-2 p-2">
+                <button
+                    icon
+                    default
+                    ripple
+                    [appTooltip]="'DOMAINS.AUTHENTICATION_EDIT' | translate"
+                    (click)="editAuthSource(row)"
+                >
+                    <icon>edit</icon>
+                </button>
+                <button
+                    icon
+                    default
+                    error
+                    ripple
+                    [appTooltip]="'DOMAINS.AUTHENTICATION_REMOVE' | translate"
+                    (click)="removeAuthSource(row)"
+                >
+                    <icon>delete</icon>
+                </button>
+            </div>
+        </ng-template>
+    `, imports: [
+      ProgressBarComponent,
+      TooltipDirective,
+      SimpleTableComponent,
+      IconComponent,
+      TranslatePipe
+    ], styles: ["/* angular:styles/component:css;6b3bad7fe95d5122;/home/runner/work/backoffice/backoffice/src/app/domains/domain-authentication.component.ts */\n:host {\n  height: 100%;\n  width: 100%;\n}\n/*# sourceMappingURL=domain-authentication.component.css.map */\n"] }]
+  }], null, null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DomainAuthenticationComponent, { className: "DomainAuthenticationComponent", filePath: "src/app/domains/domain-authentication.component.ts", lineNumber: 107 });
+})();
+export {
+  DomainAuthenticationComponent
+};
+//# debugId=f074e4d6-8af7-575f-b784-5b8484033ced
+//# sourceMappingURL=chunk-MFBQKYYE.js.map

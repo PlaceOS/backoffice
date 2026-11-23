@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/ui/pipes/user.pipe.ts"
+  ],
+  "sourcesContent": [
+    "import { Pipe, PipeTransform } from '@angular/core';\nimport { User, users } from '@placeos/ts-client';\nimport { orThrow } from '@placeos/ts-client/compat';\nimport { newItem } from '../../common/placeos';\n\n/** User lookups by ID, email or card number. Requests in flight are shared. */\nconst USERS = new Map<string, Promise<User>>();\n\n@Pipe({\n    name: 'user',\n})\nexport class UserPipe implements PipeTransform {\n    public transform(id: string): Promise<User> {\n        if (!id) return Promise.resolve({} as User);\n        let user = USERS.get(id);\n        if (!user) {\n            // Drop a failed lookup so that a later render can try again\n            user = users\n                .show({ id })\n                .then(orThrow)\n                // The server can leave out the admin fields of the user\n                .then((data) => newItem(User, data))\n                .catch(() => {\n                    USERS.delete(id);\n                    return {} as User;\n                });\n            USERS.set(id, user);\n        }\n        return user;\n    }\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;AAMA,IAAM,QAAQ,oBAAI,IAAyB;AAKrC,IAAO,WAAP,MAAO,UAAiC;EACnC,UAAU,IAA0B;AACvC,QAAI,CAAC;AAAI,aAAO,QAAQ,QAAQ,CAAA,CAAU;AAC1C,QAAI,OAAO,MAAM,IAAI,EAAE;AACvB,QAAI,CAAC,MAAM;AAEP,aAAO,cACF,KAAK,EAAE,GAAE,CAAE,EACX,KAAK,OAAO,EAEZ,KAAK,CAAC,SAAS,QAAQ,2BAAM,IAAI,CAAC,EAClC,MAAM,MAAK;AACR,cAAM,OAAO,EAAE;AACf,eAAO,CAAA;MACX,CAAC;AACL,YAAM,IAAI,IAAI,IAAI;IACtB;AACA,WAAO;EACX;;qCAlBS,WAAQ;EAAA;mFAAR,WAAQ,MAAA,KAAA,CAAA;;;sEAAR,UAAQ,CAAA;UAHpB;WAAK;MACF,MAAM;KACT;;;",
+  "names": [],
+  "debugId": "fc322525-e464-52a0-8543-cf5d72a52722"
+}
