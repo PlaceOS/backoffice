@@ -16,7 +16,7 @@ import {
 } from '../../app/triggers/triggers.utilities';
 
 describe('triggers.utilities', () => {
-    it('generates trigger defaults and populated settings', () => {
+    it('generates trigger defaults', () => {
         expect(generateTriggerFormModel()).toEqual({
             name: '',
             description: '',
@@ -24,13 +24,27 @@ describe('triggers.utilities', () => {
             supported_methods: ['POST'],
             debounce_period: 0,
         });
-        // A saved trigger keeps an empty list of webhook methods
-        expect(
-            generateTriggerFormModel(
-                newItem(Trigger, { name: 'Hook', supported_methods: [] }),
-            ).supported_methods,
-        ).toEqual([]);
+    });
 
+    it.each([
+        { name: 'a new trigger gets POST', data: {}, methods: ['POST'] },
+        {
+            name: 'a saved trigger keeps an empty list',
+            data: { id: 'trigger-1', supported_methods: [] },
+            methods: [],
+        },
+        {
+            name: 'a copy keeps its list',
+            data: { id: '', supported_methods: ['GET'] },
+            methods: ['GET'],
+        },
+    ])('webhook methods: $name', ({ data, methods }) => {
+        expect(
+            generateTriggerFormModel(newItem(Trigger, data)).supported_methods,
+        ).toEqual(methods);
+    });
+
+    it('generates populated trigger settings', () => {
         expect(
             generateTriggerSettingsFormModel(
                 newItem(TriggerInstance, {

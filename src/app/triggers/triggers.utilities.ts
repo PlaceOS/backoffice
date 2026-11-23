@@ -79,8 +79,12 @@ export function generateTriggerFormModel(trigger?: Trigger): TriggerFormModel {
         name: trigger?.name || '',
         description: trigger?.description || '',
         enable_webhook: trigger?.enable_webhook || false,
-        // The server always sends the list. A saved empty list stays empty
-        supported_methods: trigger ? trigger.supported_methods : ['POST'],
+        // A saved trigger keeps its list, also when it is empty. A new trigger
+        // (from `newItem`, with an empty list) gets POST. A copy keeps its list
+        supported_methods:
+            trigger?.id || trigger?.supported_methods?.length
+                ? trigger.supported_methods
+                : ['POST'],
         debounce_period: Math.max(0, trigger?.debounce_period || 0),
     };
 }
