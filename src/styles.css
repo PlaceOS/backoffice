@@ -1568,7 +1568,7 @@ input[type='checkbox'][role='switch'] {
     background-color: var(--base-100);
     color: var(--base-content);
     box-shadow: 0 var(--shadow) 0 var(--base-300);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     line-height: 1.4;
     text-align: center;
     overflow-wrap: anywhere;
