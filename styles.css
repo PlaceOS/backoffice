@@ -5936,7 +5936,7 @@ input[type=checkbox][role=switch]:focus-visible {
   color: var(--base-content);
   box-shadow: 0 2px 0 hsl(0, 0%, 80%);
   box-shadow: 0 var(--shadow) 0 var(--base-300);
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.4;
   text-align: center;
   word-wrap: anywhere;
