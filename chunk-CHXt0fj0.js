@@ -1,0 +1,2 @@
+function a(e){typeof e==`function`?e():e.unsubscribe()}function l(e,i=()=>!0){return new Promise(o=>{let n=null,t=!1;n=e.subscribe(r=>{i(r)&&(n?a(n):t=!0,o(r))}),t&&n&&a(n)})}function b(e,i=()=>!0,o=50,n=6e4){return new Promise((t,r)=>{let c=Date.now(),s=()=>{let u=e();if(i(u))return t(u);if(Date.now()-c>=n)return r(new Error(`Timed out waiting for signal value`));setTimeout(s,o)};s()})}function f(e,i){return Promise.race([l(e.componentInstance.event,o=>o.reason===i),l(e.closed)])}export{f as n,l as r,b as t};
+//# debugId=a303e929-8088-5fe6-9088-f5c9ca62f31c

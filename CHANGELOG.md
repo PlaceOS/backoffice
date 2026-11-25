@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.2611.9] - 2026-11-17
+## [2.2611.10] - 2026-11-24
 
 ### Bug Fixes
 
@@ -59,6 +59,10 @@ All notable changes to this project will be documented in this file.
 
 - Module menu keeps its module while other rows are hovered
 
+#### Triggers
+
+- A new trigger gets POST as its webhook method again
+
 #### Ui
 
 - Stop the required-marker colour applying to checkboxes
@@ -75,6 +79,7 @@ All notable changes to this project will be documented in this file.
 - Toasts use the type that matches what happened
 - Empty uploads and invalid email domains show an error toast
 - Sidebar highlight slides from the last link, not the top
+- Sidebar loads applications once, popup refreshes on open
 
 ### Documentation
 

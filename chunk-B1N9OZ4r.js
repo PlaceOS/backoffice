@@ -1,0 +1,2 @@
+var o=[{path:`:id`,loadComponent:()=>import(`./chunk-XjhjXuJ7.js`).then(t=>t.TriggersComponent),children:[{path:`about`,loadComponent:()=>import(`./chunk-9fXTq0YY.js`).then(t=>t.TriggerAboutComponent)},{path:`instances`,loadComponent:()=>import(`./chunk-CHLwdepU.js`).then(t=>t.TriggerInstancesComponent)},{path:`extend/:id`,loadComponent:()=>import(`./chunk-Cm6gquuL.js`).then(t=>t.ExtensionOutletComponent)},{path:`**`,redirectTo:`about`}]},{path:`**`,redirectTo:`-`}];export{o as ROUTES};
+//# debugId=deac59d0-d358-50a7-a2ad-895cd265a357
