@@ -257,7 +257,6 @@ interface RepositoryCommit extends Partial<GitRepositoryCommit> {
                                                 $event.stopPropagation()
                                             "
                                             (click)="$event.stopPropagation()"
-                                            (keydown)="$event.stopPropagation()"
                                             [placeholder]="
                                                 'COMMON.SEARCH_FOR'
                                                     | translate
@@ -346,7 +345,6 @@ interface RepositoryCommit extends Partial<GitRepositoryCommit> {
                                                 $event.stopPropagation()
                                             "
                                             (click)="$event.stopPropagation()"
-                                            (keydown)="$event.stopPropagation()"
                                             [placeholder]="
                                                 'COMMON.SEARCH_FOR'
                                                     | translate

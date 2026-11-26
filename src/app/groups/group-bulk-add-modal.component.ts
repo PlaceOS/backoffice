@@ -1,5 +1,12 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Component, computed, inject, resource, signal } from '@angular/core';
+import {
+    Component,
+    computed,
+    inject,
+    resource,
+    signal,
+    viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogCloseDirective } from '../ui/controls/dialog';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -73,6 +80,9 @@ export interface GroupBulkAddResult<T extends GroupBulkAddItem> {
         }
         <main
             class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-2"
+            [attr.role]="tabs() ? 'tabpanel' : null"
+            [attr.id]="tabs()?.panelId(tab()) ?? null"
+            [attr.aria-labelledby]="tabs()?.tabId(tab()) ?? null"
         >
             @if (!show_permissions || tab() === 0) {
                 <app-form-field class="no-subscript">
@@ -238,6 +248,8 @@ export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
     public readonly loading = signal(false);
     public readonly permissions = signal(this._data.permissions ?? 0);
     public readonly tab = signal(0);
+    /** The tabs, shown only with permissions. The content is their panel. */
+    public readonly tabs = viewChild(TabsComponent);
     public readonly title = this._data.title;
     public readonly placeholder = this._data.placeholder;
     public readonly empty_message = this._data.empty_message;

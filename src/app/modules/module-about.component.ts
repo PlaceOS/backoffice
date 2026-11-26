@@ -1,8 +1,17 @@
-import { Component, inject, signal } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    inject,
+    Injector,
+    signal,
+    viewChild,
+} from '@angular/core';
 import { hasSupportRole } from '../common/support-access';
 
 import { Dialog } from '@angular/cdk/dialog';
 import { RouterModule } from '@angular/router';
+import { refocusIfLost } from '../common/focus';
+import { ActiveItemService } from '../common/item.service';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { CustomTooltipComponent } from '../ui/custom-tooltip.component';
@@ -190,7 +199,11 @@ import { ModuleStateService } from './module-state.service';
             <hr class="my-4" />
             @let other_settings_value = other_settings();
             @if (settings() && other_settings_value) {
-                <section>
+                <section
+                    #settings_section
+                    tabindex="-1"
+                    class="outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid"
+                >
                     <a-settings-form
                         [id]="item.id"
                         [merge]="true"
@@ -198,6 +211,19 @@ import { ModuleStateService } from './module-state.service';
                         [merge_settings]="other_settings_value || []"
                     />
                 </section>
+            } @else if (settings_error()) {
+                <div role="alert" class="flex flex-col items-center gap-4 p-8">
+                    <p>{{ 'COMMON.SETTINGS_LOAD_ERROR' | translate }}</p>
+                    <button
+                        btn
+                        type="button"
+                        [attr.aria-busy]="settings_retrying()"
+                        [attr.aria-disabled]="settings_retrying()"
+                        (click)="retrySettings()"
+                    >
+                        {{ 'COMMON.RETRY' | translate }}
+                    </button>
+                </div>
             } @else {
                 <div
                     class="m-auto flex flex-col items-center justify-center p-8"
@@ -235,6 +261,22 @@ export class ModuleAboutComponent {
     public readonly hasSupportRole = hasSupportRole;
     private _service = inject(ModuleStateService);
     private _dialog = inject(Dialog);
+    private _item_service = inject(ActiveItemService);
+    /** Whether the settings failed to load */
+    public readonly settings_error = this._item_service.settings_error;
+    private readonly _settings_section =
+        viewChild<ElementRef<HTMLElement>>('settings_section');
+    private readonly _injector = inject(Injector);
+
+    /** Retry the settings. Focus moves from Retry to the settings that load. */
+    public async retrySettings() {
+        if (!(await this._item_service.retrySettings())) return;
+        refocusIfLost(
+            this._injector,
+            () => this._settings_section()?.nativeElement,
+        );
+    }
+    public readonly settings_retrying = this._item_service.settings_retrying;
 
     /** Driver for the active item */
     public readonly driver = this._service.driver;

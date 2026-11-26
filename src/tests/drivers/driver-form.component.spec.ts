@@ -152,4 +152,65 @@ describe('DriverFormComponent', () => {
             encryption_level: EncryptionLevel.Support,
         });
     });
+
+    it('keeps the dialog open when the settings fail, and a save writes only the settings', async () => {
+        mocks.addDriver.mockResolvedValue(
+            mockReply(newItem(Driver, { id: 'driver-1' })),
+        );
+        mocks.addSettings
+            .mockRejectedValueOnce(new Error('500'))
+            .mockResolvedValueOnce(mockReply({}));
+        component.formModel.update((model) => ({
+            ...model,
+            name: 'Display',
+            module_name: 'Display',
+            settings: 'volume: 10\n',
+        }));
+        const dialog_ref = TestBed.inject(DialogRef);
+
+        await component.submit();
+
+        expect(dialog_ref.close).not.toHaveBeenCalled();
+        expect(component.formModel().settings).toBe('volume: 10\n');
+
+        await component.submit();
+
+        expect(mocks.addDriver).toHaveBeenCalledOnce();
+        expect(mocks.addSettings).toHaveBeenCalledTimes(2);
+        expect(mocks.addSettings.mock.calls[1][0].body).toMatchObject({
+            parent_id: 'driver-1',
+            settings_string: 'volume: 10\n',
+        });
+        expect(dialog_ref.close).toHaveBeenCalledOnce();
+    });
+
+    it('sends one settings create when a second save comes during a settings retry', async () => {
+        mocks.addDriver.mockResolvedValue(
+            mockReply(newItem(Driver, { id: 'driver-1' })),
+        );
+        mocks.addSettings.mockRejectedValueOnce(new Error('500'));
+        component.formModel.update((model) => ({
+            ...model,
+            name: 'Display',
+            module_name: 'Display',
+            settings: 'volume: 10\n',
+        }));
+        await component.submit();
+        expect(component.settings_retry()).not.toBeNull();
+
+        // The retry stays pending while a second save comes, such as from
+        // the save hotkey
+        let finish: (reply: ReturnType<typeof mockReply>) => void;
+        mocks.addSettings.mockReturnValueOnce(
+            new Promise((resolve) => (finish = resolve)),
+        );
+        const retry = component.submit();
+        const second = component.submit();
+        finish(mockReply({}));
+        await Promise.all([retry, second]);
+
+        // One create for the first save and one for the retry
+        expect(mocks.addSettings).toHaveBeenCalledTimes(2);
+        expect(TestBed.inject(DialogRef).close).toHaveBeenCalledOnce();
+    });
 });

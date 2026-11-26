@@ -1,10 +1,12 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
+import { AdminDataService } from '../admin/admin-data.service';
 import { extensionsForItem } from '../common/api';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { isSubsystemUser } from '../common/support-access';
 import { ItemShellComponent } from '../ui/item-shell.component';
 import { UsersStateService } from './users-state.service';
+import { BackofficeUsersService } from './users.service';
 
 @Component({
     selector: 'new-users-view',
@@ -26,6 +28,15 @@ export class UsersComponent {
     public readonly name = 'users';
     public readonly item = this._service.item;
     public readonly counts = this._state.counts;
+
+    constructor() {
+        const admin_data = inject(AdminDataService);
+        const user = inject(BackofficeUsersService);
+        // Only admins can list domains. The list layouts show the domain filter when they load.
+        effect(() => {
+            if (user.current()?.sys_admin) void admin_data.loadDomains();
+        });
+    }
 
     public userActions() {
         const item = this._service.activeOf('users');
@@ -70,15 +81,7 @@ export class UsersComponent {
                 icon: { content: 'groups' },
                 count: this.counts()?.groups || 0,
             },
-            {
-                id: 'history',
-                name: i18n('USERS.TAB_HISTORY'),
-                icon: { content: 'history' },
-            },
             ...extensionsForItem(this.item(), this.name),
-        ].filter(
-            (tab) =>
-                !isSubsystemUser() || !['groups', 'history'].includes(tab.id),
-        ),
+        ].filter((tab) => !isSubsystemUser() || tab.id !== 'groups'),
     );
 }

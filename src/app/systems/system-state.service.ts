@@ -319,7 +319,7 @@ export class SystemStateService extends AsyncHandler {
     }
 
     /**
-     * Open confirmation modal for stopping the active system
+     * Open confirmation modal for starting the active system
      */
     public async startSystem() {
         const details = await this.confirm({
@@ -641,7 +641,19 @@ export class SystemStateService extends AsyncHandler {
                 }
             }
         }
-        const sorted_ids = sorted_modules.map((m) => m.id);
+        // The loaded list can be one page, and can hold modules that are not
+        // in the system. Sort only the system's modules, and keep the rest of
+        // them after the sorted ones, so the save drops none.
+        const system_ids = this.active_item.modules;
+        const in_system = new Set(system_ids);
+        const loaded_ids = sorted_modules
+            .map((m) => m.id)
+            .filter((id) => in_system.has(id));
+        const loaded = new Set(loaded_ids);
+        const sorted_ids = [
+            ...loaded_ids,
+            ...system_ids.filter((id) => !loaded.has(id)),
+        ];
 
         const resp = await this._saveSystem({ modules: sorted_ids }).catch(
             (err) => {
@@ -658,14 +670,15 @@ export class SystemStateService extends AsyncHandler {
         }
     }
 
+    /** Save a new zone order. Resolves `true` only when the server saved it */
     public async reorderZones(order: string[]) {
-        if (order.length !== this.active_item.zones.length) return;
+        if (order.length !== this.active_item.zones.length) return false;
         const details = await this.confirm({
             title: 'Change order?',
             content: `Are you sure you want to change the zone priority?<br>Settings will be updated immediately for the system.`,
             icon: { type: 'icon', content: 'layers' },
         });
-        if (details.reason !== 'done') return;
+        if (details.reason !== 'done') return false;
         details.loading('Updating zone order...');
         const resp = await this._saveSystem({ zones: order }).catch((err) => {
             notifyError(
@@ -675,9 +688,10 @@ export class SystemStateService extends AsyncHandler {
         });
         if (resp) {
             notifySuccess(`Successfully reordered system zones.`);
-            if (resp) this._state.replaceItem(resp as unknown as Identity);
+            this._state.replaceItem(resp as unknown as Identity);
         }
         details.close();
+        return !!resp;
     }
 
     /**
