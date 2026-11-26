@@ -6,14 +6,13 @@
 import { APIRequestContext, Browser, Locator, Page } from '@playwright/test';
 import {
     ENGINE_API,
-    asList,
     createResource,
     getJson,
     uniqueName,
 } from '../../../support/api';
 import { buildStorageState, mintToken } from '../../../support/auth';
 import { APP_URL, BACKEND_URL } from '../../../support/env';
-import { Cleanup, expect } from '../../../support/fixtures';
+import { Cleanup } from '../../../support/fixtures';
 
 export interface ApiUser {
     id: string;
@@ -116,25 +115,6 @@ export async function createGroup(
     });
     cleanup.add(`${ENGINE_API}/groups/${group.id}`);
     return group;
-}
-
-/**
- * Wait until a search of `path` lists the item `id`. Lists come from
- * Elasticsearch, so a new item shows a moment after the API made it.
- */
-export async function waitForListed(
-    api: APIRequestContext,
-    path: string,
-    q: string,
-    id: string,
-): Promise<void> {
-    await expect
-        .poll(async () =>
-            asList<{ id: string }>(await getJson(api, path, { q })).map(
-                (item) => item.id,
-            ),
-        )
-        .toContain(id);
 }
 
 /** HTTP status of a GET, to check that an item is gone */

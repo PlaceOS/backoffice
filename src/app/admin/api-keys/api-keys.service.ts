@@ -1,5 +1,12 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { computed, inject, resource, Service, signal } from '@angular/core';
+import {
+    computed,
+    inject,
+    linkedSignal,
+    resource,
+    Service,
+    signal,
+} from '@angular/core';
 import { api_keys, ApiKey, root, User, users } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { addDays, getUnixTime } from 'date-fns';
@@ -38,6 +45,9 @@ export function apiKeyExpiry(
 ): number | undefined {
     return expires_at ?? (ttl ? getUnixTime(now) + ttl : undefined);
 }
+
+/** Saves to try before a form closes, so a save loop always ends */
+const MAX_SAVE_ATTEMPTS = 20;
 
 @Service()
 export class APIKeyService {
@@ -87,6 +97,25 @@ export class APIKeyService {
         this._available_keys.hasValue() ? this._available_keys.value() : [],
     );
 
+    /**
+     * Text of the error of the last key list load, or empty when it loaded.
+     * A retry keeps the error until it ends, so the Retry button stays
+     */
+    public readonly load_error = linkedSignal<string, string>({
+        source: () => this._available_keys.status(),
+        computation: (status, previous) => {
+            if (status === 'error') {
+                return describeError(this._available_keys.error());
+            }
+            return status === 'reloading' ? (previous?.value ?? '') : '';
+        },
+    }).asReadonly();
+
+    /** Loads the key list again, such as after a failed load */
+    public reloadKeys() {
+        this._available_keys.reload();
+    }
+
     public async selectDefaultDomain() {
         return this._admin_data.selectDefaultDomain('api-keys');
     }
@@ -95,29 +124,34 @@ export class APIKeyService {
         const ref = this._dialog.open(APIKeyModalComponent, {
             data: { domain: this._domain() },
         });
-        const details = await waitForDialog<APIKeyFormData>(ref, 'done');
-        if (details?.reason !== 'done') return;
-        ref.componentInstance.loading.set('Creating new API key...');
-        const domain = this._domain();
-        const api_key = details.metadata;
-        const key = await api_keys
-            .create({
-                body: keyBody({
-                    ...api_key,
-                    expires_at: apiKeyExpiry(api_key),
-                    authority_id: domain.id,
-                }),
-            })
-            .then(orThrow)
-            .catch((_) => {
-                ref.close();
-                notifyError(describeError(_));
-                return null;
-            });
-        if (!key) return;
-        this._last_key.set(key);
-        this._change.set(Date.now());
-        notifySuccess('Successfully created new API key.');
+        // A failed save keeps the form open, so the user can fix it and
+        // save again. Closing the form ends the loop.
+        for (let attempt = 0; attempt < MAX_SAVE_ATTEMPTS; attempt++) {
+            const details = await waitForDialog<APIKeyFormData>(ref, 'done');
+            if (details?.reason !== 'done') return;
+            ref.componentInstance.loading.set('Creating new API key...');
+            const domain = this._domain();
+            const api_key = details.metadata;
+            const key = await api_keys
+                .create({
+                    body: keyBody({
+                        ...api_key,
+                        expires_at: apiKeyExpiry(api_key),
+                        authority_id: domain.id,
+                    }),
+                })
+                .then(orThrow)
+                .catch((_) => {
+                    ref.componentInstance.loading.set('');
+                    notifyError(describeError(_));
+                    return null;
+                });
+            if (!key) continue;
+            this._last_key.set(key);
+            this._change.set(Date.now());
+            notifySuccess('Successfully created new API key.');
+            break;
+        }
         ref.close();
     }
 
@@ -166,26 +200,31 @@ export class APIKeyService {
         const ref = this._dialog.open(APIKeyModalComponent, {
             data: { domain: this._domain(), key },
         });
-        const details = await waitForDialog<APIKeyFormData>(ref, 'done');
-        if (details?.reason !== 'done') return;
-        ref.componentInstance.loading.set('Updating API key...');
-        const domain = this._domain();
-        try {
-            await api_keys
-                .update({
-                    id: key.id,
-                    body: keyBody({
-                        ...details.metadata,
-                        authority_id: domain.id,
-                    }),
-                })
-                .then(orThrow);
-        } catch (_) {
-            ref.close();
-            return notifyError(describeError(_));
+        // As for a new key, a failed save keeps the form open
+        for (let attempt = 0; attempt < MAX_SAVE_ATTEMPTS; attempt++) {
+            const details = await waitForDialog<APIKeyFormData>(ref, 'done');
+            if (details?.reason !== 'done') return;
+            ref.componentInstance.loading.set('Updating API key...');
+            const domain = this._domain();
+            try {
+                await api_keys
+                    .update({
+                        id: key.id,
+                        body: keyBody({
+                            ...details.metadata,
+                            authority_id: domain.id,
+                        }),
+                    })
+                    .then(orThrow);
+            } catch (_) {
+                ref.componentInstance.loading.set('');
+                notifyError(describeError(_));
+                continue;
+            }
+            this._change.set(Date.now());
+            notifySuccess('Successfully updated API key.');
+            break;
         }
-        this._change.set(Date.now());
-        notifySuccess('Successfully updated API key.');
         ref.close();
     }
 

@@ -69,8 +69,11 @@ const NAVIGATION_KEYS = new Set([
                     <button
                         btn
                         ripple
-                        class="w-32 pr-2"
+                        class="min-w-32 pr-2"
                         [disabled]="disable_confirm()"
+                        [attr.aria-keyshortcuts]="
+                            confirm_text() ? null : 'Alt+Shift+S'
+                        "
                         (click)="save.emit()"
                     >
                         <div class="flex items-center space-x-2">
@@ -82,7 +85,9 @@ const NAVIGATION_KEYS = new Set([
                             </div>
                             <div class="flex-1"></div>
                             @if (!confirm_text()) {
-                                <div class="keycap">S</div>
+                                <div class="keycap" aria-hidden="true">
+                                    Alt ⇧ S
+                                </div>
                             }
                         </div>
                     </button>

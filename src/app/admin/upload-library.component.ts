@@ -4,10 +4,11 @@ import { Dialog } from '@angular/cdk/dialog';
 import {
     Component,
     computed,
+    effect,
     inject,
-    OnInit,
     resource,
     signal,
+    untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { type Upload, uploads } from '@placeos/ts-client';
@@ -17,7 +18,7 @@ import { readError } from '../common/errors';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import { notifyError, notifySuccess } from '../common/notifications';
-import { setAuthCookie } from '../common/placeos';
+import { authority, setAuthCookie } from '../common/placeos';
 import { UploadsService } from '../common/uploads.service';
 import { confirmAndRun } from '../overlays/confirm-modal.component';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
@@ -28,7 +29,6 @@ import { DateFromPipe } from '../ui/pipes/date-from.pipe';
 import { SimpleTableComponent } from '../ui/simple-table.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
-import { AdminDomainSelectComponent } from './admin-domain-select.component';
 import { ViewUploadModalComponent } from './view-upload-modal.component';
 
 function getMimeType(filename: string): string {
@@ -79,18 +79,31 @@ const UPLOAD_POLL_MS = 250;
 /** Stop checking upload progress after one hour */
 const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
 
+/** Wait after an upload finishes before the list loads again */
+const UPLOAD_RELOAD_MS = 1000;
+
 @Component({
     selector: 'upload-library',
     template: `
         <div class="flex h-full w-full flex-col">
+            <!-- On a phone the search and upload go below the title -->
             <div
-                class="mt-4 mb-2 flex items-center justify-between space-x-2 px-4"
+                class="mt-4 mb-4 flex flex-wrap items-center justify-between gap-2 px-4"
             >
                 <div class="text-2xl">
                     {{ 'ADMIN.UPLOADS_LIB_HEADER' | translate }}
                 </div>
-                <div class="flex items-center space-x-2">
-                    <admin-domain-select key="upload-library" />
+                <div class="flex min-w-0 items-center gap-2">
+                    <app-form-field class="no-subscript w-[20rem] max-w-full">
+                        <icon prefix class="relative -left-1 text-2xl">
+                            search
+                        </icon>
+                        <input
+                            placeholder="Search for file..."
+                            aria-label="Search for file"
+                            [(ngModel)]="search_term"
+                        />
+                    </app-form-field>
                     <button
                         icon
                         default
@@ -110,15 +123,6 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
                         (change)="handleFileEvent($event)"
                     />
                 </div>
-            </div>
-            <div class="mb-4 flex items-center justify-end space-x-2 px-4">
-                <app-form-field class="no-subscript w-[20rem] max-w-full">
-                    <icon prefix class="relative -left-1 text-2xl">search</icon>
-                    <input
-                        placeholder="Search for file..."
-                        [(ngModel)]="search_term"
-                    />
-                </app-form-field>
             </div>
             <div class="flex h-1/2 min-h-0 w-full flex-1 flex-col px-4 pb-4">
                 <app-progress-bar
@@ -252,7 +256,6 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
         ProgressBarComponent,
         TooltipDirective,
         FormFieldComponent,
-        AdminDomainSelectComponent,
         IconComponent,
         SimpleTableComponent,
         TranslatePipe,
@@ -260,7 +263,7 @@ const MAX_UPLOAD_POLLS = (60 * 60 * 1000) / UPLOAD_POLL_MS;
         DateFromPipe,
     ],
 })
-export class UploadLibraryComponent extends AsyncHandler implements OnInit {
+export class UploadLibraryComponent extends AsyncHandler {
     private _dialog = inject(Dialog);
     private _clipboard = inject(Clipboard);
     private _uploads = inject(UploadsService);
@@ -269,11 +272,35 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     public readonly search_term = this._admin_data.filter(
         'upload-library:search',
     );
-    public readonly domain = this._admin_data.selectedDomain('upload-library');
+    /**
+     * The server lists only the uploads of the domain of the host. It refuses
+     * the storage of another domain, also for a sys admin, so there is no
+     * domain picker.
+     */
+    public readonly domain = computed(() => authority());
     public readonly refresh = signal(0);
     public readonly loading = signal(false);
     /** Table sort, kept when the user leaves the page */
     public readonly sort = this._admin_data.sort('upload-library:uploads');
+
+    private _completed_seen = this._uploads.completed_count();
+    /**
+     * Load the list again a moment after uploads finish, also a retry from
+     * the upload list. One load covers the uploads that finish together.
+     */
+    private readonly _reload_on_upload = effect(() => {
+        const completed = this._uploads.completed_count();
+        untracked(() => {
+            if (completed > this._completed_seen) {
+                this.timeout(
+                    'reload',
+                    () => this.refresh.update((_) => _ + 1),
+                    UPLOAD_RELOAD_MS,
+                );
+            }
+            this._completed_seen = completed;
+        });
+    });
 
     private readonly _uploads_list = resource({
         params: () => ({
@@ -284,8 +311,6 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
         loader: async ({ params, abortSignal }) => {
             const { domain, search } = params;
             if (!domain) return [] as UploadInfo[];
-            // The server lists the uploads of the authority of the request.
-            // It ignored the `authority_id` that 6.x sent
             const response = await uploads
                 .query(
                     { limit: 1000, file_search: search || null },
@@ -313,10 +338,6 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
     public readonly uploads_list = computed(
         () => this._uploads_list.value() || [],
     );
-
-    public async ngOnInit() {
-        await this._admin_data.selectDefaultDomain('upload-library');
-    }
 
     public sizeOf(bytes: number) {
         const sizes = [' B', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -381,7 +402,6 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
                             }
                             this.clearTimeout('upload_list');
                             this.loading.set(false);
-                            if (success) this.refresh.update((_) => _ + 1);
                         } else {
                             this.timeout(
                                 'upload_list',

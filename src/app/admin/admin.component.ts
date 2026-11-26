@@ -35,6 +35,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
                                 [queryParams]="item.query || {}"
                                 routerLinkActive="bg-secondary! text-secondary-content"
                                 ariaCurrentWhenActive="page"
+                                [attr.aria-label]="item.name"
                             >
                                 <div class="flex w-full items-center space-x-2">
                                     <icon class="text-2xl" [icon]="item.icon" />

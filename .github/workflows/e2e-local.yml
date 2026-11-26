@@ -71,15 +71,39 @@ jobs:
               run: bun run postinstall
 
             # This machine is not a fresh VM. An aborted run can leave the
-            # stack up or the dev server port held.
+            # stack up or the dev server port held. Touch only what this job
+            # makes: other jobs (e.g. the user-interfaces suite) share the
+            # machine and the Docker daemon.
             - name: Reclaim the machine from an earlier run
               run: |
                   e2e/stack/down.sh --volumes || true
-                  lsof -nP -iTCP:4216 -sTCP:LISTEN -t 2>/dev/null | xargs kill -9 2>/dev/null || true
-                  docker image prune -f || true
+                  # Stop a dev server on 4216 only if it runs from this
+                  # workspace, i.e. an earlier run of this job started it
+                  for pid in $(lsof -nP -iTCP:4216 -sTCP:LISTEN -t 2>/dev/null); do
+                      cwd=$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')
+                      case "$cwd" in
+                          "$GITHUB_WORKSPACE" | "$GITHUB_WORKSPACE"/*) kill "$pid" || true ;;
+                          *) echo "::warning::Port 4216 is held by pid $pid ($cwd), which this job did not start" ;;
+                      esac
+                  done
 
             - name: Install Playwright browser
               run: bunx playwright install chromium
+
+            # The pull below leaves the old images with no tag. Record the IDs
+            # of the stack's images now, so the teardown can remove the old
+            # ones and no other image. Compose needs the env files to load the
+            # project; up.sh makes them the same way.
+            - name: Record the stack images before the pull
+              continue-on-error: true
+              run: |
+                  mkdir -p e2e/stack/.secrets
+                  touch e2e/stack/.secrets/.env.secret_key e2e/stack/.secrets/.env.public_key
+                  : > "$RUNNER_TEMP/e2e-stack-images"
+                  for ref in $(docker compose -p backoffice-e2e -f e2e/stack/docker-compose.yml config --images 2>/dev/null); do
+                      docker image inspect --format '{{.Id}}' "$ref" 2>/dev/null \
+                          >> "$RUNNER_TEMP/e2e-stack-images" || true
+                  done
 
             # Without a pull, `latest` stays the image of the day the runner was
             # set up. A pull that fails or stalls must not fail the run: the
@@ -165,10 +189,30 @@ jobs:
                   retention-days: 14
                   if-no-files-found: warn
 
-            # The volumes go too: every run starts from a cold stack
+            # The volumes go too: every run starts from a cold stack.
+            # Then remove the old stack images that the pull left with no
+            # tag. Only the IDs recorded before the pull are candidates, so no
+            # image outside the stack is touched. An image that the stack
+            # still uses (e.g. one pinned by digest), that has a tag, or that
+            # a container uses, stays (no -f). --no-prune keeps untagged
+            # parent images that are not in the list.
             - name: Tear down the stack
               if: ${{ always() }}
-              run: e2e/stack/down.sh --volumes
+              run: |
+                  e2e/stack/down.sh --volumes
+                  list="$RUNNER_TEMP/e2e-stack-images"
+                  [ -s "$list" ] || exit 0
+                  current=""
+                  for ref in $(docker compose -p backoffice-e2e -f e2e/stack/docker-compose.yml config --images 2>/dev/null); do
+                      current="$current $(docker image inspect --format '{{.Id}}' "$ref" 2>/dev/null || true)"
+                  done
+                  for id in $(sort -u "$list"); do
+                      case " $current " in *" $id "*) continue ;; esac
+                      tags=$(docker image inspect --format '{{len .RepoTags}}' "$id" 2>/dev/null) || continue
+                      if [ "$tags" = 0 ]; then
+                          docker rmi --no-prune "$id" || true
+                      fi
+                  done
 
             # Only on failure, so a green run stays quiet. Plain curl, not a
             # third-party action at a mutable ref: this runs on a persistent

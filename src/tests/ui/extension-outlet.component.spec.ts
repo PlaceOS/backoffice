@@ -4,7 +4,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { metadata } from '@placeos/ts-client';
 import { of } from 'rxjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+    afterEach,
+    beforeEach,
+    describe,
+    expect,
+    it,
+    type MockInstance,
+    vi,
+} from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
 import { PlaceResource } from '../../app/common/types';
 import {
@@ -31,6 +39,7 @@ vi.mock('../../app/common/placeos', async () => {
     const { signal } = await import('@angular/core');
     return {
         online: signal(true),
+        setAuthCookie: vi.fn(async () => true),
         backofficeConfig: vi.fn(() => ({
             extend: {
                 systems: {
@@ -144,6 +153,75 @@ describe('ExtensionOutletComponent', () => {
         });
         expect(replaceItem).toHaveBeenCalledTimes(2);
         expect(reply).toMatchObject({ action: 'result', status: 'success' });
+    });
+
+    it('saves the active item when the frame sends another id', async () => {
+        await send({ action: 'update', content: { id: 'sys-2', name: 'X' } });
+
+        expect(save).toHaveBeenLastCalledWith({ id: 'sys-1', name: 'X' });
+    });
+
+    describe('resource', () => {
+        const upload = (origin: string, path = 'upload-1/url') =>
+            `${origin}/api/engine/v2/uploads/${path}`;
+        let fetch_spy: MockInstance<typeof fetch>;
+
+        beforeEach(() => {
+            fetch_spy = vi
+                .spyOn(window, 'fetch')
+                // The Blob of the page, which FileReader takes
+                .mockResolvedValue({
+                    ok: true,
+                    blob: async () => new Blob(['image']),
+                } as Response);
+        });
+        afterEach(() => fetch_spy.mockRestore());
+
+        /** Ask for `src` when the active item holds it */
+        const load = (src: string) => {
+            item.set({
+                id: 'sys-1',
+                name: 'Room 1',
+                images: [src],
+            } as PlaceResource);
+            return send({ action: 'resource', name: src });
+        };
+
+        it('does not load an upload that the item holds only as a key', async () => {
+            const src = upload(location.origin);
+            item.set({
+                id: 'sys-1',
+                name: 'Room 1',
+                settings: { [src]: true },
+            } as PlaceResource);
+
+            const reply = await send({ action: 'resource', name: src });
+
+            expect(fetch_spy).not.toHaveBeenCalled();
+            expect(reply).toMatchObject({ status: 'success', content: src });
+        });
+
+        it('loads an upload of the item as a data URL', async () => {
+            await load(upload(location.origin));
+
+            // The file is read after the first reply wait
+            await vi.waitFor(() =>
+                expect(`${replies.at(-1)?.content}`).toMatch(/^data:/),
+            );
+            expect(fetch_spy).toHaveBeenCalledTimes(1);
+        });
+
+        it.each([
+            ['another origin', upload('https://other.example')],
+            ['another API', upload(location.origin, '../users/current')],
+            ['another upload route', upload(location.origin, 'upload-1')],
+            ['a query', `${upload(location.origin)}?a=1`],
+        ])('gives back a URL on %s without loading it', async (_, src) => {
+            const reply = await load(src);
+
+            expect(fetch_spy).not.toHaveBeenCalled();
+            expect(reply).toMatchObject({ status: 'success', content: src });
+        });
     });
 
     it('replies with the loaded metadata', async () => {

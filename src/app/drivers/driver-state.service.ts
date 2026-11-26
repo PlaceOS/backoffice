@@ -10,6 +10,8 @@ import {
     notifyInfo,
     notifySuccess,
 } from '../common/notifications';
+import { openedTabs } from '../common/opened-tabs';
+import { clearSupportModuleCache } from '../common/support-access';
 import { collectPages, Identity } from '../common/types';
 import { openConfirmModal } from '../overlays/confirm-modal.component';
 import { ViewResponseModalComponent } from '../overlays/view-response-modal.component';
@@ -48,22 +50,44 @@ export class DriverStateService {
         () => this._updates_available.value() || false,
     );
 
+    private readonly _driver_id = computed(() => this.item()?.id || undefined);
+    // The module list can be long. It only loads once the Modules tab is
+    // opened. Until then a single row query gives the tab count.
+    private readonly _opened_tabs = openedTabs(this._driver_id);
+    private readonly _load_modules = computed(() =>
+        this._opened_tabs().has('modules'),
+    );
+
     private readonly _modules = resource({
+        // The id, not the item: a save gives a new item object, which must
+        // not load every module page again
         params: () => ({
-            item: this.item(),
+            driver_id: this._driver_id(),
             changed: this._modules_change(),
+            full: this._load_modules(),
         }),
-        loader: async ({ params: { item }, abortSignal }) => {
-            if (!item) return { data: [] as Module[], total: 0 };
+        loader: async ({ params: { driver_id, full }, abortSignal }) => {
+            const empty = { data: [] as Module[], total: 0 };
+            if (!driver_id) return empty;
+            // The signal goes to each next page, so a newer load stops this one
+            const query = modules
+                .query(
+                    { driver_id, limit: full ? 500 : 1 },
+                    { signal: abortSignal },
+                )
+                .then(orThrowPage);
+            if (!full) {
+                // No count on a failure, so the tab shows "?" and not 0
+                return query
+                    .then(({ total }) => ({ ...empty, total }))
+                    .catch(() => ({ data: [] as Module[], total: undefined }));
+            }
             // Load every page so the list matches the tab count
-            const data = await collectPages(
-                modules
-                    .query(
-                        { driver_id: item.id, limit: 500 },
-                        { signal: abortSignal },
-                    )
-                    .then(orThrowPage),
-            ).catch(reportLoadError([] as Module[]));
+            const data = await collectPages(query).catch((e: unknown) =>
+                abortSignal.aborted
+                    ? ([] as Module[])
+                    : reportLoadError([] as Module[])(e),
+            );
             return { data, total: data.length };
         },
     });
@@ -211,6 +235,8 @@ export class DriverStateService {
             });
         details.close();
         if (!removed) return;
+        // The support group module list keeps modules for a while. Drop it.
+        clearSupportModuleCache();
         this._modules_change.update((change) => change + 1);
         notifySuccess(`Successfully removed module.`);
     }

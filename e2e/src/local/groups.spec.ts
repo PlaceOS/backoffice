@@ -4,17 +4,13 @@ import {
     asList,
     createResource,
     getJson,
+    lastWord,
     uniqueName,
+    waitForListed,
 } from '../../support/api';
 import { Cleanup, expect, test } from '../../support/fixtures';
 import { FeaturePage } from '../pages';
-import {
-    ApiGroup,
-    createGroup,
-    createUser,
-    statusOf,
-    waitForListed,
-} from './support/people';
+import { ApiGroup, createGroup, createUser, statusOf } from './support/people';
 
 /**
  * Groups on the local backend: user stories US-GRP-* in
@@ -48,9 +44,6 @@ async function createZone(api: APIRequestContext, cleanup: Cleanup) {
     cleanup.add(`${ENGINE_API}/zones/${zone.id}`);
     return zone;
 }
-
-/** The last word of a name from `uniqueName()`, which no other item has */
-const lastWord = (name: string) => name.split(' ').pop() ?? name;
 
 test.describe('Groups on the local backend', () => {
     let groups: FeaturePage;
@@ -93,6 +86,14 @@ test.describe('Groups on the local backend', () => {
         }) => {
             const match = await createGroup(api, cleanup);
             const other = await createGroup(api, cleanup);
+            for (const group of [match, other]) {
+                await waitForListed(
+                    api,
+                    GROUPS_API,
+                    lastWord(group.name),
+                    group.id,
+                );
+            }
             await groups.goto();
 
             await groups.search(lastWord(match.name));
@@ -107,6 +108,12 @@ test.describe('Groups on the local backend', () => {
             cleanup,
         }) => {
             const group = await createGroup(api, cleanup);
+            await waitForListed(
+                api,
+                GROUPS_API,
+                lastWord(group.name),
+                group.id,
+            );
             await groups.goto();
             await groups.search(lastWord(group.name));
 
@@ -290,6 +297,13 @@ test.describe('Groups on the local backend', () => {
                 default_permissions: 1,
             });
             const user = await createUser(api, cleanup);
+            // The user search comes from Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/users`,
+                lastWord(user.name),
+                user.id,
+            );
             await groups.gotoItem(group.id, 'users');
             await expect(groups.tabContent).toContainText(
                 'No users associated with this group',

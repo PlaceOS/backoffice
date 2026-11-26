@@ -1,5 +1,13 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    inject,
+    Injector,
+    viewChild,
+} from '@angular/core';
+import { refocusIfLost } from '../common/focus';
+import { ActiveItemService } from '../common/item.service';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { TooltipDirective } from '../ui/controls/tooltip.directive';
 import { SettingsFormComponent } from '../ui/forms/settings-form.component';
@@ -177,7 +185,11 @@ import { SystemStateService } from './system-state.service';
             <!-- The settings editor is large, so it loads with the settings -->
             @defer (on immediate) {
                 @if (settings() && other_settings_value) {
-                    <section>
+                    <section
+                        #settings_section
+                        tabindex="-1"
+                        class="outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid"
+                    >
                         <a-settings-form
                             [id]="item()?.id"
                             [merge]="true"
@@ -185,6 +197,22 @@ import { SystemStateService } from './system-state.service';
                             [merge_settings]="other_settings_value || []"
                         />
                     </section>
+                } @else if (settings_error()) {
+                    <div
+                        role="alert"
+                        class="flex flex-col items-center gap-4 p-8"
+                    >
+                        <p>{{ 'COMMON.SETTINGS_LOAD_ERROR' | translate }}</p>
+                        <button
+                            btn
+                            type="button"
+                            [attr.aria-busy]="settings_retrying()"
+                            [attr.aria-disabled]="settings_retrying()"
+                            (click)="retrySettings()"
+                        >
+                            {{ 'COMMON.RETRY' | translate }}
+                        </button>
+                    </div>
                 } @else {
                     <div class="flex flex-col items-center justify-center p-8">
                         <app-spinner class="mb-4" [diameter]="32" />
@@ -220,6 +248,22 @@ import { SystemStateService } from './system-state.service';
 })
 export class SystemAboutComponent {
     private _service = inject(SystemStateService);
+    private _item_service = inject(ActiveItemService);
+    /** Whether the settings failed to load */
+    public readonly settings_error = this._item_service.settings_error;
+    private readonly _settings_section =
+        viewChild<ElementRef<HTMLElement>>('settings_section');
+    private readonly _injector = inject(Injector);
+
+    /** Retry the settings. Focus moves from Retry to the settings that load. */
+    public async retrySettings() {
+        if (!(await this._item_service.retrySettings())) return;
+        refocusIfLost(
+            this._injector,
+            () => this._settings_section()?.nativeElement,
+        );
+    }
+    public readonly settings_retrying = this._item_service.settings_retrying;
 
     /** List of settings for associated modules, drivers and zones */
     public readonly other_settings = this._service.associated_settings;

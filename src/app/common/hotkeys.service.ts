@@ -92,6 +92,8 @@ export class HotkeysService {
      * Modifiers may be pressed in any order, but the last key must be pressed last.
      * The listener belongs to the dialog that is on top when it is registered
      * (or to the page when no dialog is open) and only fires while that layer is on top.
+     * Page-wide letter shortcuts must use a modifier, e.g. `Alt+Shift+KeyN`, so
+     * that speech input and stray key presses do not fire them.
      * @param combo Array of key codes to listen to or a hotkey string e.g. `Alt+Shift+KeyK`
      * @param next Callback for combination presses
      */

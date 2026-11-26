@@ -87,8 +87,11 @@ describe('support subsystem access', () => {
         api.currentGroups.mockResolvedValue([membership(64)]);
         await loadSupportAccess(newItem(User));
         expect(canUseSupportAction(8)).toBe(true);
-        api.currentGroups.mockRejectedValue(new Error('Forbidden'));
-        await loadSupportAccess(newItem(User));
+        api.currentGroups.mockRejectedValue(new Error('Unavailable'));
+        // The caller retries a failure, so it is not an empty group list
+        await expect(loadSupportAccess(newItem(User))).rejects.toThrow(
+            'Unavailable',
+        );
         expect(hasSupportSubsystem()).toBe(false);
     });
 
@@ -343,6 +346,59 @@ describe('selected support group', () => {
         clearSupportModuleCache();
         await querySupportModules({});
         expect(api.queryModules).toHaveBeenCalledTimes(2);
+    });
+
+    it('walks the group systems again after the module set expires', async () => {
+        vi.useFakeTimers({ toFake: ['Date'] });
+        try {
+            api.currentGroups.mockResolvedValue([membership(1)]);
+            await loadSupportAccess(newItem(User));
+            api.querySystems.mockResolvedValue({
+                data: [{ id: 'sys-1' }],
+                total: 1,
+                next: null,
+            });
+            await querySupportModules({});
+            vi.setSystemTime(Date.now() + 59_000);
+            await querySupportModules({});
+            expect(api.querySystems).toHaveBeenCalledOnce();
+            vi.setSystemTime(Date.now() + 1_000);
+            await querySupportModules({});
+            expect(api.querySystems).toHaveBeenCalledTimes(2);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('loads the modules of a group again after its walk was left for another group', async () => {
+        api.currentGroups.mockResolvedValue([
+            membership(1, 'support', 'group-1'),
+            membership(1, 'support', 'group-2'),
+        ]);
+        await loadSupportAccess(newItem(User));
+        selectSupportGroup('group-1');
+        const systems = { data: [{ id: 'sys-1' }], total: 1, next: null };
+        // The systems of group-1 stay pending until the test releases them
+        let release: (page: typeof systems) => void;
+        api.querySystems.mockReturnValueOnce(
+            new Promise((resolve) => (release = resolve)),
+        );
+        api.querySystems.mockResolvedValue(systems);
+        api.queryModules.mockResolvedValue({
+            data: [{ id: 'mod-1', name: 'Screen' }],
+            total: 1,
+            next: null,
+        });
+
+        const abandoned = querySupportModules({});
+        selectSupportGroup('group-2');
+        release(systems);
+        await abandoned;
+        selectSupportGroup('group-1');
+        const result = await querySupportModules({});
+
+        // The walk that stopped early did not keep an empty list for group-1
+        expect(result.data.map(({ id }) => id)).toEqual(['mod-1']);
     });
 
     it('does not show any sections before a user has access', async () => {

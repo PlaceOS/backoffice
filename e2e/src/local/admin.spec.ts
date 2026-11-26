@@ -6,7 +6,9 @@ import {
     asList,
     createResource,
     getJson,
+    lastWord,
     uniqueName,
+    waitForListed,
 } from '../../support/api';
 import { Cleanup, expect, test } from '../../support/fixtures';
 import { AdminPage } from '../pages';
@@ -214,6 +216,13 @@ test.describe('Admin on the local backend', () => {
                     )
                     .toEqual([zone.id]);
             }
+            // The zone picker searches for the root
+            await waitForListed(
+                api,
+                `${ENGINE_API}/zones`,
+                lastWord(root.name),
+                root.id,
+            );
 
             await admin.gotoSection('database');
             await admin.exportZoneTreeButton.click();

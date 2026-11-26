@@ -30,14 +30,6 @@ export const ROUTES: Routes = [
                     ),
             },
             {
-                path: 'history',
-                canActivate: [authorisedAdminGuard],
-                loadComponent: () =>
-                    import('./user-history.component').then(
-                        (m) => m.UserHistoryComponent,
-                    ),
-            },
-            {
                 path: 'extend/:id',
                 loadComponent: () =>
                     import('../ui/extension-outlet.component').then(

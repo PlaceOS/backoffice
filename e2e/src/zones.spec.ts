@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures/test-fixtures';
+import { expect, holdMetadata, test } from './fixtures/test-fixtures';
 import { FeaturePage } from './pages';
 
 /**
@@ -242,14 +242,16 @@ test.describe('Zones', () => {
         test('AC-ZON-009-2: shows a spinner while metadata loads', async ({
             page,
         }) => {
-            await page.addInitScript(() => {
-                sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '1000');
-            });
+            const release = await holdMetadata(page);
             await zones.gotoItem(PARKING);
             await zones.openTab('metadata');
 
             await expect(zones.metadataLoadingSpinner).toBeVisible();
+            await release();
             await expect(zones.metadataLoadingSpinner).toBeHidden();
+            await expect(zones.tabContent).toContainText(
+                'No Metadata blocks found',
+            );
         });
     });
 

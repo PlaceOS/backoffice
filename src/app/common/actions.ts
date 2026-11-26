@@ -36,7 +36,9 @@ import {
     planDomainCascade,
     planZoneCascade,
 } from './cascade-delete';
-import { newItem, toBody, toJsonBody } from './placeos';
+import { readError } from './errors';
+import { i18n } from './locale.service';
+import { newItem, parseIdList, toBody, toJsonBody } from './placeos';
 import {
     clearSupportModuleCache,
     querySupportModules,
@@ -63,7 +65,10 @@ export interface ItemCascade<T> {
 
 /** Options of `ItemActions.query`. `signal` cancels the query and its next pages */
 export interface ItemQueryOptions {
+    /** Users list only. Other lists ignore it */
     include_deleted?: boolean;
+    /** Users list only: the users of this domain */
+    authority_id?: string;
     signal?: AbortSignal;
 }
 
@@ -151,12 +156,12 @@ const drivers: ItemActions<Driver> = {
             .query({ offset: 0, limit: 1, driver_id: _.id })
             .then(orThrowPage)
             .then(({ total }) => total)
-            .catch((_err) => 0);
+            .catch(() => null);
+        // Without the count, the user must still know that modules go too
+        if (count === null)
+            return ['error', i18n('DRIVERS.DELETE_MODULES_UNKNOWN')];
         return count
-            ? [
-                  'error',
-                  `${count} modules that rely on this driver will be <strong>immediately</strong> removed.`,
-              ]
+            ? ['error', i18n('DRIVERS.DELETE_MODULES', { count })]
             : null;
     },
     name: 'DRIVERS',
@@ -247,6 +252,14 @@ const systems: ItemActions<System> = {
     name: 'SYSTEMS',
 };
 
+/**
+ * The result of a save that made the item, but a later step of it failed.
+ * `save_warning` gives the reason. The bulk import shows it on the row.
+ */
+export interface SaveWarning {
+    readonly save_warning?: string;
+}
+
 type BulkSystemItem = Omit<Partial<System>, 'modules'> & {
     modules?: readonly string[] | string;
     start_modules?: boolean;
@@ -255,9 +268,12 @@ type BulkSystemItem = Omit<Partial<System>, 'modules'> & {
 /**
  * Creates or updates a system. A new system from a bulk import can also list
  * driver ids in `modules`: it gets a module for each logic driver, and it
- * starts when `start_modules` is set.
+ * starts when `start_modules` is set. If one of these steps fails, the
+ * result has a `save_warning`.
  */
-async function saveSystem(item: Partial<System>): Promise<System> {
+async function saveSystem(
+    item: Partial<System>,
+): Promise<System & SaveWarning> {
     const { modules, start_modules, ...system_data } = item as BulkSystemItem;
     const { module_ids, driver_ids } = splitModuleIds(modules);
     const form_data = {
@@ -278,15 +294,27 @@ async function saveSystem(item: Partial<System>): Promise<System> {
     const system = await systems_v7
         .create({ body: toBody(System, form_data) })
         .then(orThrow);
-    await addLogicDriverModules(system, driver_ids);
-    if (start_modules)
-        await systems_v7.start({ sys_id: system.id }).then(orThrow);
+    // The system exists now. A failed later step must not fail the row, or
+    // a retry of the row creates the system again.
+    try {
+        await addLogicDriverModules(system, driver_ids);
+        if (start_modules)
+            await systems_v7.start({ sys_id: system.id }).then(orThrow);
+    } catch (error) {
+        return {
+            ...system,
+            save_warning: i18n('SYSTEMS.MODULES_WARNING', {
+                error: await readError(error),
+            }),
+        };
+    }
     return system;
 }
 
+/** Adds a module for each logic driver. Waits for all, then rejects with the first failure */
 async function addLogicDriverModules(system: System, driver_ids: string[]) {
     if (!driver_ids.length) return;
-    await Promise.all(
+    const results = await Promise.allSettled(
         [...new Set(driver_ids)].map(async (driver_id) => {
             const driver = await drivers_v7
                 .show({ id: driver_id })
@@ -308,6 +336,11 @@ async function addLogicDriverModules(system: System, driver_ids: string[]) {
                 .then(orThrow);
         }),
     );
+    const failed = results.find(
+        (result): result is PromiseRejectedResult =>
+            result.status === 'rejected',
+    );
+    if (failed) throw failed.reason;
 }
 
 function splitModuleIds(modules: readonly string[] | string | undefined) {
@@ -316,25 +349,6 @@ function splitModuleIds(modules: readonly string[] | string | undefined) {
         module_ids: ids.filter((id) => !id.startsWith('driver-')),
         driver_ids: ids.filter((id) => id.startsWith('driver-')),
     };
-}
-
-function parseIdList(value: readonly string[] | string | undefined): string[] {
-    if (Array.isArray(value)) return value.filter((id) => !!id);
-    if (typeof value !== 'string') return [];
-    const trimmed = value.trim();
-    if (!trimmed) return [];
-    try {
-        const parsed = JSON.parse(trimmed);
-        if (Array.isArray(parsed)) return parseIdList(parsed);
-    } catch {
-        // Continue with delimited text parsing for non-JSON cells.
-    }
-    return trimmed
-        .replace(/^\[/, '')
-        .replace(/\]$/, '')
-        .split(/[\s,]+/)
-        .map((id) => id.replace(/^['"]|['"]$/g, ''))
-        .filter((id) => !!id);
 }
 
 /** Fills the `{{key}}` fields of a support URL from the system and the page location */

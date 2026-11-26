@@ -82,6 +82,8 @@ export default defineConfig({
         env: {
             PLACEOS_DOMAIN: backend.host,
             PLACEOS_INSECURE: String(backend.protocol !== 'https:'),
+            // The stack has a self-signed certificate
+            PLACEOS_SELF_SIGNED: 'true',
         },
     },
 });

@@ -2,10 +2,12 @@ import { Dialog } from '@angular/cdk/dialog';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { DefaultUrlSerializer, NavigationEnd, Router } from '@angular/router';
+import { Settings } from '@placeos/ts-client';
 import { Subject } from 'rxjs';
 import { afterEach, expect, it, vi } from 'vitest';
 import { HotkeysService } from '../../app/common/hotkeys.service';
 import { ActiveItemService } from '../../app/common/item.service';
+import { newItem } from '../../app/common/placeos';
 import { SettingsService } from '../../app/common/settings.service';
 import { BackofficeUsersService } from '../../app/users/users.service';
 
@@ -262,6 +264,66 @@ it('shows a saved item with its current settings', async () => {
     service.ngOnDestroy();
 });
 
+it('keeps each saved settings level on the active item', async () => {
+    vi.useFakeTimers();
+    mocks.query.mockResolvedValue({ data: [], total: 0, next: null });
+    mocks.show.mockResolvedValue({ id: 'sys-1', name: 'Room' });
+    mocks.settings.mockResolvedValue(
+        settingsReply([
+            { encryption_level: 0, settings_string: 'a: 1' },
+            { encryption_level: 1, settings_string: 'b: 1' },
+        ]),
+    );
+    const user = signal({ sys_admin: false, support: false });
+    TestBed.configureTestingModule({
+        providers: [
+            ActiveItemService,
+            {
+                provide: Router,
+                useValue: {
+                    url: '/systems/sys-1',
+                    events: new Subject<NavigationEnd>(),
+                    parseUrl: (url: string) =>
+                        new DefaultUrlSerializer().parse(url),
+                },
+            },
+            { provide: Dialog, useValue: {} },
+            { provide: SettingsService, useValue: {} },
+            {
+                provide: HotkeysService,
+                useValue: { listen: () => () => undefined },
+            },
+            {
+                provide: BackofficeUsersService,
+                useValue: { user, current: user },
+            },
+        ],
+    });
+    const service = TestBed.inject(ActiveItemService);
+    await vi.advanceTimersByTimeAsync(350);
+    await service.setItem('sys-1');
+    const level = (index: number) =>
+        service.active_item.settings[index].settings_string;
+
+    // Two levels save, the first one last
+    service.updateSettings(
+        1,
+        newItem(Settings, { parent_id: 'sys-1', settings_string: 'b: 2' }),
+    );
+    service.updateSettings(
+        0,
+        newItem(Settings, { parent_id: 'sys-1', settings_string: 'a: 2' }),
+    );
+    // A save for another item changes nothing
+    service.updateSettings(
+        0,
+        newItem(Settings, { parent_id: 'sys-2', settings_string: 'a: 3' }),
+    );
+
+    expect([level(0), level(1)]).toEqual(['a: 2', 'b: 2']);
+    service.ngOnDestroy();
+});
+
 it('keeps the latest item when an older detail response arrives last', async () => {
     vi.useFakeTimers();
     mocks.query.mockResolvedValue({ data: [], total: 0, next: null });
@@ -299,7 +361,9 @@ it('keeps the latest item when an older detail response arrives last', async () 
     });
     const service = TestBed.inject(ActiveItemService);
     await vi.advanceTimersByTimeAsync(350);
+    // Both detail requests are in flight before either answers
     const first = service.setItem('sys-1');
+    await vi.advanceTimersByTimeAsync(1);
     const second = service.setItem('sys-2');
     await vi.advanceTimersByTimeAsync(1);
     responses.get('sys-2')({ id: 'sys-2', name: 'Second' });

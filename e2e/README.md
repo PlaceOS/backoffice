@@ -40,9 +40,10 @@ The config starts the dev server, or uses the server that runs on port 4200.
 CI runs `chromium` and `mobile-chrome` only. Run the other projects locally
 before you change code that is specific to a browser.
 
-`USE_MOCK=false` stops the tests from switching on the mock backend. Most
-tests expect the mock data, so use this only to debug. To test against a real
-backend, use the [local backend](#local-backend) suite.
+The mock suite refuses `USE_MOCK=false` (also from `e2e/.env`). Without the
+mock backend, the dev server proxy sends requests to the shared
+`placeos-dev.aca.im` deployment, and these specs create and delete data. To
+test against a real backend, use the [local backend](#local-backend) suite.
 
 ## Coverage
 
@@ -58,7 +59,7 @@ names.
 | `drivers.spec.ts`        | List, readme, modules, edit, delete, recompile and reload     |
 | `repositories.spec.ts`   | List, details, edit, delete, add a driver from a repository   |
 | `triggers.spec.ts`       | List, search, create, edit, delete, instances                 |
-| `users.spec.ts`          | List, search, create, edit, delete, metadata, history         |
+| `users.spec.ts`          | List, search, create, edit, delete, metadata                  |
 | `groups.spec.ts`         | Group tree, create, edit, delete, members, zone access        |
 | `domains.spec.ts`        | List, create, edit, delete, applications, auth methods, users |
 | `admin.spec.ts`          | Every admin section, brokers, extensions, tenants, API keys   |
@@ -79,6 +80,9 @@ test('a renamed trigger keeps its new name', async ({ page }) => {
     await triggers.openEditModal();
     await triggers.dialog.getByRole('textbox', { name: 'Name*' }).fill('Fire');
     await triggers.saveButton.click();
+    // The save is async. Wait for it before the reload.
+    await expect(triggers.dialog).toBeHidden();
+    await expect(triggers.itemName).toHaveText('Fire');
 
     await page.reload();
     await triggers.waitForItemDetails();
@@ -113,7 +117,8 @@ and delete real data, so the config refuses a backend that is not on a
 loopback host. The stack and the suite are adapted from the
 `PlaceOS/user-interfaces` e2e stack.
 
-You need Docker with about 2 GB of free memory for the stack.
+You need Docker with a Compose v2 version that has `up --wait-timeout`,
+`curl`, and about 2 GB of free memory for the stack.
 
 ```bash
 e2e/stack/up.sh                    # start the stack (--fresh: remove its data first, --pull: pull new images)
@@ -147,8 +152,10 @@ start needs access to GitHub.
 ### How a run works
 
 1. Playwright starts the dev server on port 4216, with its proxy
-   (`config/proxy.conf.js`) pointed at the stack. It does not use port 4200,
-   because a dev server there can proxy to a shared deployment.
+   (`config/proxy.conf.js`) pointed at the stack. It sets
+   `PLACEOS_SELF_SIGNED=true`, because the stack has a self-signed
+   certificate. It does not use port 4200, because a dev server there can
+   proxy to a shared deployment.
 2. The `setup` project (`support/stack.setup.ts`) checks that the stack
    answers, then seeds it (`support/seed.ts`). The seed is idempotent:
     - It registers an OAuth app for `http://localhost:4216/oauth-resp.html`.
@@ -221,7 +228,8 @@ Rules:
 1. Import `test` and `expect` from `support/fixtures`. The fixtures are:
    `page` (signed in as the admin), `staffPage` (signed in as a user that is
    not an admin), `api` (an API context with an admin bearer) and `cleanup`
-   (`cleanup.add(path)` deletes that API path after the test).
+   (`cleanup.add(path)` deletes that API path after the test). A delete that
+   fails with a status other than 404 fails the test.
 2. Each spec makes its own data with `uniqueName()` and gives it to
    `cleanup`. Specs run in parallel on the same stack. Do not change the
    seeded authority, admin user or zone tree.

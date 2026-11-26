@@ -142,8 +142,17 @@ export function invalidateToken() {
     _session?.invalidateToken();
 }
 
-/** End the session and go to the logout page */
+/**
+ * End the session and go to the logout page. The next user of the browser
+ * must not see this user's one-time edge key or upload history.
+ */
 export function logout() {
+    try {
+        sessionStorage.removeItem('BACKOFFICE.last_edge');
+        localStorage.removeItem('BACKOFFICE.uploads');
+    } catch {
+        // Storage can be blocked. The session still ends.
+    }
     return _session?.logout();
 }
 
@@ -249,6 +258,84 @@ export function withEmptyLists<T>(schema: Schema<unknown>, item: T): T {
         }
     }
     return Object.keys(lists).length ? { ...item, ...lists } : item;
+}
+
+/**
+ * The values of a list cell: a JSON array, or text with values split at
+ * commas and spaces. Quotes and brackets around the text are removed. A list
+ * gives its values that are not empty.
+ */
+export function parseIdList(
+    value: readonly string[] | string | undefined,
+): string[] {
+    if (Array.isArray(value)) return value.filter((id) => !!id);
+    if (typeof value !== 'string') return [];
+    const trimmed = value.trim();
+    if (!trimmed) return [];
+    try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parseIdList(parsed);
+    } catch {
+        // Continue with delimited text parsing for non-JSON cells.
+    }
+    return trimmed
+        .replace(/^\[/, '')
+        .replace(/\]$/, '')
+        .split(/[\s,]+/)
+        .map((id) => id.replace(/^['"]|['"]$/g, ''))
+        .filter((id) => !!id);
+}
+
+/**
+ * The values of a list cell: a JSON array, or text split at commas. A value
+ * can hold spaces, such as the tag `North Wing`.
+ */
+function listCell(value: string): string[] {
+    try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) return parsed.map(String).filter((_) => _);
+    } catch {
+        // Not JSON, so split the text
+    }
+    return value
+        .split(',')
+        .map((part) => part.trim())
+        .filter((part) => part);
+}
+
+/**
+ * `row` with each text value converted to the type of its schema field: a
+ * number for a number field, `true` or `false` for a boolean field, and a
+ * list (see `listCell`) for a list of values. A CSV cell that is not JSON, and an edit of a bulk import row, are
+ * text, and the API rejects text for these fields. Other values stay as they
+ * are.
+ */
+export function typedRow(
+    schema: Schema<unknown>,
+    row: Record<string, unknown>,
+): Record<string, unknown> {
+    const node = schema.node;
+    if (node.kind !== 'object') return row;
+    const fields = new Map(node.fields.map((field) => [field.key, field.node]));
+    return Object.fromEntries(
+        Object.entries(row).map(([key, value]) => {
+            const field = fields.get(key);
+            if (!field || typeof value !== 'string') return [key, value];
+            if (isValueList(field)) return [key, listCell(value)];
+            if (!value.trim()) return [key, value];
+            const kind = (field.kind === 'nullable' ? field.inner : field).kind;
+            const text = value.trim().toLowerCase();
+            if (kind === 'boolean' && (text === 'true' || text === 'false'))
+                return [key, text === 'true'];
+            const number = Number(value);
+            if (
+                (kind === 'number' || kind === 'integer') &&
+                Number.isFinite(number)
+            )
+                return [key, number];
+            return [key, value];
+        }),
+    );
 }
 
 /**

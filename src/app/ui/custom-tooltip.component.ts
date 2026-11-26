@@ -1,3 +1,4 @@
+import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { CdkPortal, PortalModule } from '@angular/cdk/portal';
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
@@ -56,6 +57,9 @@ export class CustomTooltipComponent
     private _overlay = inject(Overlay);
     private _injector = inject(Injector);
     private _router = inject(Router, { optional: true });
+    private _focus_traps = inject(FocusTrapFactory);
+    /** Keeps keyboard focus in a panel that opened on a click */
+    private _focus_trap: FocusTrap | null = null;
 
     /** Horizontal position of the rendered overlay */
     public readonly xPosition = input<'start' | 'center' | 'end'>('end');
@@ -152,6 +156,21 @@ export class CustomTooltipComponent
                         .withViewportMargin(VIEWPORT_MARGIN),
                 });
                 this._overlay_ref.attach(_portal);
+                // The panel is outside the page, and outside the focus trap
+                // of a dialog. Move focus into it, so a keyboard can use it.
+                if (!hover) {
+                    const panel = this._overlay_ref.overlayElement;
+                    this._focus_trap = this._focus_traps.create(panel);
+                    // Content that is still loading, such as a spinner, has
+                    // nothing to focus. Focus the panel itself then.
+                    this._focus_trap
+                        .focusInitialElementWhenReady()
+                        .then((focused) => {
+                            if (focused || !panel.isConnected) return;
+                            panel.tabIndex = -1;
+                            panel.focus();
+                        });
+                }
                 // Close like a menu: on Escape and when the page changes
                 this.subscription(
                     'escape',
@@ -186,8 +205,15 @@ export class CustomTooltipComponent
         this.unsub('escape');
         this.unsub('navigation');
         if (this._overlay_ref) {
+            const had_focus = this._overlay_ref.overlayElement.contains(
+                document.activeElement,
+            );
+            this._focus_trap?.destroy();
+            this._focus_trap = null;
             this._overlay_ref.dispose();
             this._overlay_ref = null;
+            // Give focus back to the trigger, not to the page
+            if (had_focus) this._element.nativeElement.focus();
         }
     }
 

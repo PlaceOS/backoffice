@@ -1,7 +1,15 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    inject,
+    Injector,
+    viewChild,
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { refocusIfLost } from '../common/focus';
+import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifySuccess } from '../common/notifications';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
@@ -152,13 +160,30 @@ import { DriverStateService } from './driver-state.service';
             }
             <hr class="my-4" />
             @if (item().settings) {
-                <section>
+                <section
+                    #settings_section
+                    tabindex="-1"
+                    class="outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid"
+                >
                     <a-settings-form
                         [merge]="true"
                         [id]="item().id"
                         [settings]="item().settings"
                     />
                 </section>
+            } @else if (settings_error()) {
+                <div role="alert" class="flex flex-col items-center gap-4 p-8">
+                    <p>{{ 'COMMON.SETTINGS_LOAD_ERROR' | translate }}</p>
+                    <button
+                        btn
+                        type="button"
+                        [attr.aria-busy]="settings_retrying()"
+                        [attr.aria-disabled]="settings_retrying()"
+                        (click)="retrySettings()"
+                    >
+                        {{ 'COMMON.RETRY' | translate }}
+                    </button>
+                </div>
             } @else {
                 <div class="flex flex-col items-center justify-center">
                     <app-spinner class="mb-4" diameter="48" />
@@ -194,6 +219,22 @@ import { DriverStateService } from './driver-state.service';
 export class DriverAboutComponent {
     private _service = inject(DriverStateService);
     private _clipboard = inject(Clipboard);
+    private _item_service = inject(ActiveItemService);
+    /** Whether the settings failed to load */
+    public readonly settings_error = this._item_service.settings_error;
+    private readonly _settings_section =
+        viewChild<ElementRef<HTMLElement>>('settings_section');
+    private readonly _injector = inject(Injector);
+
+    /** Retry the settings. Focus moves from Retry to the settings that load. */
+    public async retrySettings() {
+        if (!(await this._item_service.retrySettings())) return;
+        refocusIfLost(
+            this._injector,
+            () => this._settings_section()?.nativeElement,
+        );
+    }
+    public readonly settings_retrying = this._item_service.settings_retrying;
 
     public readonly updateDriver = () => this._service.updateDriver();
     public readonly recompile = () => this._service.recompileDriver();

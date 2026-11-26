@@ -70,7 +70,12 @@ let next_id = 0;
             (overlayOutsideClick)="onOutsideClick($event)"
             (detach)="close()"
         >
-            <div class="select-panel">
+            <!-- Takes the keys of the search input. The input has the focus -->
+            <div
+                class="select-panel"
+                role="presentation"
+                (keydown)="onPanelKeydown($event)"
+            >
                 <ng-content select="[select-search]" />
                 <div
                     role="listbox"
@@ -181,6 +186,28 @@ export class SelectComponent<T = unknown>
             host.setAttribute('aria-label', text);
             host.setAttribute('data-placeholder-label', '');
         });
+        // A search input in the panel has the focus, so it tells screen
+        // readers the active option. A search can remove the active option,
+        // so then there is none until the next arrow key.
+        afterRenderEffect(() => {
+            const options = this.options();
+            const active_id = this.active_id();
+            if (!this.opened()) return;
+            const active = this._key_manager?.activeItem;
+            if (active && !options.includes(active)) {
+                this._key_manager.setActiveItem(-1);
+                return;
+            }
+            const doc = this._element.nativeElement.ownerDocument;
+            const input = doc
+                .getElementById(this.panel_id)
+                ?.parentElement?.querySelector('[select-search] input');
+            if (!input) return;
+            input.setAttribute('aria-controls', this.panel_id);
+            if (active_id)
+                input.setAttribute('aria-activedescendant', active_id);
+            else input.removeAttribute('aria-activedescendant');
+        });
     }
 
     public isSelected(option: OptionComponent): boolean {
@@ -289,10 +316,31 @@ export class SelectComponent<T = unknown>
             this.close();
         } else if (key === 'Enter' || (key === ' ' && !this._typing())) {
             event.preventDefault();
-            this._key_manager?.activeItem?.pickOption();
+            // A search can remove the active option. Pick only a shown one.
+            const active = this._key_manager?.activeItem;
+            if (active && this.options().includes(active)) active.pickOption();
         } else {
             this._key_manager?.onKeydown(event);
         }
+    }
+
+    /**
+     * Keys from the panel, such as from its search input. The arrow keys,
+     * Enter, Escape and Tab work on the options as from the select. Other
+     * keys stay in the input, so they do not start a typeahead.
+     */
+    public onPanelKeydown(keyboard_event: Event) {
+        const event = keyboard_event as KeyboardEvent;
+        event.stopPropagation();
+        // Enter during IME composition confirms the text, not an option
+        if (event.isComposing) return;
+        if (
+            !['ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab'].includes(
+                event.key,
+            )
+        )
+            return;
+        this.onKeydown(event);
     }
 
     public writeValue(value: T) {

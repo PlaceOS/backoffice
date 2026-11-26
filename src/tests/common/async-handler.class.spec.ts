@@ -331,6 +331,20 @@ describe('AsyncHandler', () => {
     });
 
     describe('ngOnDestroy', () => {
+        it('starts nothing that an async callback makes after it', () => {
+            const tick = vi.fn();
+            const sub = mockSubscription();
+            handler.ngOnDestroy();
+
+            handler.testTimeout('late', tick, 100);
+            handler.testInterval('poll', tick, 100);
+            handler.testSubscription('watch', sub);
+            vi.advanceTimersByTime(500);
+
+            expect(tick).not.toHaveBeenCalled();
+            expect(sub.unsubscribe).toHaveBeenCalled();
+        });
+
         it('should call destroy', () => {
             const destroy_spy = vi.spyOn(handler, 'testDestroy');
             handler.testTimeout('test', vi.fn());

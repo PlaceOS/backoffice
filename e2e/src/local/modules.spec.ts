@@ -1,5 +1,10 @@
 import { APIRequestContext } from '@playwright/test';
-import { uniqueName } from '../../support/api';
+import {
+    ENGINE_API,
+    lastWord,
+    uniqueName,
+    waitForListed,
+} from '../../support/api';
 import { Cleanup, expect, test } from '../../support/fixtures';
 import { FeaturePage } from '../pages';
 import {
@@ -14,7 +19,6 @@ import {
     fieldOf,
     fillSettingsEditor,
     getModule,
-    lastWord,
     Module,
     settingsOf,
     statusOf,
@@ -78,6 +82,15 @@ test.describe('Modules on the local backend', () => {
             ip: '10.0.0.22',
             port: 23,
         });
+        // Search comes from Elasticsearch, which indexes a new item late
+        for (const mod of [found, other]) {
+            await waitForListed(
+                api,
+                `${ENGINE_API}/modules`,
+                lastWord(mod.custom_name),
+                mod.id,
+            );
+        }
         const modules = new FeaturePage(page, 'modules');
         await modules.goto();
 
@@ -147,6 +160,13 @@ test.describe('Modules on the local backend', () => {
         cleanup,
     }) => {
         const driver = await deviceDriver(api, cleanup);
+        // The driver search comes from Elasticsearch
+        await waitForListed(
+            api,
+            `${ENGINE_API}/drivers`,
+            lastWord(driver.name),
+            driver.id,
+        );
         const modules = new FeaturePage(page, 'modules');
         // The form puts underscores in place of spaces in a custom name
         const name = uniqueName('E2E_New_Module').replace(/ /g, '_');

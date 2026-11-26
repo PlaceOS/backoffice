@@ -11,6 +11,7 @@ import {
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { tenants as tenants_v7 } from '@placeos/ts-client/staff';
 import type { PlaceTenant } from '../admin/staff-api.component';
+import { httpError } from './errors';
 import { i18n } from './locale.service';
 import { newItem } from './placeos';
 import { collectPages, mapPage } from './types';
@@ -229,7 +230,12 @@ export async function splitZoneSystems(
         systems
             .show({ sys_id: system.id })
             .then(orThrow)
-            .catch(() => null),
+            // Only a 404 means the system is gone. Any other failure stops
+            // the plan, so a system is never left out by mistake.
+            .catch((error: unknown) => {
+                if (httpError(error)?.status === 404) return null;
+                throw error;
+            }),
     );
     const orphaned: System[] = [];
     confirmed.forEach((current) => {

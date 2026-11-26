@@ -9,6 +9,12 @@ on:
 permissions:
     contents: read
 
+# A newer push cancels the run of an older one, so an older build cannot
+# publish over a newer one on build/dev.
+concurrency:
+    group: build-develop
+    cancel-in-progress: true
+
 jobs:
     # Tests run in parallel with the build. The dev deploy does not wait for them.
     test:
@@ -43,7 +49,7 @@ jobs:
                   echo '{ "git": { "deploymentEnabled": false } }' > dist/backoffice/browser/vercel.json
 
             - name: Deploy the application
-              uses: MrYuion/git-publish-subdir-action@develop
+              uses: MrYuion/git-publish-subdir-action@dd41bb412c2d90b8579e0ad7276ec210dfec9ac8 # develop
               env:
                   REPO: self
                   BRANCH: build/dev

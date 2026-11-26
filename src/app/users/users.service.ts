@@ -80,7 +80,7 @@ export class BackofficeUsersService extends AsyncHandler {
 
     /**
      * Load the signed-in user and their support access. Retries with backoff
-     * while the user is not available, and gives up after
+     * while the user or their support memberships do not load, and gives up after
      * `MAX_LOAD_ATTEMPTS` until the next reconnect calls it again.
      */
     public load(attempt = 0): Promise<void> {

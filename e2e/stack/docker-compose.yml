@@ -99,11 +99,9 @@ services:
     volumes:
       - elastic-data:/usr/share/elasticsearch/data
     # Memory locking is off: it needs an unlimited `memlock` rlimit, which not
-    # every Docker host gives, and a test stack does not need it.
+    # every Docker host gives (rootless Docker does not), and a test stack
+    # does not need it.
     ulimits:
-      memlock:
-        soft: -1
-        hard: -1
       nofile:
         soft: 65536
         hard: 65536
@@ -219,8 +217,9 @@ services:
     restart: always
     <<: *std-logging
     ports:
-      - '${E2E_HTTP_PORT:-9180}:80'
-      - '${E2E_HTTPS_PORT:-9543}:443'
+      # Loopback only: the stack has a known admin password
+      - '127.0.0.1:${E2E_HTTP_PORT:-9180}:80'
+      - '127.0.0.1:${E2E_HTTPS_PORT:-9543}:443'
     healthcheck:
       test: "bash -c ': &>/dev/null </dev/tcp/127.0.0.1/80'"
       interval: 5s

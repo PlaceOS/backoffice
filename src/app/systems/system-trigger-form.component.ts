@@ -239,7 +239,7 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     public ngOnInit(): void {
         this.subscription(
             'save_item_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
+            this._hotkey.listen(['Alt', 'Shift', 'KeyS'], () => this.submit()),
         );
         this._loadPlaylistNames();
     }

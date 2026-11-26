@@ -30,6 +30,7 @@ import {
 import * as yaml from 'js-yaml';
 import { ACTIONS } from '../common/actions';
 import { mergeFormItem, onSaveHotkey, submitFormDialog } from '../common/forms';
+import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
 import { DialogEvent, Identity } from '../common/types';
@@ -59,213 +60,233 @@ import {
             [loading]="saving()"
             (save)="submit()"
         >
-            @if (!is_editing()) {
-                <label for="repos" id="repos-label">{{
-                    'REPOS.SINGULAR' | translate
-                }}</label>
-                <item-search-field
-                    id="repos"
-                    role="group"
-                    aria-labelledby="repos-label"
-                    [placeholder]="'REPOS.SEARCH' | translate"
-                    [options]="repo_list()"
-                    [loading]="loading_type().includes('repository')"
-                    [(ngModel)]="repo"
-                    (ngModelChange)="driver.set(null); commit.set(null)"
-                />
-                @if (repo()) {
-                    <label for="driver" id="driver-label">{{
-                        'DRIVERS.BASE' | translate
+            @if (settings_retry(); as retry) {
+                <!-- The driver is saved. Only its settings can be saved now. -->
+                <p role="alert" class="bg-base-200 rounded-sm p-4">
+                    {{
+                        'DRIVERS.SETTINGS_RETRY'
+                            | translate
+                                : { name: retry.driver.name || retry.driver.id }
+                    }}
+                </p>
+            } @else {
+                @if (!is_editing()) {
+                    <label for="repos" id="repos-label">{{
+                        'REPOS.SINGULAR' | translate
                     }}</label>
                     <item-search-field
-                        id="driver"
+                        id="repos"
                         role="group"
-                        aria-labelledby="driver-label"
-                        [placeholder]="'DRIVERS.SEARCH' | translate"
-                        [options]="driver_list()"
-                        [loading]="loading_type().includes('drivers')"
-                        [(ngModel)]="driver"
-                        (ngModelChange)="commit.set(null)"
+                        aria-labelledby="repos-label"
+                        [placeholder]="'REPOS.SEARCH' | translate"
+                        [options]="repo_list()"
+                        [loading]="loading_type().includes('repository')"
+                        [(ngModel)]="repo"
+                        (ngModelChange)="driver.set(null); commit.set(null)"
                     />
-                }
-            }
-            @if (driver()) {
-                <label
-                    for="commit"
-                    id="commit-label"
-                    [class.error]="commit_error()"
-                >
-                    {{ 'DRIVERS.COMMIT' | translate }}
-                </label>
-                <item-search-field
-                    id="commit"
-                    role="group"
-                    aria-labelledby="commit-label"
-                    [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
-                    [options]="commit_list()"
-                    [loading]="loading_type().includes('commits')"
-                    [ngModel]="commit()"
-                    (ngModelChange)="
-                        commit.set($event); applyDriverCommit($event)
-                    "
-                />
-                @if (commit_error()) {
-                    <div class="text-error text-xs">
-                        {{ 'DRIVERS.DETAILS_ERROR_1' | translate }}
-                        {{ 'DRIVERS.DETAILS_ERROR_2' | translate }}
-                    </div>
-                }
-            }
-            @if (commit() && !loading() && form.id) {
-                <div class="flex flex-col">
-                    <label
-                        for="driver-name"
-                        [class.error]="fieldInvalid('name')"
-                    >
-                        {{ 'COMMON.FIELD_NAME' | translate }}
-                        <span required>*</span>
-                    </label>
-                    <app-form-field>
-                        <input
-                            [placeholder]="'COMMON.FIELD_NAME' | translate"
-                            id="driver-name"
-                            [formField]="form.name"
+                    @if (repo()) {
+                        <label for="driver" id="driver-label">{{
+                            'DRIVERS.BASE' | translate
+                        }}</label>
+                        <item-search-field
+                            id="driver"
+                            role="group"
+                            aria-labelledby="driver-label"
+                            [placeholder]="'DRIVERS.SEARCH' | translate"
+                            [options]="driver_list()"
+                            [loading]="loading_type().includes('drivers')"
+                            [(ngModel)]="driver"
+                            (ngModelChange)="commit.set(null)"
                         />
-                        <div error>
-                            {{ 'DRIVERS.NAME_REQUIRED' | translate }}
+                    }
+                }
+                @if (driver()) {
+                    <label
+                        for="commit"
+                        id="commit-label"
+                        [class.error]="commit_error()"
+                    >
+                        {{ 'DRIVERS.COMMIT' | translate }}
+                    </label>
+                    <item-search-field
+                        id="commit"
+                        role="group"
+                        aria-labelledby="commit-label"
+                        [placeholder]="'DRIVERS.COMMIT_SEARCH' | translate"
+                        [options]="commit_list()"
+                        [loading]="loading_type().includes('commits')"
+                        [ngModel]="commit()"
+                        (ngModelChange)="
+                            commit.set($event); applyDriverCommit($event)
+                        "
+                    />
+                    @if (commit_error()) {
+                        <div class="text-error text-xs">
+                            {{ 'DRIVERS.DETAILS_ERROR_1' | translate }}
+                            {{ 'DRIVERS.DETAILS_ERROR_2' | translate }}
                         </div>
-                    </app-form-field>
-                    <div class="flex space-x-4">
-                        @if (!is_editing()) {
+                    }
+                }
+                @if (commit() && !loading() && form.id) {
+                    <div class="flex flex-col">
+                        <label
+                            for="driver-name"
+                            [class.error]="fieldInvalid('name')"
+                        >
+                            {{ 'COMMON.FIELD_NAME' | translate }}
+                            <span required>*</span>
+                        </label>
+                        <app-form-field>
+                            <input
+                                [placeholder]="'COMMON.FIELD_NAME' | translate"
+                                id="driver-name"
+                                [formField]="form.name"
+                            />
+                            <div error>
+                                {{ 'DRIVERS.NAME_REQUIRED' | translate }}
+                            </div>
+                        </app-form-field>
+                        <div class="flex space-x-4">
+                            @if (!is_editing()) {
+                                <div class="flex flex-1 flex-col">
+                                    <label for="role" id="role-label">
+                                        {{ 'DRIVERS.ROLE' | translate }}
+                                    </label>
+                                    <app-form-field>
+                                        <app-select
+                                            id="role"
+                                            aria-labelledby="role-label"
+                                            [formField]="form.role"
+                                        >
+                                            @for (
+                                                type of role_types;
+                                                track type
+                                            ) {
+                                                <app-option [value]="type.id">
+                                                    {{ type.name | translate }}
+                                                </app-option>
+                                            }
+                                        </app-select>
+                                    </app-form-field>
+                                </div>
+                            }
                             <div class="flex flex-1 flex-col">
-                                <label for="role" id="role-label">
-                                    {{ 'DRIVERS.ROLE' | translate }}
+                                <label
+                                    for="module-name"
+                                    [class.error]="fieldInvalid('module_name')"
+                                >
+                                    {{ 'DRIVERS.MODULE_NAME' | translate }}
+                                    <span required>*</span>
                                 </label>
                                 <app-form-field>
-                                    <app-select
-                                        id="role"
-                                        aria-labelledby="role-label"
-                                        [formField]="form.role"
-                                    >
-                                        @for (type of role_types; track type) {
-                                            <app-option [value]="type.id">
-                                                {{ type.name | translate }}
-                                            </app-option>
-                                        }
-                                    </app-select>
+                                    <input
+                                        [placeholder]="
+                                            'DRIVERS.MODULE_NAME' | translate
+                                        "
+                                        id="module-name"
+                                        [formField]="form.module_name"
+                                    />
+                                    <div error>
+                                        {{
+                                            'DRIVERS.MODULE_NAME_REQUIRED'
+                                                | translate
+                                        }}
+                                    </div>
                                 </app-form-field>
                             </div>
-                        }
-                        <div class="flex flex-1 flex-col">
-                            <label
-                                for="module-name"
-                                [class.error]="fieldInvalid('module_name')"
-                            >
-                                {{ 'DRIVERS.MODULE_NAME' | translate }}
-                                <span required>*</span>
-                            </label>
-                            <app-form-field>
-                                <input
-                                    [placeholder]="
-                                        'DRIVERS.MODULE_NAME' | translate
-                                    "
-                                    id="module-name"
-                                    [formField]="form.module_name"
-                                />
-                                <div error>
-                                    {{
-                                        'DRIVERS.MODULE_NAME_REQUIRED'
-                                            | translate
-                                    }}
-                                </div>
-                            </app-form-field>
                         </div>
-                    </div>
-                    <label for="description">
-                        {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
-                    </label>
-                    <app-form-field>
-                        <textarea
-                            [placeholder]="
-                                'COMMON.FIELD_DESCRIPTION' | translate
-                            "
-                            id="description"
-                            [formField]="form.description"
-                        ></textarea>
-                    </app-form-field>
-                    <label
-                        for="default-uri"
-                        [class.error]="fieldInvalid('default_uri')"
-                    >
-                        {{ 'DRIVERS.DEFAULT_URI' | translate }}
-                    </label>
-                    <app-form-field>
-                        <input
-                            [placeholder]="'DRIVERS.DEFAULT_URI' | translate"
-                            id="default-uri"
-                            [formField]="form.default_uri"
-                        />
-                        <div error>
-                            {{ 'MODULES.URI_REQUIRED' | translate }}
-                        </div>
-                    </app-form-field>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex flex-1 flex-col">
-                            <label
-                                for="default-port"
-                                [class.error]="fieldInvalid('default_port')"
-                            >
-                                {{ 'DRIVERS.DEFAULT_PORT' | translate }}
-                            </label>
-                            <app-form-field>
-                                <input
-                                    type="number"
-                                    [placeholder]="
-                                        'DRIVERS.DEFAULT_PORT' | translate
-                                    "
-                                    id="default-port"
-                                    [formField]="form.default_port"
-                                />
-                                <div error>
-                                    {{ 'MODULES.PORT_REQUIRED' | translate }}
-                                </div>
-                            </app-form-field>
-                        </div>
-                        <div class="flex flex-1 flex-col">
-                            <div class="h-1 w-full"></div>
-                            <settings-toggle
-                                class="w-full"
-                                [label]="'MODULES.IGNORE_CONNECTED' | translate"
-                                [formField]="form.ignore_connected"
-                            />
-                        </div>
-                    </div>
-                    <label for="alert-level" id="alert-level-label">
-                        {{ 'COMMON.ALERT_LEVEL' | translate }}
-                    </label>
-                    <app-form-field>
-                        <app-select
-                            id="alert-level"
-                            aria-labelledby="alert-level-label"
-                            [formField]="form.alert_level"
+                        <label for="description">
+                            {{ 'COMMON.FIELD_DESCRIPTION' | translate }}
+                        </label>
+                        <app-form-field>
+                            <textarea
+                                [placeholder]="
+                                    'COMMON.FIELD_DESCRIPTION' | translate
+                                "
+                                id="description"
+                                [formField]="form.description"
+                            ></textarea>
+                        </app-form-field>
+                        <label
+                            for="default-uri"
+                            [class.error]="fieldInvalid('default_uri')"
                         >
-                            @for (level of alert_levels; track level.id) {
-                                <app-option [value]="level.id">
-                                    {{ level.name | translate }}
-                                </app-option>
-                            }
-                        </app-select>
-                    </app-form-field>
-                </div>
-            }
-            <!-- Form fields go here -->
-            @if (loading()) {
-                <div
-                    class="bg-base-200 flex w-full flex-col items-center justify-center space-y-4 rounded-xl px-8 py-16"
-                >
-                    <app-spinner [diameter]="32" />
-                    <p>{{ loading() | translate }}</p>
-                </div>
+                            {{ 'DRIVERS.DEFAULT_URI' | translate }}
+                        </label>
+                        <app-form-field>
+                            <input
+                                [placeholder]="
+                                    'DRIVERS.DEFAULT_URI' | translate
+                                "
+                                id="default-uri"
+                                [formField]="form.default_uri"
+                            />
+                            <div error>
+                                {{ 'MODULES.URI_REQUIRED' | translate }}
+                            </div>
+                        </app-form-field>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex flex-1 flex-col">
+                                <label
+                                    for="default-port"
+                                    [class.error]="fieldInvalid('default_port')"
+                                >
+                                    {{ 'DRIVERS.DEFAULT_PORT' | translate }}
+                                </label>
+                                <app-form-field>
+                                    <input
+                                        type="number"
+                                        [placeholder]="
+                                            'DRIVERS.DEFAULT_PORT' | translate
+                                        "
+                                        id="default-port"
+                                        [formField]="form.default_port"
+                                    />
+                                    <div error>
+                                        {{
+                                            'MODULES.PORT_REQUIRED' | translate
+                                        }}
+                                    </div>
+                                </app-form-field>
+                            </div>
+                            <div class="flex flex-1 flex-col">
+                                <div class="h-1 w-full"></div>
+                                <settings-toggle
+                                    class="w-full"
+                                    [label]="
+                                        'MODULES.IGNORE_CONNECTED' | translate
+                                    "
+                                    [formField]="form.ignore_connected"
+                                />
+                            </div>
+                        </div>
+                        <label for="alert-level" id="alert-level-label">
+                            {{ 'COMMON.ALERT_LEVEL' | translate }}
+                        </label>
+                        <app-form-field>
+                            <app-select
+                                id="alert-level"
+                                aria-labelledby="alert-level-label"
+                                [formField]="form.alert_level"
+                            >
+                                @for (level of alert_levels; track level.id) {
+                                    <app-option [value]="level.id">
+                                        {{ level.name | translate }}
+                                    </app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                }
+                <!-- Form fields go here -->
+                @if (loading()) {
+                    <div
+                        class="bg-base-200 flex w-full flex-col items-center justify-center space-y-4 rounded-xl px-8 py-16"
+                    >
+                        <app-spinner [diameter]="32" />
+                        <p>{{ loading() | translate }}</p>
+                    </div>
+                }
             }
         </fullscreen-modal-shell>
     `,
@@ -286,6 +307,7 @@ import {
 export class DriverFormComponent implements OnInit {
     private _dialog_ref =
         inject<DialogRef<unknown, DriverFormComponent>>(DialogRef);
+    private _items = inject(ActiveItemService);
     private _data = inject<{ item: Driver; readonly?: string }>(DIALOG_DATA);
     private readonly _name = 'DRIVERS';
     private _date_pipe = new DatePipe('en');
@@ -304,6 +326,15 @@ export class DriverFormComponent implements OnInit {
     public readonly loading_type = signal<string[]>([]);
     public readonly commit_error = signal(false);
     private readonly _details_request = signal(0);
+    /**
+     * The new driver that saved when its initial settings did not, with the
+     * settings that failed. Then the dialog shows only a notice, and a save
+     * writes these settings only.
+     */
+    public readonly settings_retry = signal<{
+        driver: Identity;
+        settings_string: string;
+    } | null>(null);
     public readonly role_types = [
         { id: PlaceDriverRole.SSH, name: 'DRIVERS.SSH' },
         { id: PlaceDriverRole.Device, name: 'DRIVERS.DEVICE' },
@@ -474,12 +505,18 @@ export class DriverFormComponent implements OnInit {
     }
 
     public async submit(): Promise<void> {
+        // The details of a new commit fill the form. Do not save it half done.
+        // A save in flight, also a settings retry, runs once.
+        if (this.loading() || this.saving()) return;
+        if (this.settings_retry()) return this._retrySettings();
         await submitFormDialog(
             this.form,
             {
                 loading: this.saving,
                 event: this.event,
-                close: () => this._dialog_ref.close(),
+                close: () => {
+                    if (!this.settings_retry()) this._dialog_ref.close();
+                },
             },
             `${this._name}.`,
             () => {
@@ -494,14 +531,27 @@ export class DriverFormComponent implements OnInit {
                 return ACTIONS.drivers.save(form_item);
             },
             async (item) => {
-                if (!this.formModel().id && this.formModel().settings) {
-                    await this.newSettings(
-                        item as unknown as Identity,
-                        this.formModel().settings,
-                    );
+                const settings = this.formModel().settings;
+                if (this.formModel().id || !settings) return;
+                const saved = item as unknown as Identity;
+                if (!(await this.newSettings(saved, settings))) {
+                    this.settings_retry.set({
+                        driver: saved,
+                        settings_string: settings,
+                    });
                 }
             },
         );
+    }
+
+    /** Writes the initial settings of the saved driver again, then closes */
+    private async _retrySettings() {
+        const { driver, settings_string } = this.settings_retry();
+        this.saving.set(i18n('DRIVERS.SAVING'));
+        if (!(await this.newSettings(driver, settings_string))) return;
+        this.settings_retry.set(null);
+        this.saving.set(null);
+        this._dialog_ref.close();
     }
 
     private _applyDriverDetails(details: DriverDetails) {
@@ -582,8 +632,9 @@ export class DriverFormComponent implements OnInit {
         }
     }
 
+    /** Writes the initial settings of a new driver. Gives false if it fails */
     private async newSettings(item: Identity, settings_string: string) {
-        await settings_v7
+        return settings_v7
             .create({
                 body: {
                     parent_id: item.id as string,
@@ -592,14 +643,24 @@ export class DriverFormComponent implements OnInit {
                 },
             })
             .then(orThrow)
-            .catch(async (err) => {
-                this.saving.set(null);
-                notifyError(
-                    `Error saving settings for ${
-                        item.name || item.id
-                    }. Error: ${await readError(err)}`,
-                );
-            });
+            .then(
+                (saved) => {
+                    // The driver page can have loaded before the settings
+                    // saved. Show them there.
+                    this._items.updateSettings(EncryptionLevel.Support, saved);
+                    return true;
+                },
+                async (err) => {
+                    this.saving.set(null);
+                    notifyError(
+                        i18n('DRIVERS.SETTINGS_SAVE_ERROR', {
+                            name: item.name || item.id,
+                            error: await readError(err),
+                        }),
+                    );
+                    return false;
+                },
+            );
     }
 
     private async _loadCommitList(

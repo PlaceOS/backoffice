@@ -1,12 +1,16 @@
-import { signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
     ActivatedRouteSnapshot,
     provideRouter,
+    Route,
     Router,
     RouterStateSnapshot,
+    Routes,
 } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { appRoutes } from '../../../app/app.routes';
 import {
     authorisedAdminGuard,
     authorisedUserGuard,
@@ -87,31 +91,6 @@ describe.each([
         });
     }
 
-    it('admits subsystem members only on subsystem routes', async () => {
-        user.set({ sys_admin: false, support: false });
-        subsystem.allowed = true;
-        expect(await canActivate(new ActivatedRouteSnapshot())).toBe(
-            guard === authorisedUserGuard,
-        );
-        const route = new ActivatedRouteSnapshot();
-        route.data = { role_only: true };
-        expect(await canActivate(route)).toBe(false);
-    });
-
-    it('requires an explicit route opt-in for admin routes', async () => {
-        if (guard !== authorisedAdminGuard) return;
-        user.set({ sys_admin: false, support: false });
-        subsystem.allowed = true;
-        const opted_in = Object.assign(new ActivatedRouteSnapshot(), {
-            routeConfig: { data: { allow_subsystem: true } },
-        });
-        expect(await canActivate(opted_in)).toBe(true);
-        // Inherited data is not an opt-in; only the route's own config is
-        const child = new ActivatedRouteSnapshot();
-        child.data = { allow_subsystem: true };
-        expect(await canActivate(child)).toBe(false);
-    });
-
     it('waits for the connection and user before deciding access', async () => {
         vi.useFakeTimers();
         connection.set(false);
@@ -130,5 +109,83 @@ describe.each([
         await vi.advanceTimersByTimeAsync(50);
         await result;
         expect(settled).toHaveBeenCalledExactlyOnceWith(true);
+    });
+});
+
+@Component({ template: '' })
+class StubComponent {}
+
+/**
+ * The registered routes, with a stub for each component. The guards, the
+ * route data and the feature routes stay as the app registers them.
+ */
+function stubRoutes(routes: Routes): Routes {
+    return routes.map((route): Route => {
+        const { loadChildren, children } = route;
+        const stubbed: Route = { ...route };
+        if (route.component || route.loadComponent) {
+            delete stubbed.component;
+            stubbed.loadComponent = () => StubComponent;
+        }
+        if (children) stubbed.children = stubRoutes(children);
+        if (loadChildren) {
+            stubbed.loadChildren = async () => {
+                const loaded = await loadChildren();
+                if (!Array.isArray(loaded)) {
+                    throw new Error('A feature must load a Routes array');
+                }
+                return stubRoutes(loaded);
+            };
+        }
+        return stubbed;
+    });
+}
+
+/** App URLs, and whether a member of a support subsystem with no role opens them */
+const SUBSYSTEM_ACCESS: readonly [url: string, allowed: boolean][] = [
+    ['/systems/-/about', true],
+    ['/zones/-/about', true],
+    ['/modules/-/about', true],
+    // `allow_subsystem` on the users route
+    ['/users/-/about', true],
+    // An admin child route. The inherited `allow_subsystem` is not an opt-in
+    ['/users/-/groups', false],
+    // `role_only` routes
+    ['/drivers/-/about', false],
+    ['/triggers/-/about', false],
+    ['/zones/-/triggers', false],
+    // Admin routes with no opt-in
+    ['/domains/-/about', false],
+    ['/groups/-/about', false],
+    ['/repositories/-/about', false],
+    ['/admin/about', false],
+];
+
+describe('app routes for a support subsystem member', () => {
+    beforeEach(() => {
+        subsystem.allowed = true;
+        connection.set(true);
+        TestBed.configureTestingModule({
+            providers: [
+                provideRouter(stubRoutes(appRoutes)),
+                {
+                    provide: BackofficeUsersService,
+                    useValue: {
+                        user: signal({ sys_admin: false, support: false }),
+                    },
+                },
+            ],
+        });
+    });
+
+    it.each(SUBSYSTEM_ACCESS)('%s is allowed: %s', async (url, allowed) => {
+        const harness = await RouterTestingHarness.create();
+        await harness.navigateByUrl(url);
+        // A denied route starts a second navigation to /unauthorised
+        await harness.fixture.whenStable();
+
+        expect(TestBed.inject(Router).url).toBe(
+            allowed ? url : '/unauthorised',
+        );
     });
 });

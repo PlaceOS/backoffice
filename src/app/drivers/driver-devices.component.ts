@@ -22,7 +22,7 @@ import { DriverStateService } from './driver-state.service';
 @Component({
     selector: 'driver-devices',
     template: `
-        <div class="p-4">
+        <div class="flex h-full min-h-0 w-full flex-col p-4">
             <section class="mb-4 flex items-center">
                 <app-form-field class="h-12 flex-1">
                     <div class="prefix" prefix>
@@ -37,14 +37,16 @@ import { DriverStateService } from './driver-state.service';
                     />
                 </app-form-field>
             </section>
-            <section>
+            <section class="flex min-h-0 flex-1 flex-col">
                 <app-progress-bar
                     mode="indeterminate"
                     class="w-full"
                     [class.invisible]="!loading()"
                 />
+                <!-- Virtual rows: only the visible modules render -->
                 <simple-table
-                    class="block min-w-lg text-sm"
+                    class="block min-h-0 w-full min-w-lg flex-1 text-sm"
+                    [virtual_row_height]="64"
                     [data]="modules()"
                     [columns]="[
                         {

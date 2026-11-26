@@ -274,11 +274,6 @@ export async function fillSettingsEditor(
     await page.keyboard.insertText(text);
 }
 
-/** Last word of a name from `uniqueName()`, which no other record has */
-export function lastWord(name: string): string {
-    return name.split(' ').pop() ?? name;
-}
-
 /** A module as the API gives it now */
 export function getModule(api: APIRequestContext, id: string): Promise<Module> {
     return getJson<Module>(api, enginePath('modules', id));

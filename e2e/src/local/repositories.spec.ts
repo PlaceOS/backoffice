@@ -1,11 +1,15 @@
-import { uniqueName } from '../../support/api';
+import {
+    ENGINE_API,
+    lastWord,
+    uniqueName,
+    waitForListed,
+} from '../../support/api';
 import { expect, test } from '../../support/fixtures';
 import { FeaturePage } from '../pages';
 import {
     createDriver,
     createRepository,
     fieldOf,
-    lastWord,
     Repository,
     statusOf,
 } from './support/drivers';
@@ -29,6 +33,15 @@ test.describe('Repositories on the local backend', () => {
         const other = await createRepository(api, cleanup, {
             name: uniqueName('E2E Audio Repo'),
         });
+        // Search comes from Elasticsearch, which indexes a new item late
+        for (const repo of [found, other]) {
+            await waitForListed(
+                api,
+                `${ENGINE_API}/repositories`,
+                lastWord(repo.name),
+                repo.id,
+            );
+        }
         const repositories = new FeaturePage(page, 'repositories');
         await repositories.goto();
 

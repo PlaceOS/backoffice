@@ -243,6 +243,10 @@ The Repositories section allows administrators to manage source code repositorie
 
 ### Acceptance Criteria
 
+> Not implemented: an interface repository has no "Interfaces" tab. It has
+> About and an optional Changelog. To see the installed interfaces, go to
+> Admin > Interfaces.
+
 **AC-REP-009-1: Display Interfaces List**
 - Given I have selected an interface repository
 - When I navigate to the "Interfaces" tab

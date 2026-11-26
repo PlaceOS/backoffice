@@ -52,8 +52,9 @@ The form sets the section, name, URL and conditions. It does not set the icon.
 To set an icon, edit the domain config. The form keeps an icon that is already
 in the config.
 
-The domain selector lists all domains. You only see the extensions of the
-domain that serves your host.
+The domain selector lists all domains. The list shows the extensions of the
+selected domain. The extension tabs on other pages come from the domain that
+serves your host.
 
 ## Conditions
 
@@ -130,23 +131,23 @@ is true:
 
 ### Request
 
-| Field     | Type           | Use                                          |
-| --------- | -------------- | -------------------------------------------- |
-| `id`      | `string`       | Request ID. The reply has the same ID        |
-| `type`    | `'backoffice'` | Required                                     |
-| `action`  | `string`       | `update`, `metadata`, `load` or `resource`   |
-| `name`    | `string`       | Metadata name or resource URL                |
-| `parent`  | `boolean`      | For `load`. Read from the parent of the item |
-| `content` | `object`       | Data for `update` and `metadata`             |
+| Field     | Type              | Use                                                       |
+| --------- | ----------------- | --------------------------------------------------------- |
+| `id`      | `string`          | Request ID. The reply has the same ID                     |
+| `type`    | `'backoffice'`    | Required                                                  |
+| `action`  | `string`          | `update`, `metadata`, `load` or `resource`                |
+| `name`    | `string`          | Metadata name or resource URL                             |
+| `parent`  | `boolean`         | For `load`. Read from the parent of the item              |
+| `content` | `object`, `array` | An object for `update`. An object or array for `metadata` |
 
 ### Actions
 
-| Action     | Needs             | Backoffice does                                       | Reply                             |
-| ---------- | ----------------- | ----------------------------------------------------- | --------------------------------- |
-| `update`   | `content`         | Merges `content` into the selected item and saves it  | `status` is `success` or `error`  |
-| `metadata` | `name`, `content` | Saves `content` as the metadata `name` on the item    | `status` is `success`             |
-| `load`     | `name`            | Reads the metadata `name` from the item or its parent | `content` is the metadata details |
-| `resource` | `name`            | Makes the URL in `name` safe for the page to display  | `content` is a URL                |
+| Action     | Needs             | Backoffice does                                                  | Reply                                                                                                                            |
+| ---------- | ----------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `update`   | `content`         | Merges `content` into the selected item and saves it             | `status` is `success` or `error`                                                                                                 |
+| `metadata` | `name`, `content` | Saves `content` as the metadata `name` on the item               | `status` is `success` or `error`                                                                                                 |
+| `load`     | `name`            | Reads the metadata `name` from the item or its parent            | `content` is the parsed details, or `{}` if the item has no metadata block with that name                                        |
+| `resource` | `name`            | Downloads an upload of the item with the credentials of the user | `content` is a data URL for an upload of the item, or the same URL for all other URLs. `status` is `error` if the download fails |
 
 Backoffice replies to each of these actions. It does not reply to other
 actions. A `metadata`, `load` or `resource` request with no `name` gets an
@@ -155,8 +156,9 @@ actions. A `metadata`, `load` or `resource` request with no `name` gets an
 `update`. Backoffice shows a notification for the result. After the save,
 Backoffice replaces the selected item with the saved item. The next `update`
 merges into the saved item, so send only the fields that change. `content`
-must be an object. The Admin section has no item to save, so `update` fails
-there.
+must be an object. Backoffice ignores an `id` in `content`: the update always
+saves the selected item. The Admin section has no item to save, so `update`
+fails there.
 
 `metadata`. Backoffice sets the metadata description to `Metadata from <url>`.
 `content` can be an object or an array.
@@ -165,8 +167,9 @@ there.
 An item with no `parent_id` gets an `error` reply.
 
 `resource`. Use this for upload URLs that need the credentials of the user.
-The URL must contain `/api/engine/v2/uploads` and must occur in the data of the
-selected item. Backoffice then downloads the file and replies with a data URL.
+The URL must be the download URL of an upload on the Backoffice origin
+(`/api/engine/v2/uploads/<id>/url`), and the whole URL must be a value in the
+data of the selected item. Send the URL exactly as the item holds it. Backoffice then downloads the file and replies with a data URL.
 For all other URLs, the reply contains the same URL. Backoffice caches each
 data URL in memory until the page reloads.
 

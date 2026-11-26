@@ -2,9 +2,12 @@ import {
     Component,
     computed,
     effect,
+    ElementRef,
     inject,
+    Injector,
     signal,
     untracked,
+    viewChild,
 } from '@angular/core';
 import { type System, type Zone, zones } from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
@@ -15,6 +18,8 @@ import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { describeError } from '../common/errors';
+import { refocusIfLost } from '../common/focus';
+import { ActiveItemService } from '../common/item.service';
 import { FormFieldComponent } from '../ui/controls/form-field.component';
 import { OptionComponent } from '../ui/controls/option.component';
 import { SelectComponent } from '../ui/controls/select.component';
@@ -210,13 +215,30 @@ import { TranslatePipe } from '../ui/translate.pipe';
             }
             <hr class="my-4" />
             @if (item()?.settings) {
-                <section>
+                <section
+                    #settings_section
+                    tabindex="-1"
+                    class="outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid"
+                >
                     <a-settings-form
                         [merge]="true"
                         [id]="item()?.id"
                         [settings]="item()?.settings"
                     />
                 </section>
+            } @else if (settings_error()) {
+                <div role="alert" class="flex flex-col items-center gap-4 p-8">
+                    <p>{{ 'COMMON.SETTINGS_LOAD_ERROR' | translate }}</p>
+                    <button
+                        btn
+                        type="button"
+                        [attr.aria-busy]="settings_retrying()"
+                        [attr.aria-disabled]="settings_retrying()"
+                        (click)="retrySettings()"
+                    >
+                        {{ 'COMMON.RETRY' | translate }}
+                    </button>
+                </div>
             } @else {
                 <div class="flex flex-col items-center p-8">
                     <app-spinner class="mb-4" diameter="48" />
@@ -251,6 +273,22 @@ import { TranslatePipe } from '../ui/translate.pipe';
 })
 export class ZoneAboutComponent {
     private _service = inject(ZonesStateService);
+    private _item_service = inject(ActiveItemService);
+    /** Whether the settings failed to load */
+    public readonly settings_error = this._item_service.settings_error;
+    private readonly _settings_section =
+        viewChild<ElementRef<HTMLElement>>('settings_section');
+    private readonly _injector = inject(Injector);
+
+    /** Retry the settings. Focus moves from Retry to the settings that load. */
+    public async retrySettings() {
+        if (!(await this._item_service.retrySettings())) return;
+        refocusIfLost(
+            this._injector,
+            () => this._settings_section()?.nativeElement,
+        );
+    }
+    public readonly settings_retrying = this._item_service.settings_retrying;
 
     /** List of associated systems */
     public readonly systems = this._service.systems;

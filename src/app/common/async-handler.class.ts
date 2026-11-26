@@ -16,6 +16,12 @@ export class AsyncHandler implements OnDestroy {
     protected readonly _initialised = signal(false);
     /** Signal of the initialised state of the object */
     public readonly initialised = this._initialised.asReadonly();
+    /**
+     * Set on destroy. An async callback can finish after it. Timers and
+     * intervals made then do not start, and a subscription given then is
+     * unsubscribed at once.
+     */
+    private _destroyed = false;
 
     /** Whether the object has been initialised */
     public get is_initialised(): boolean {
@@ -27,6 +33,7 @@ export class AsyncHandler implements OnDestroy {
     }
 
     protected destroy() {
+        this._destroyed = true;
         for (const key in this._timers) {
             if (key in this._timers) this.clearTimeout(key);
         }
@@ -46,6 +53,7 @@ export class AsyncHandler implements OnDestroy {
      */
     protected timeout(name: string, fn: () => void, delay = 300) {
         if (name && fn && fn instanceof Function) {
+            if (this._destroyed) return;
             this.clearTimeout(name);
             this._timers[name] = setTimeout(() => {
                 // Clear first, so a callback that schedules itself again
@@ -81,6 +89,7 @@ export class AsyncHandler implements OnDestroy {
      */
     protected interval(name: string, fn: () => void, delay = 300) {
         if (name && fn && fn instanceof Function) {
+            if (this._destroyed) return;
             this.clearInterval(name);
             this._intervals[name] = setInterval(() => fn(), delay);
         } else {
@@ -115,6 +124,7 @@ export class AsyncHandler implements OnDestroy {
         if (!unsub) return;
         this.unsub(name);
         this._subscriptions[name] = unsub;
+        if (this._destroyed) this.unsub(name);
     }
 
     /**

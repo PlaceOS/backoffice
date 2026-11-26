@@ -2,8 +2,9 @@
  * E2E Test Environment Configuration
  *
  * This module handles environment configuration for E2E tests.
- * By default, tests run against a mock environment.
- * Set USE_MOCK=false to run against a live environment.
+ * The mock suite (playwright.config.ts) always uses the mock backend and
+ * refuses USE_MOCK=false. Only playwright.local.config.ts sets
+ * USE_MOCK=false, for the local PlaceOS stack.
  */
 
 export interface TestEnvConfig {
@@ -64,7 +65,7 @@ export function buildAppUrl(path = '/'): string {
 }
 
 /**
- * Check if running in mock mode
+ * Check if running in mock mode. False only in the local-backend suite.
  */
 export function isMockMode(): boolean {
     return getTestEnvConfig().use_mock;

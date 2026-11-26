@@ -6,7 +6,13 @@
  * The control helpers at the end are also used by `triggers.spec.ts`.
  */
 import { APIRequestContext, Locator, Page, expect } from '@playwright/test';
-import { ENGINE_API, createResource, uniqueName } from '../../../support/api';
+import {
+    ENGINE_API,
+    createResource,
+    lastWord,
+    uniqueName,
+    waitForListed,
+} from '../../../support/api';
 import { Cleanup } from '../../../support/fixtures';
 
 export interface Domain {
@@ -22,7 +28,11 @@ export interface User {
     email: string;
 }
 
-/** Make a domain (authority) that only this test uses */
+/**
+ * Make a domain (authority) that only this test uses. It waits until search
+ * lists the domain, because the domain select loads its list one time from
+ * Elasticsearch.
+ */
 export async function createDomain(
     api: APIRequestContext,
     cleanup: Cleanup,
@@ -36,6 +46,12 @@ export async function createDomain(
         config,
     });
     cleanup.add(`${ENGINE_API}/domains/${domain.id}`);
+    await waitForListed(
+        api,
+        `${ENGINE_API}/domains`,
+        lastWord(name),
+        domain.id,
+    );
     return domain;
 }
 

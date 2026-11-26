@@ -200,9 +200,9 @@ export class SystemZonesComponent {
     private readonly _item_id = computed(() => this.item_signal()?.id);
 
     public changed: Record<string, boolean> = {};
-    /** ID of a zone that the user wishes to add to the system */
+    /** Zones that the user added, which are not saved yet */
     public readonly pending_zones = signal<Zone[]>([]);
-    /** ID of a zone that the user wishes to add to the system */
+    /** Zone ids in the new order. Empty when the order did not change */
     public readonly zone_order = signal<string[]>([]);
     /** Whether zones for active item are loading */
     public readonly loading = this._service.loading;
@@ -254,7 +254,7 @@ export class SystemZonesComponent {
         () => this.pending_zones().length > 0 || this.order_changed(),
     );
 
-    /** Query function for systems */
+    /** Query function for zones */
     public readonly query_fn = (_: string, signal?: AbortSignal) =>
         queryZones({ q: _ }, { signal }).then((resp) => resp.data);
 
@@ -282,7 +282,8 @@ export class SystemZonesComponent {
         const zones = this.original_zones();
         const zone_order = this.zone_order();
         if (zones.every(({ id }, idx) => zone_order[idx] === id)) return;
-        await this._service.reorderZones(zone_order);
+        // Keep the draft when the user cancels or the save fails
+        if (!(await this._service.reorderZones(zone_order))) return;
         this.order_changed.set(false);
         this.changed = {};
         this.zone_order.set([]);

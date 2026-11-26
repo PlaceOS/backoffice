@@ -6,6 +6,7 @@ import { DialogEvent, type SearchFn } from '../common/types';
 import { DialogCloseDirective } from '../ui/controls/dialog';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
+import { DialogTitleDirective } from '../ui/dialog-title.directive';
 import { IconComponent } from '../ui/icon.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 
@@ -20,7 +21,7 @@ export interface SelectItemModalData<T = unknown> {
         <div
             class="bg-base-200 mx-2 mt-2 flex items-center justify-between rounded-sm px-4 py-2"
         >
-            <h3 class="text-xl font-medium">
+            <h3 appDialogTitle class="text-xl font-medium">
                 {{ 'COMMON.ITEM_ADD' | translate: { item: name } }}
             </h3>
             @if (!loading) {
@@ -73,6 +74,7 @@ export interface SelectItemModalData<T = unknown> {
     styles: [``],
     imports: [
         DialogCloseDirective,
+        DialogTitleDirective,
         SpinnerComponent,
         TranslatePipe,
         ItemSearchFieldComponent,

@@ -75,6 +75,7 @@ import { DomainStateService } from './domain-state.service';
             @if (form) {
                 <section>
                     <app-tabs
+                        #tabs
                         class="border-base-300 border-x border-t"
                         [labels]="[
                             'DOMAINS.SETTINGS_CONFIG' | translate,
@@ -82,20 +83,26 @@ import { DomainStateService } from './domain-state.service';
                         ]"
                         [(selectedIndex)]="index"
                     />
-                    @if (index !== 1) {
-                        <settings-form-field
-                            [formField]="form.config"
-                            lang="json"
-                            [readonly]="false"
-                        />
-                    }
-                    @if (index === 1) {
-                        <settings-form-field
-                            [formField]="form.internals"
-                            lang="json"
-                            [readonly]="false"
-                        />
-                    }
+                    <div
+                        role="tabpanel"
+                        [id]="tabs.panelId(index)"
+                        [attr.aria-labelledby]="tabs.tabId(index)"
+                    >
+                        @if (index !== 1) {
+                            <settings-form-field
+                                [formField]="form.config"
+                                lang="json"
+                                [readonly]="false"
+                            />
+                        }
+                        @if (index === 1) {
+                            <settings-form-field
+                                [formField]="form.internals"
+                                lang="json"
+                                [readonly]="false"
+                            />
+                        }
+                    </div>
                 </section>
             }
         </div>

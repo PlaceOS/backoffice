@@ -17,6 +17,7 @@ import { EncryptionLevel, orThrow } from '@placeos/ts-client/compat';
 
 import { AsyncHandler } from '../../common/async-handler.class';
 import { HotkeysService } from '../../common/hotkeys.service';
+import { ActiveItemService } from '../../common/item.service';
 import { notifyError, notifySuccess } from '../../common/notifications';
 import { newItem, settingsLevels, toBody } from '../../common/placeos';
 import { HashMap, Identity } from '../../common/types';
@@ -94,6 +95,7 @@ function settingsBody(item: Settings, settings_string: string) {
         @if (used_settings() && used_settings().length) {
             <form>
                 <app-tabs
+                    #tabs
                     class="border-base-300 border-x border-t"
                     [labels]="level_labels()"
                     [selectedIndex]="level_index()"
@@ -101,64 +103,76 @@ function settingsBody(item: Settings, settings_string: string) {
                         encryption_level.set(+levels()[$event].id)
                     "
                 />
-                @for (option of levels(); track $index; let i = $index) {
-                    @if (
-                        encryption_level() === option.id &&
-                        hasSetting(+option.id)
-                    ) {
-                        <div [class.error-border]="settingError(+option.id)">
-                            <settings-form-field
-                                [decorations]="
-                                    +option.id === 4 ? merge_decorations() : []
-                                "
-                                [ngModel]="settingValue(+option.id)"
-                                (ngModelChange)="
-                                    updateSetting(+option.id, $event)
-                                "
-                                [ngModelOptions]="{ standalone: true }"
-                                [readonly]="
-                                    !option.active || this.saving()[option.id]
-                                "
-                            />
-                        </div>
-                        @if (settingError(+option.id)) {
-                            <div class="error-display">
-                                {{ settingError(+option.id)?.yaml }}
-                            </div>
-                        }
+                <div
+                    role="tabpanel"
+                    [id]="tabs.panelId(level_index())"
+                    [attr.aria-labelledby]="tabs.tabId(level_index())"
+                >
+                    @for (option of levels(); track $index; let i = $index) {
                         @if (
-                            option.name !== 'Merged' &&
-                            settings()[i - 1]?.modified_by_id
+                            encryption_level() === option.id &&
+                            hasSetting(+option.id)
                         ) {
                             <div
-                                class="border-base-300 mb-4 flex items-center justify-between space-x-2 border-x border-b border-gray-300 p-1"
+                                [class.error-border]="settingError(+option.id)"
                             >
-                                <div class="pl-2 text-xs">
-                                    {{
-                                        (
-                                            settings()[i - 1]?.modified_by_id
-                                            | user
-                                            | async
-                                        )?.name
-                                    }}
-                                </div>
-                                <code
-                                    class="text-xs"
-                                    [appTooltip]="
-                                        settings()[i - 1]?.updated_at * 1000 ||
-                                            0 | date: 'medium'
+                                <settings-form-field
+                                    [decorations]="
+                                        +option.id === 4
+                                            ? merge_decorations()
+                                            : []
                                     "
-                                >
-                                    {{ 'COMMON.LAST_EDIT' | translate }}:
-                                    {{
-                                        settings()[i - 1]?.updated_at * 1000
-                                            | dateFrom
-                                    }}
-                                </code>
+                                    [ngModel]="settingValue(+option.id)"
+                                    (ngModelChange)="
+                                        updateSetting(+option.id, $event)
+                                    "
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [readonly]="
+                                        !option.active ||
+                                        this.saving()[option.id]
+                                    "
+                                />
                             </div>
+                            @if (settingError(+option.id)) {
+                                <div class="error-display">
+                                    {{ settingError(+option.id)?.yaml }}
+                                </div>
+                            }
+                            @if (
+                                option.name !== 'Merged' &&
+                                settings()[i - 1]?.modified_by_id
+                            ) {
+                                <div
+                                    class="border-base-300 mb-4 flex items-center justify-between space-x-2 border-x border-b border-gray-300 p-1"
+                                >
+                                    <div class="pl-2 text-xs">
+                                        {{
+                                            (
+                                                settings()[i - 1]
+                                                    ?.modified_by_id
+                                                | user
+                                                | async
+                                            )?.name
+                                        }}
+                                    </div>
+                                    <code
+                                        class="text-xs"
+                                        [appTooltip]="
+                                            settings()[i - 1]?.updated_at *
+                                                1000 || 0 | date: 'medium'
+                                        "
+                                    >
+                                        {{ 'COMMON.LAST_EDIT' | translate }}:
+                                        {{
+                                            settings()[i - 1]?.updated_at * 1000
+                                                | dateFrom
+                                        }}
+                                    </code>
+                                </div>
+                            }
                         }
                     }
-                }
+                </div>
             </form>
         }
         <ng-template #spinner>
@@ -217,6 +231,7 @@ function settingsBody(item: Settings, settings_string: string) {
 export class SettingsFormComponent extends AsyncHandler implements OnInit {
     private _hotkey = inject(HotkeysService);
     private _users = inject(BackofficeUsersService);
+    private _items = inject(ActiveItemService);
 
     public readonly changed = signal(0);
 
@@ -494,26 +509,32 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             );
         }
         if (promises.length) {
-            Promise.all(promises).then(
-                (results: Settings[]) => {
-                    this._clearDirty(saved_levels);
-                    results.forEach((result, index) => {
-                        this._setSaving(saved_levels[index], false);
-                        this._setSettings(saved_levels[index], result);
-                    });
+            // When all requests settle, apply each level that saved. It keeps
+            // its new id, so a retry of a failed level does not create it again.
+            Promise.allSettled(promises).then(async (results) => {
+                const saved = saved_levels.filter(
+                    (_, index) => results[index].status === 'fulfilled',
+                );
+                this._clearDirty(saved);
+                results.forEach((result, index) => {
+                    this._setSaving(saved_levels[index], false);
+                    if (result.status === 'fulfilled')
+                        this._setSettings(saved_levels[index], result.value);
+                });
+                const failed = results.find(
+                    (result): result is PromiseRejectedResult =>
+                        result.status === 'rejected',
+                );
+                if (!failed) {
                     notifySuccess(i18n('COMMON.SETTINGS_SAVE_SUCCESS_ALL'));
-                },
-                async (err) => {
-                    for (const level of saved_levels) {
-                        this._setSaving(level, false);
-                    }
-                    notifyError(
-                        i18n('COMMON.SETTINGS_SAVE_ERROR', {
-                            error: await readError(err),
-                        }),
-                    );
-                },
-            );
+                    return;
+                }
+                notifyError(
+                    i18n('COMMON.SETTINGS_SAVE_ERROR', {
+                        error: await readError(failed.reason),
+                    }),
+                );
+            });
         }
     }
 
@@ -555,6 +576,8 @@ export class SettingsFormComponent extends AsyncHandler implements OnInit {
             next[level] = new_settings;
             return next;
         });
+        // The parent passes the item's settings, so keep them up to date
+        this._items.updateSettings(level, new_settings);
     }
 
     /** Discard all unsaved changes */

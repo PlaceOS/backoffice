@@ -72,9 +72,11 @@ function mediaQuery(query: string) {
                         class="relative z-0 flex h-full w-1/2 flex-1 flex-col outline-none"
                     >
                         <item-selection
+                            #picker
                             class="z-20 lg:hidden"
                             [route]="name()"
                             [title]="i18n_key() + '.PLURAL' | translate"
+                            [filter_options]="filter_options()"
                         >
                             <button
                                 btn
@@ -86,7 +88,11 @@ function mediaQuery(query: string) {
                                 <icon>menu</icon>
                             </button>
                         </item-selection>
-                        <div class="flex h-1/2 flex-1 flex-col">
+                        <!-- The open phone picker covers this, so Tab must not reach it -->
+                        <div
+                            class="flex h-1/2 flex-1 flex-col"
+                            [inert]="!large_screen() && picker.show_view()"
+                        >
                             @if (loading()) {
                                 <item-details-skeleton />
                             } @else if (display_item()?.id) {
@@ -124,6 +130,7 @@ function mediaQuery(query: string) {
                             primary
                             class="absolute bottom-2 left-2 z-30 h-12 w-12 lg:-left-9"
                             [appTooltip]="i18n_key() + '.NEW' | translate"
+                            [attr.aria-label]="i18n_key() + '.NEW' | translate"
                             appTooltipPosition="right"
                             ripple
                             [disabled]="!canCreate()"
@@ -137,6 +144,9 @@ function mediaQuery(query: string) {
                                 primary
                                 class="absolute bottom-16 left-2 z-30 h-10 w-10 lg:-left-8"
                                 [appTooltip]="i18n_key() + '.BULK' | translate"
+                                [attr.aria-label]="
+                                    i18n_key() + '.BULK' | translate
+                                "
                                 appTooltipPosition="right"
                                 ripple
                                 [disabled]="!canCreate()"

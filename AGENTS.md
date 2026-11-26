@@ -15,7 +15,7 @@ bun run build                          # Production build
 
 # Testing
 bun run test                           # Unit tests (Vitest)
-bun run test:ci                        # Tests sequentially (CI mode)
+bun run test:ci                        # Unit tests as CI runs them
 bunx playwright install --with-deps
 bun run e2e                            # Playwright E2E tests (mock backend)
 e2e/stack/up.sh                        # Local PlaceOS stack in Docker (https://localhost:9543)
@@ -30,8 +30,8 @@ bun run lint                           # ESLint
 ## Tech Stack
 
 - **Framework**: Angular 22 with standalone components and signals
-- **Build**: Nx 23 + Vite 8 + @analogjs/vite-plugin-angular
-- **Testing**: Vitest + Playwright
+- **Build**: Nx 23 with the Angular application builder (`@angular/build:application`)
+- **Testing**: Vitest (Vite 8 + @analogjs/vite-plugin-angular) + Playwright
 - **Styling**: Tailwind CSS 4 (legacy `tailwind.config.js` loaded via `@config`) with custom CSS variables
 - **Backend**: @placeos/ts-client for PlaceOS REST API integration
 - **Real-time**: MQTT for dashboard updates
@@ -47,10 +47,10 @@ src/app/
 │   ├── user-state.ts # Current user signals
 │   └── async-handler.class.ts # Base class for subscription management
 ├── ui/               # Shared UI components and guards
-│   └── guards/       # AuthorisedUserGuard, AuthorisedAdminGuard
+│   └── guards/       # authorisedUserGuard, authorisedAdminGuard (functions)
 ├── overlays/         # Modal/dialog components
 └── [features]/       # Feature modules: admin, systems, domains, drivers,
-                      # modules, repositories, triggers, users, zones, metrics
+                      # groups, modules, repositories, triggers, users, zones
 ```
 
 ### Feature Module Pattern
@@ -88,7 +88,7 @@ export class MyComponent extends AsyncHandler {
 
 ## Build Configuration
 
-- Dev proxy configured in `config/proxy.conf.js` (targets placeos-dev.aca.im)
+- Dev proxy configured in `config/proxy.conf.js` (targets placeos-dev.aca.im). `PLACEOS_DOMAIN` changes the target, `PLACEOS_INSECURE=true` uses plain HTTP, and `PLACEOS_SELF_SIGNED=true` accepts a self-signed certificate (local stack only). The proxy checks TLS certificates by default
 - Version info auto-generated to `src/env/version.ts` on postinstall
 - Production builds output to `dist/backoffice/browser`
 - Releases follow PlaceOS/PlaceOS releases. Do not make `release/*` branches. See `docs/releases.md`

@@ -49,4 +49,41 @@ describe('SystemZonesComponent', () => {
         expect(component.zone_order()).toEqual([]);
         expect(component.has_changes()).toBe(false);
     });
+
+    it('keeps the new zone order when the save does not complete', async () => {
+        const system = newItem(System, {
+            id: 'sys-1',
+            zones: ['zone-1', 'zone-2'],
+        });
+        const reorderZones = vi.fn(async () => false);
+        TestBed.configureTestingModule({
+            imports: [SystemZonesComponent],
+            providers: [
+                provideZonelessChangeDetection(),
+                provideRouter([]),
+                {
+                    provide: SystemStateService,
+                    useValue: {
+                        item: signal(system),
+                        zones: signal([
+                            newItem(Zone, { id: 'zone-1' }),
+                            newItem(Zone, { id: 'zone-2' }),
+                        ]),
+                        loading: signal({}),
+                        active_item: system,
+                        reorderZones,
+                    },
+                },
+            ],
+        });
+        const fixture = TestBed.createComponent(SystemZonesComponent);
+        const component = fixture.componentInstance;
+        await fixture.whenStable();
+        await component.reorder([0, 1]);
+
+        await component.saveZoneOrder();
+
+        expect(reorderZones).toHaveBeenCalledWith(['zone-2', 'zone-1']);
+        expect(component.zone_order()).toEqual(['zone-2', 'zone-1']);
+    });
 });

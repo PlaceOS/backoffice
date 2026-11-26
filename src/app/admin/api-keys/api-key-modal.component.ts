@@ -212,12 +212,13 @@ export interface APIKeyModalData {
                     </app-autocomplete>
                 </div>
                 <div class="flex flex-col">
-                    <label for="permissions">{{
+                    <label for="permissions" id="permissions-label">{{
                         'ADMIN.PERMISSIONS' | translate
                     }}</label>
                     <app-form-field>
                         <app-select
                             id="permissions"
+                            aria-labelledby="permissions-label"
                             data-testid="api-key-permissions"
                             placeholder="None"
                             [formField]="form.permissions"
@@ -266,12 +267,13 @@ export interface APIKeyModalData {
                 </div>
                 @if (!editing) {
                     <div class="flex flex-col">
-                        <label for="ttl">{{
+                        <label for="ttl" id="ttl-label">{{
                             'ADMIN.APP_KEYS_FIELD_TTL' | translate
                         }}</label>
                         <app-form-field>
                             <app-select
                                 id="ttl"
+                                aria-labelledby="ttl-label"
                                 data-testid="api-key-ttl"
                                 [placeholder]="
                                     'ADMIN.APP_KEYS_FIELD_TTL_HINT' | translate

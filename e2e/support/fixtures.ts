@@ -23,7 +23,8 @@ interface TestFixtures {
     staffPage: Page;
     /**
      * Deletes the API paths given to `add` after the test, last added first,
-     * also when the test fails. A path that is already gone is ignored.
+     * also when the test fails. A path that is already gone (404) is
+     * ignored. Other failures fail the test after every delete is tried.
      */
     cleanup: Cleanup;
 }
@@ -57,8 +58,23 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
                 paths.push(path);
             },
         });
+        // Try every delete, then report each failure. A 404 is a record
+        // that is already gone, e.g. the test deleted it. Report only the
+        // path and the status: the response body and the thrown error can
+        // hold the request headers, which include the bearer token.
+        const failures: string[] = [];
         for (const path of paths.reverse()) {
-            await api.delete(path).catch(() => undefined);
+            try {
+                const res = await api.delete(path);
+                if (!res.ok() && res.status() !== 404) {
+                    failures.push(`DELETE ${path}: HTTP ${res.status()}`);
+                }
+            } catch {
+                failures.push(`DELETE ${path}: request failed (no response)`);
+            }
+        }
+        if (failures.length) {
+            throw new Error(`cleanup failed:\n${failures.join('\n')}`);
         }
     },
 

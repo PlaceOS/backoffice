@@ -1,11 +1,20 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    inject,
+    Injector,
+    OnInit,
+    signal,
+    viewChild,
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { systems as systems_v7 } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { place } from '@placeos/ts-client/staff';
 import { mapLimit } from '../common/cascade-delete';
 import { readError } from '../common/errors';
+import { refocusIfLost } from '../common/focus';
 import { escapeHtml } from '../common/general';
 import { i18n } from '../common/locale.service';
 import {
@@ -46,15 +55,45 @@ export interface ExternalResource {
     selector: 'resource-imports',
     template: `
         <div class="flex h-full w-full flex-col">
-            <div class="my-4 flex items-center justify-between space-x-2 px-4">
-                <div class="text-2xl">
+            <!-- On a phone the controls go below the title -->
+            <div
+                class="my-4 flex flex-wrap items-center justify-between gap-2 px-4"
+            >
+                <h2
+                    #heading
+                    tabindex="-1"
+                    class="text-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid"
+                >
                     {{ 'ADMIN.RESOURCE_IMPORTS_HEADER' | translate }}
-                </div>
-                <div class="flex items-center space-x-2">
+                </h2>
+                <div class="flex min-w-0 flex-wrap items-center gap-2">
+                    <!-- The rooms do not depend on the domain, so a change does not load them again -->
+                    <span
+                        id="resource-imports-prefix"
+                        class="text-sm opacity-60"
+                    >
+                        {{ 'ADMIN.RESOURCE_IMPORTS_PREFIX' | translate }}
+                    </span>
                     <admin-domain-select
                         key="resource-imports"
-                        (changed)="loadResourceList()"
+                        labelled_by="resource-imports-prefix"
+                        field_class="no-subscript w-56 max-w-full"
                     />
+                    @if (domains_failed()) {
+                        <span role="alert" class="text-sm">
+                            {{ 'ADMIN.DOMAINS_LOAD_ERROR' | translate }}
+                        </span>
+                        <button
+                            btn
+                            ripple
+                            class="clear"
+                            [attr.aria-busy]="domains_loading()"
+                            [attr.aria-disabled]="domains_loading()"
+                            (click)="loadDomains(true)"
+                        >
+                            {{ 'COMMON.RETRY' | translate }}
+                        </button>
+                    }
                     <button
                         icon
                         default
@@ -77,6 +116,23 @@ export interface ExternalResource {
                     class="sticky left-0 w-full"
                     [class.invisible]="!loading()"
                 />
+                @if (load_error()) {
+                    <div
+                        role="alert"
+                        class="bg-base-200 mb-4 flex items-center gap-4 rounded-sm p-4"
+                    >
+                        <p class="flex-1">{{ load_error() }}</p>
+                        <button
+                            btn
+                            ripple
+                            [attr.aria-busy]="loading()"
+                            [attr.aria-disabled]="loading()"
+                            (click)="loadResourceList(true)"
+                        >
+                            {{ 'COMMON.RETRY' | translate }}
+                        </button>
+                    </div>
+                }
                 <simple-table
                     class="mb-4 block min-w-5xl text-sm"
                     [data]="resource_list()"
@@ -107,7 +163,11 @@ export interface ExternalResource {
                         },
                     ]"
                     [sortable]="true"
-                    [empty_message]="'ADMIN.RESOURCE_IMPORTS_EMPTY' | translate"
+                    [empty_message]="
+                        loading() || load_error()
+                            ? ''
+                            : ('ADMIN.RESOURCE_IMPORTS_EMPTY' | translate)
+                    "
                 />
                 <ng-template #email_template let-data="data">
                     <div class="mono p-4 text-xs">{{ data }}</div>
@@ -144,7 +204,7 @@ export interface ExternalResource {
                             default
                             ripple
                             (click)="importResource(row)"
-                            [disabled]="row.imported"
+                            [disabled]="row.imported || !domain()"
                             [appTooltip]="
                                 'ADMIN.RESOURCE_IMPORTS_IMPORT' | translate
                             "
@@ -191,16 +251,46 @@ export interface ExternalResource {
 export class ResourceImportsComponent implements OnInit {
     private _dialog = inject(Dialog);
     private _admin_data = inject(AdminDataService);
+    private _injector = inject(Injector);
+    private readonly _heading = viewChild<ElementRef<HTMLElement>>('heading');
 
     public readonly loading = signal(false);
+    /**
+     * The domain that names the imported systems. The staff API has no
+     * domain input: it lists the rooms of the tenant of the host.
+     */
     public readonly domain =
         this._admin_data.selectedDomain('resource-imports');
     public readonly resource_list = signal<ExternalResource[]>([]);
+    /** Why the rooms did not load. Imports stay off until they load */
+    public readonly load_error = signal('');
+    /** Whether no domains loaded. An import needs a domain. */
+    public readonly domains_failed = signal(false);
+    public readonly domains_loading = signal(false);
+    /** Import in flight for each room email, so a room gets one system */
+    private readonly _importing = new Map<string, Promise<boolean>>();
 
-    public async ngOnInit() {
-        const domain =
-            await this._admin_data.selectDefaultDomain('resource-imports');
-        if (!domain) return;
+    /**
+     * Load the domains for the picker, and select the default domain. The
+     * error, with its Retry button, stays until the domains load.
+     * @param retry From the Retry button. When the domains load, the button
+     * goes, so the heading gets the focus.
+     */
+    public async loadDomains(retry = false) {
+        if (this.domains_loading()) return;
+        this.domains_loading.set(true);
+        const domain = await this._admin_data
+            .selectDefaultDomain('resource-imports')
+            .finally(() => this.domains_loading.set(false));
+        const failed = !domain && !this._admin_data.domain_list().length;
+        this.domains_failed.set(failed);
+        if (retry && !failed)
+            refocusIfLost(this._injector, () => this._heading()?.nativeElement);
+    }
+
+    public ngOnInit() {
+        // Load the domain list for the picker. The rooms do not wait for it.
+        this.loadDomains();
         this.loadResourceList();
     }
 
@@ -254,12 +344,33 @@ export class ResourceImportsComponent implements OnInit {
      * Create a system for the resource.
      * Returns whether the import succeeded.
      */
-    public async importResource(
+    public importResource(
         resource: ExternalResource,
         notify = true,
     ): Promise<boolean> {
+        // A second call, such as a double click or Import All while a row
+        // import runs, gets the result of the import in flight
+        const pending = this._importing.get(resource.email);
+        if (pending) return pending;
+        const run = this._importResource(resource, notify).finally(() =>
+            this._importing.delete(resource.email),
+        );
+        this._importing.set(resource.email, run);
+        return run;
+    }
+
+    private async _importResource(
+        resource: ExternalResource,
+        notify: boolean,
+    ): Promise<boolean> {
         const domain = this.domain();
         if (!domain) return false;
+        // Import All works from a copy of the list. A row import can have
+        // finished since then, so read the row as it is now.
+        const current = this.resource_list().find(
+            (item) => item.email === resource.email,
+        );
+        if (current?.imported) return true;
         const system = await systems_v7
             .create({
                 body: {
@@ -300,16 +411,33 @@ export class ResourceImportsComponent implements OnInit {
         return true;
     }
 
-    public async loadResourceList() {
+    /**
+     * Load the rooms and check which ones have a system.
+     * @param retry From the Retry button. When the rooms load, the button
+     * goes, so the heading gets the focus.
+     */
+    public async loadResourceList(retry = false) {
+        // The error, with its Retry button, stays until the rooms load
+        if (this.loading()) return;
+        // The domains can have failed with the rooms. Then load them again too.
+        if (retry && !this.domain()) this.loadDomains();
         this.resource_list.set([]);
-        if (!this.domain()) return;
         this.loading.set(true);
         // The staff API lists the rooms of the tenant of this domain. It
         // ignored the `limit` and `authority_id` that 6.x sent, so they are gone
         const rooms = await place
             .query({})
             .then(orThrow)
-            .catch(() => []);
+            .catch(async (err) => {
+                this.load_error.set(
+                    `Failed to load rooms. Error: ${await readError(err)}`,
+                );
+                return null;
+            });
+        if (!rooms) {
+            this.loading.set(false);
+            return;
+        }
         const list: ExternalResource[] = rooms.map((_) => ({
             id: _.id || '',
             booking_type: _.bookingType,
@@ -342,9 +470,13 @@ export class ResourceImportsComponent implements OnInit {
                 }
             }
         } catch (err) {
-            notifyError(
+            this.load_error.set(
                 `Failed to check imported resources. Error: ${await readError(err)}`,
             );
+            // Without the check, every room looks new, and an import would
+            // make a second system for a room that has one. Show no rooms.
+            this.loading.set(false);
+            return;
         }
         for (const resource of list) {
             const system_id = system_ids.get(resource.email.toLowerCase());
@@ -353,7 +485,10 @@ export class ResourceImportsComponent implements OnInit {
                 resource.system_id = system_id;
             }
         }
+        this.load_error.set('');
         this.resource_list.set(list);
         this.loading.set(false);
+        if (retry)
+            refocusIfLost(this._injector, () => this._heading()?.nativeElement);
     }
 }

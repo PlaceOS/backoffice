@@ -1,10 +1,13 @@
 import {
+    afterNextRender,
     booleanAttribute,
     Component,
     computed,
     effect,
     ElementRef,
     forwardRef,
+    inject,
+    Injector,
     input,
     model,
     output,
@@ -40,10 +43,10 @@ import {
                         "
                         (keydown.enter)="
                             $event.preventDefault();
-                            finishEdit(item, edit_input.value)
+                            finishEdit(item, edit_input.value, true)
                         "
                         (keydown.escape)="
-                            $event.stopPropagation(); editing.set(null)
+                            $event.stopPropagation(); cancelEdit(item)
                         "
                         (blur)="finishEdit(item, edit_input.value)"
                     />
@@ -68,7 +71,7 @@ import {
                             [attr.aria-label]="
                                 ('COMMON.REMOVE' | translate) + ' ' + item
                             "
-                            (click)="remove(item)"
+                            (click)="remove(item, true)"
                         >
                             <icon>cancel</icon>
                         </button>
@@ -99,6 +102,8 @@ import {
     host: { class: 'chip-list', role: 'list' },
 })
 export class ChipListComponent implements ControlValueAccessor {
+    private readonly _element = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly _injector = inject(Injector);
     private _onChange: (value: readonly string[]) => void = () => undefined;
     private _onTouched: () => void = () => undefined;
 
@@ -171,8 +176,14 @@ export class ChipListComponent implements ControlValueAccessor {
         return true;
     }
 
-    public remove(item: string) {
+    /**
+     * Remove an item. With `refocus`, focus goes to the Remove button of the
+     * next chip (or the last chip), or to the text input when no chip stays.
+     */
+    public remove(item: string, refocus = false) {
+        const index = this.list().indexOf(item);
         this._set(this.list().filter((existing) => existing !== item));
+        if (refocus) this._focusChip(index, 'last');
     }
 
     public startEdit(item: string) {
@@ -183,11 +194,12 @@ export class ChipListComponent implements ControlValueAccessor {
      * Replace an item with its edited text, keeping its position.
      * Empty text removes the item. Text of another item merges into it.
      */
-    public finishEdit(item: string, text: string) {
+    public finishEdit(item: string, text: string, refocus = false) {
         if (this.editing() !== item) return;
         this.editing.set(null);
         const value = text.trim();
         const items = this.list();
+        const index = items.indexOf(item);
         if (!value || (value !== item && items.includes(value))) {
             this.remove(item);
         } else if (value !== item) {
@@ -195,6 +207,14 @@ export class ChipListComponent implements ControlValueAccessor {
                 items.map((existing) => (existing === item ? value : existing)),
             );
         }
+        // The inline input goes away, so move the focus to a chip
+        if (refocus) this._focusChip(index, 'first');
+    }
+
+    /** Stop the edit of an item and focus its Edit button */
+    public cancelEdit(item: string) {
+        this.editing.set(null);
+        this._focusChip(this.list().indexOf(item), 'first');
     }
 
     public writeValue(value: readonly string[]) {
@@ -211,6 +231,29 @@ export class ChipListComponent implements ControlValueAccessor {
 
     public setDisabledState(disabled: boolean) {
         this._form_disabled.set(disabled);
+    }
+
+    /**
+     * After the next render, focus the first (Edit) or last (Remove) button
+     * of the chip at `index`, or of the last chip. Focus the text input when
+     * there is no chip.
+     */
+    private _focusChip(index: number, action: 'first' | 'last') {
+        afterNextRender(
+            () => {
+                const chips =
+                    this._element.nativeElement.querySelectorAll('.chip');
+                const chip = chips[Math.min(index, chips.length - 1)];
+                const buttons =
+                    chip?.querySelectorAll<HTMLElement>('.chip-action') ?? [];
+                const target =
+                    action === 'first'
+                        ? buttons[0]
+                        : buttons[buttons.length - 1];
+                (target ?? this._text_input().nativeElement).focus();
+            },
+            { injector: this._injector },
+        );
     }
 
     private _set(value: string[]) {

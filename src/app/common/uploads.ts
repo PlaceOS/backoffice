@@ -119,12 +119,13 @@ export function uploadFile(
                     upload_details.progress = state.progress;
                     upload_details.link = uploadURL(upload.id);
                     next(upload_details);
+                    // Keep listening after a failure: a retry resumes this
+                    // upload, and its progress must still reach the list
                     if (state.status === 'FAILED') {
                         error?.({
                             ...upload_details,
                             error: 'Upload failed',
                         });
-                        state_subscription?.unsubscribe();
                     }
                     if (state.status === 'COMPLETED') {
                         complete?.();

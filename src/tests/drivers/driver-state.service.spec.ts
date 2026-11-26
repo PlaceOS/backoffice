@@ -1,11 +1,18 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { provideZonelessChangeDetection } from '@angular/core';
+import {
+    ApplicationRef,
+    provideZonelessChangeDetection,
+    signal,
+} from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Driver, drivers, Settings } from '@placeos/ts-client';
-import { mockReply } from '@placeos/ts-client/compat';
+import { NavigationEnd, Router } from '@angular/router';
+import { Driver, drivers, Module, modules, Settings } from '@placeos/ts-client';
+import { mockPage, mockReply } from '@placeos/ts-client/compat';
+import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActiveItemService } from '../../app/common/item.service';
 import { newItem } from '../../app/common/placeos';
+import { clearSupportModuleCache } from '../../app/common/support-access';
 import { DriverStateService } from '../../app/drivers/driver-state.service';
 
 const mocks = vi.hoisted(() => ({ confirm: vi.fn(), open: vi.fn() }));
@@ -20,6 +27,9 @@ vi.mock('../../app/common/notifications', () => ({
     ),
     notifyInfo: vi.fn(),
     notifySuccess: vi.fn(),
+}));
+vi.mock('../../app/common/support-access', () => ({
+    clearSupportModuleCache: vi.fn(),
 }));
 vi.mock('../../app/overlays/confirm-modal.component', () => ({
     openConfirmModal: mocks.confirm,
@@ -102,5 +112,155 @@ describe('driver recompile', () => {
         expect(mocks.open.mock.calls[0][1]).toEqual({
             data: { content: 'error: undefined method `power`' },
         });
+    });
+});
+
+describe('driver modules', () => {
+    const active = signal<Driver | null>(null);
+    let navigation: Subject<NavigationEnd>;
+    let service: DriverStateService;
+
+    beforeEach(() => {
+        vi.resetAllMocks();
+        active.set(null);
+        navigation = new Subject();
+        vi.mocked(drivers.query).mockResolvedValue(
+            mockReply([]) as Awaited<ReturnType<typeof drivers.query>>,
+        );
+        vi.mocked(drivers.readme).mockResolvedValue(mockReply(''));
+        vi.mocked(modules.query).mockResolvedValue(
+            mockPage({
+                data: [newItem(Module, { id: 'mod-1' })],
+                total: 10000,
+            }),
+        );
+        TestBed.configureTestingModule({
+            providers: [
+                provideZonelessChangeDetection(),
+                DriverStateService,
+                { provide: Dialog, useValue: { open: mocks.open } },
+                {
+                    provide: ActiveItemService,
+                    useValue: {
+                        activeOf: (type: string) =>
+                            type === 'drivers' ? active() : null,
+                    },
+                },
+                {
+                    provide: Router,
+                    useValue: {
+                        url: '/drivers/driver-1/about',
+                        events: navigation,
+                    },
+                },
+            ],
+        });
+        service = TestBed.inject(DriverStateService);
+    });
+
+    /** Show the tab at `url` and wait for the loads to finish */
+    const navigate = async (url: string) => {
+        navigation.next(new NavigationEnd(1, url, url));
+        await TestBed.inject(ApplicationRef).whenStable();
+    };
+
+    it('reads only the total until the modules tab opens', async () => {
+        active.set(newItem(Driver, { id: 'driver-1' }));
+        await navigate('/drivers/driver-1/about');
+
+        expect(vi.mocked(modules.query).mock.calls[0][0]).toEqual({
+            driver_id: 'driver-1',
+            limit: 1,
+        });
+        expect(service.modules_total()).toBe(10000);
+        expect(service.modules()).toEqual([]);
+    });
+
+    it('loads every module page once the modules tab opens', async () => {
+        vi.mocked(modules.query).mockResolvedValue(
+            mockPage({
+                data: [newItem(Module, { id: 'mod-1' })],
+                total: 2,
+                next: () => ({
+                    data: [newItem(Module, { id: 'mod-2' })],
+                    total: 2,
+                }),
+            }),
+        );
+        active.set(newItem(Driver, { id: 'driver-1' }));
+        await navigate('/drivers/driver-1/about');
+        // The About tab reads only the count
+        expect(vi.mocked(modules.query).mock.calls.map(([q]) => q)).toEqual([
+            { driver_id: 'driver-1', limit: 1 },
+        ]);
+        expect(service.modules()).toEqual([]);
+
+        await navigate('/drivers/driver-1/modules');
+
+        expect(service.modules().map(({ id }) => id)).toEqual([
+            'mod-1',
+            'mod-2',
+        ]);
+        expect(service.modules_total()).toBe(2);
+    });
+
+    it('stops the module load of a driver when another driver is selected', async () => {
+        type ModulePage = Awaited<ReturnType<typeof modules.query>>;
+        let release: (page: ModulePage) => void;
+        const page = mockPage<Module[]>({ data: [], total: 0 });
+        // The load of driver-1 stays pending until the test releases it
+        vi.mocked(modules.query).mockImplementation((input) =>
+            input.driver_id === 'driver-1'
+                ? new Promise<ModulePage>((resolve) => (release = resolve))
+                : Promise.resolve(page),
+        );
+        active.set(newItem(Driver, { id: 'driver-1' }));
+        const url = '/drivers/driver-1/modules';
+        navigation.next(new NavigationEnd(1, url, url));
+        await vi.waitFor(() =>
+            expect(modules.query).toHaveBeenCalledWith(
+                { driver_id: 'driver-1', limit: 500 },
+                expect.anything(),
+            ),
+        );
+        const { signal: first } = vi.mocked(modules.query).mock.calls.at(-1)[1];
+        expect(first.aborted).toBe(false);
+
+        active.set(newItem(Driver, { id: 'driver-2' }));
+        TestBed.tick();
+
+        expect(first.aborted).toBe(true);
+        release(page);
+        await navigate('/drivers/driver-2/modules');
+    });
+
+    it('shows no module count when the count fails', async () => {
+        vi.mocked(modules.query).mockRejectedValue(new Error('Offline'));
+        active.set(newItem(Driver, { id: 'driver-1' }));
+        await navigate('/drivers/driver-1/about');
+
+        // The tab shows "?" for an unknown count, not 0
+        expect(service.modules_total()).toBeUndefined();
+    });
+
+    it('does not load the modules again when a save gives a new driver object', async () => {
+        active.set(newItem(Driver, { id: 'driver-1' }));
+        await navigate('/drivers/driver-1/modules');
+        const calls = vi.mocked(modules.query).mock.calls.length;
+
+        active.set(newItem(Driver, { id: 'driver-1', name: 'Saved' }));
+        await navigate('/drivers/driver-1/modules');
+
+        expect(modules.query).toHaveBeenCalledTimes(calls);
+    });
+
+    it('clears the support group module list after it removes a module', async () => {
+        mocks.confirm.mockResolvedValue({ reason: 'done', close: vi.fn() });
+        vi.mocked(modules.destroy).mockResolvedValue(mockReply(undefined));
+        active.set(newItem(Driver, { id: 'driver-1' }));
+
+        await service.removeModule(newItem(Module, { id: 'mod-1' }));
+
+        expect(clearSupportModuleCache).toHaveBeenCalledTimes(1);
     });
 });

@@ -1,6 +1,11 @@
 import { Service, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Settings, settings as settings_v7, users } from '@placeos/ts-client';
+import {
+    type Domain,
+    Settings,
+    settings as settings_v7,
+    users,
+} from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
 import { HotkeysService } from '../common/hotkeys.service';
 import { SettingsService } from '../common/settings.service';
@@ -15,6 +20,7 @@ import {
 } from '../common/types';
 // Modals load on demand to keep them out of the first page load
 import { Dialog } from '@angular/cdk/dialog';
+import { AdminDataService } from '../admin/admin-data.service';
 import type {
     ConfirmModalComponent,
     ConfirmModalData,
@@ -37,7 +43,6 @@ import { waitForEvent, waitForSignalValue } from './signals';
 import {
     canAccessSection,
     canUseSupportAction,
-    clearSupportModuleCache,
     hasSupportRole,
     hasSupportSubsystem,
     isSubsystemUser,
@@ -65,6 +70,20 @@ const NO_DUPLICATE_TYPES = [
     'repositories',
     ...NO_COPY_TYPES,
 ];
+
+/** `AdminDataService` key of the domain that filters the user list */
+export const USER_DOMAIN_KEY = 'users';
+
+/**
+ * Search text for a list query. Each item must have all of `tags` and match
+ * `search`. The item sidebar and the item picker use it.
+ */
+export function tagQuery(search: string, tags: readonly string[]) {
+    const text = search.trim();
+    if (!tags.length) return text;
+    const tag_query = `tags:(${tags.map((_) => `+${_.trim()}`).join(' AND ')})`;
+    return text ? `${tag_query} AND (+${text})` : tag_query;
+}
 
 /** Resource types whose items carry settings */
 const SETTINGS_TYPES = new Set<ResourceType>([
@@ -101,6 +120,7 @@ export class ActiveItemService extends AsyncHandler {
     private _hotkey = inject(HotkeysService);
     private _dialog = inject(Dialog);
     private _user = inject(BackofficeUsersService);
+    private _admin_data = inject(AdminDataService);
 
     /** Whether active item is loading */
     private _loading = signal(false);
@@ -135,6 +155,17 @@ export class ActiveItemService extends AsyncHandler {
     /** Id of the latest settings refresh, so stale responses are dropped */
     private _settings_request = 0;
     private _items_changed = signal(0);
+    private _settings_error = signal(false);
+
+    /** Whether the settings of the active item failed to load */
+    public readonly settings_error = this._settings_error.asReadonly();
+    private _settings_retrying = signal(false);
+    /** Id of the item that `setItem` loads now */
+    private _loading_item_id = '';
+    /** Settings levels that saved while their item loaded, by level */
+    private _unapplied_settings = new Map<number, Settings>();
+    /** Whether a settings retry runs */
+    public readonly settings_retrying = this._settings_retrying.asReadonly();
 
     public readonly count = this._count.asReadonly();
     /**
@@ -150,6 +181,9 @@ export class ActiveItemService extends AsyncHandler {
     public readonly loading = this._loading.asReadonly();
     /** Signal for item list loading state */
     public readonly loading_list = this._loading_list.asReadonly();
+    private _list_failed = signal(false);
+    /** Whether the last page request failed. Load-more can then try it again at once. */
+    public readonly list_failed = this._list_failed.asReadonly();
     /** Signal for list of items */
     public readonly list = this._list.asReadonly();
     /** Signal for active item */
@@ -221,7 +255,9 @@ export class ActiveItemService extends AsyncHandler {
         if (section === this.type) this.updateList();
     }
 
+    /** Load the next page. One page request runs at a time. */
     public moreItems() {
+        if (this._loading_list()) return;
         this.updateList();
     }
 
@@ -230,6 +266,12 @@ export class ActiveItemService extends AsyncHandler {
             return;
         this._include_deleted.set(include);
         this.setSearch(this._search());
+    }
+
+    /** Show only the users of `domain` in the list. `null` or `{}` shows all users */
+    public setUserDomain(domain: Domain | null) {
+        this._admin_data.setDomain(USER_DOMAIN_KEY, domain);
+        if (this.type === 'users') this.setSearch(this._search());
     }
 
     public setSearch(str: string) {
@@ -248,8 +290,9 @@ export class ActiveItemService extends AsyncHandler {
                 this.updateType();
             }
         });
-        this._hotkey.listen(['KeyN'], () => this.create());
-        this._hotkey.listen(['KeyE'], () => this.edit());
+        // A modifier stops speech input and stray key presses from firing them
+        this._hotkey.listen(['Alt', 'Shift', 'KeyN'], () => this.create());
+        this._hotkey.listen(['Alt', 'Shift', 'KeyE'], () => this.edit());
         setTimeout(() => this.updateType(), 300);
     }
 
@@ -260,13 +303,19 @@ export class ActiveItemService extends AsyncHandler {
             this._user.user,
             (user) => !!user,
         ).catch(() => null);
-        if (!user) return;
+        // A newer selection came while this one waited for the user
+        if (!user || request !== this._item_request) return;
         if (!hasSupportRole() && !hasSupportSubsystem()) return;
+        // The `-` placeholder selects no item. Close the open one. The new
+        // request id above makes a load in flight drop its response.
+        if (id.length <= 2) {
+            this._active_item.set(null);
+            this._settings_error.set(false);
+            this._loading.set(false);
+            return;
+        }
         const scope_version = this._scope_version;
-        if (
-            (!this.active_item || this.active_item.id !== id) &&
-            id.length > 2
-        ) {
+        if (!this.active_item || this.active_item.id !== id) {
             this._type = (this._urlSegments()[0] ?? '') as ResourceType;
             if (!this.type)
                 return this.timeout('setItem', () => this.setItem(id));
@@ -274,6 +323,13 @@ export class ActiveItemService extends AsyncHandler {
             const { signal } = (this._item_abort = new AbortController());
             this._loading.set(true);
             this._active_item.set(null);
+            this._settings_error.set(false);
+            // A settings read or retry for the item that closes must not
+            // change the next one, also if it is the same item again
+            this._settings_request++;
+            // Saves for another item that loaded before do not apply here
+            this._loading_item_id = id;
+            this._unapplied_settings.clear();
             const actions = this.actions;
             // Load settings alongside the item and set it once, as state
             // services reload everything each time the item changes. Lists
@@ -283,8 +339,7 @@ export class ActiveItemService extends AsyncHandler {
                     .show(id, signal)
                     .then((loaded) => withEmptyLists(actions.schema, loaded))
                     .catch(() => {
-                        if (!signal.aborted)
-                            notifyError(`Error loading ${id}`);
+                        if (!signal.aborted) notifyError(`Error loading ${id}`);
                     }),
                 SETTINGS_TYPES.has(this._type)
                     ? this.loadSettings(id, signal)
@@ -296,11 +351,26 @@ export class ActiveItemService extends AsyncHandler {
                 request !== this._item_request
             )
                 return;
+            // A settings save can end while the item loads, for example the
+            // first settings of a new driver. Show it on the loaded item.
+            const late_saves = this._unapplied_settings.size > 0;
+            if (settings) {
+                for (const [level, saved] of this._unapplied_settings)
+                    settings[level] = saved;
+            }
+            this._unapplied_settings.clear();
+            this._loading_item_id = '';
             this._active_item.set(
                 (item && settings
                     ? { ...(item as PlaceResource), settings }
                     : item) as PlaceResource,
             );
+            this._settings_error.set(
+                !!item && !settings && SETTINGS_TYPES.has(this._type),
+            );
+            // The read failed, but a save ended while it ran, so the server
+            // has settings now. Read them again. The error goes when they load.
+            if (item && !settings && late_saves) this.refreshSettings(`${id}`);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.set(name);
             this._settings.title = name;
@@ -345,6 +415,8 @@ export class ActiveItemService extends AsyncHandler {
         ref.closed.subscribe(() => {
             this._settings.post('disable_uploads', false);
             this._items_changed.update((count) => count + 1);
+            // Query the list again from its first page, so new items show
+            this.setSearch(this._search());
         });
     }
 
@@ -490,9 +562,8 @@ export class ActiveItemService extends AsyncHandler {
                         // tens of seconds with only a spinner on screen — the footer
                         // is hidden while loading, which leaves Escape and the
                         // backdrop as the only things to press. Dismissing mid-run
-                        // tears down the component this callback writes to and
-                        // abandons the rest of an irreversible operation with no
-                        // record of what already went.
+                        // would not stop the deletes: they go on with no progress
+                        // shown and no receipt of what went.
                         ref.componentInstance?.disableClose();
                         outcome = await runCascade(plan, (message) =>
                             ref.componentInstance?.loading.set(message),
@@ -601,6 +672,11 @@ export class ActiveItemService extends AsyncHandler {
                                         name: item.name,
                                     }),
                                 });
+                            } else {
+                                // The confirm handler has run once, so its
+                                // button would do nothing. Close, and the
+                                // user can start the delete again.
+                                ref.close();
                             }
                             notifyError(
                                 i18n(`${actions.name}.DELETE_ERROR`, {
@@ -673,12 +749,21 @@ export class ActiveItemService extends AsyncHandler {
                 : item) as PlaceResource,
         );
         const list = this._list().filter((i) => (i as Identity).id !== item.id);
-        list.push(item);
+        if (this._inListScope(item)) list.push(item);
         list.sort((a, b) =>
             (a as Identity).name?.localeCompare((b as Identity).name),
         );
         this._list.set(list);
         if (SETTINGS_TYPES.has(this._type)) this.refreshSettings(`${item.id}`);
+    }
+
+    /** Whether a saved item belongs in the current list, which a filter can limit */
+    private _inListScope(item: Identity | PlaceResource) {
+        if (this._type !== 'users') return true;
+        const domain_id =
+            this._admin_data.selectedDomain(USER_DOMAIN_KEY)()?.id;
+        const authority_id = 'authority_id' in item ? item.authority_id : null;
+        return !domain_id || !authority_id || authority_id === domain_id;
     }
 
     public removeItem(item: unknown) {
@@ -690,7 +775,9 @@ export class ActiveItemService extends AsyncHandler {
             list.sort((a, b) =>
                 (a as Identity).name?.localeCompare((b as Identity).name),
             );
-            this._count.set(this._count() - 1);
+            // A user outside the domain filter is not in the count
+            if (this._inListScope(item as Identity))
+                this._count.set(this._count() - 1);
             this._list.set(list);
         }
     }
@@ -711,8 +798,6 @@ export class ActiveItemService extends AsyncHandler {
             this._loading.set(false);
             this._include_deleted.set(false);
             this._list_version++;
-            // Entering a section starts from fresh data
-            clearSupportModuleCache();
             log('Service', `Item type set to ${this._type}`);
             this._next_query.set(null);
             this._active_item.set(null);
@@ -778,6 +863,10 @@ export class ActiveItemService extends AsyncHandler {
                             type === 'users'
                                 ? {
                                       include_deleted: this._include_deleted(),
+                                      authority_id:
+                                          this._admin_data.selectedDomain(
+                                              USER_DOMAIN_KEY,
+                                          )()?.id || undefined,
                                       signal,
                                   }
                                 : { signal },
@@ -809,14 +898,17 @@ export class ActiveItemService extends AsyncHandler {
                 )
                     return;
                 if (!resp) {
+                    // Keep the rows and the page cursor, so that load-more
+                    // requests the failed page again
                     if (type === this._type) {
-                        this._next_query.set(null);
                         this._loading_list.set(false);
+                        this._list_failed.set(true);
                         notifyError(`Error loading ${type} list.`);
                     }
                     return;
                 }
                 if (type === this._type) {
+                    this._list_failed.set(false);
                     this._next_query.set(
                         resp.next ||
                             (() =>
@@ -850,16 +942,19 @@ export class ActiveItemService extends AsyncHandler {
      * Reload the active item's settings. Sets the item again only when they
      * changed, as state services reload everything each time it is set.
      */
-    private async refreshSettings(id: string) {
+    /** Resolves `true` when the settings of item `id` loaded and show */
+    private async refreshSettings(id: string): Promise<boolean> {
         const request = ++this._settings_request;
         const settings = await this.loadSettings(id);
         const active = this.active_item;
-        if (
-            !settings ||
-            request !== this._settings_request ||
-            active?.id !== id
-        )
-            return;
+        if (request !== this._settings_request || active?.id !== id)
+            return false;
+        if (!settings) {
+            // Keep the settings that show. Show the error only when there are none
+            if (!active.settings) this._settings_error.set(true);
+            return false;
+        }
+        this._settings_error.set(false);
         // Masked levels have a blank settings_string, so also compare the
         // save time and keys
         const unchanged = settings.every((level, idx) => {
@@ -871,7 +966,50 @@ export class ActiveItemService extends AsyncHandler {
                 `${level.keys}` === `${shown?.keys}`
             );
         });
-        if (unchanged) return;
+        if (!unchanged) this._active_item.set({ ...active, settings });
+        return true;
+    }
+
+    /**
+     * Load the settings again. The error stays until they load, so its Retry
+     * button stays, with its focus, while the request runs.
+     */
+    public async retrySettings(): Promise<boolean> {
+        const id = this.active_item?.id;
+        if (!id || !SETTINGS_TYPES.has(this._type) || this._settings_retrying())
+            return false;
+        this._settings_retrying.set(true);
+        // `false` when another item opened while it ran
+        return this.refreshSettings(`${id}`).finally(() =>
+            this._settings_retrying.set(false),
+        );
+    }
+
+    /**
+     * Show a saved settings level on the active item, when the item is its
+     * parent. A settings form that opens later, such as after a tab change,
+     * then shows it. Only this level changes, so a save that ends late
+     * cannot undo a newer save of another level.
+     */
+    public updateSettings(level: number, saved: Settings) {
+        const active = this.active_item;
+        if (!saved.parent_id) return;
+        if (active?.id !== saved.parent_id) {
+            // Its item can be loading now. Then `setItem` applies it.
+            if (saved.parent_id === this._loading_item_id)
+                this._unapplied_settings.set(level, saved);
+            return;
+        }
+        // A read that started before the save has the old value. Drop it.
+        this._settings_request++;
+        // Without loaded settings there are no other levels to keep, so load
+        // them all, with the saved level
+        if (!active.settings?.length) {
+            this.refreshSettings(`${active.id}`);
+            return;
+        }
+        const settings = [...active.settings];
+        settings[level] = saved;
         this._active_item.set({ ...active, settings });
     }
 

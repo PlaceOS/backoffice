@@ -102,7 +102,8 @@ export function onSaveHotkey(fn: () => void) {
     const hotkeys = inject(HotkeysService);
     const destroy_ref = inject(DestroyRef);
     afterNextRender(() => {
-        const sub = hotkeys.listen(['KeyS'], fn);
+        // A letter needs a modifier, so typing or speech input cannot save
+        const sub = hotkeys.listen(['Alt', 'Shift', 'KeyS'], fn);
         destroy_ref.onDestroy(() => sub?.unsubscribe());
     });
 }

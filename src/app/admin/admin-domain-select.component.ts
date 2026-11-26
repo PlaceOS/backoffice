@@ -14,6 +14,12 @@ import { SelectComponent } from '../ui/controls/select.component';
 import { TranslatePipe } from '../ui/translate.pipe';
 import { AdminDataService } from './admin-data.service';
 
+/**
+ * Value of the "All domains" option. The choice is kept as `null`, so every
+ * picker for the same key shows it, also one that opens later.
+ */
+const ALL_DOMAINS = {} as Domain;
+
 /** Domain picker for admin pages. AdminDataService keeps the choice per `key`. */
 @Component({
     selector: 'admin-domain-select',
@@ -21,6 +27,7 @@ import { AdminDataService } from './admin-data.service';
         <app-form-field [class]="field_class()">
             <app-select
                 name="domain"
+                [attr.aria-labelledby]="labelled_by()"
                 [ngModel]="domain()"
                 (ngModelChange)="select($event)"
                 [placeholder]="
@@ -29,7 +36,7 @@ import { AdminDataService } from './admin-data.service';
                 "
             >
                 @if (all()) {
-                    <app-option [value]="{}">
+                    <app-option [value]="all_domains">
                         {{ 'ADMIN.ALL_DOMAINS' | translate }}
                     </app-option>
                 }
@@ -55,8 +62,11 @@ export class AdminDomainSelectComponent {
     /** Add an "All domains" option */
     public readonly all = input(false, { transform: booleanAttribute });
     public readonly field_class = input('no-subscript w-56');
-    /** Emits after the user picks a domain */
-    public readonly changed = output<Domain>();
+    /** Id of a visible label that names the picker */
+    public readonly labelled_by = input<string | null>(null);
+    /** Emits after the user picks a domain. `null` is "All domains" */
+    public readonly changed = output<Domain | null>();
+    public readonly all_domains = ALL_DOMAINS;
 
     public readonly domain_list = this._data.domain_list;
     public readonly domain = computed(() =>
@@ -64,7 +74,8 @@ export class AdminDomainSelectComponent {
     );
 
     public select(domain: Domain) {
-        this._data.setDomain(this.key(), domain);
-        this.changed.emit(domain);
+        const value = domain === ALL_DOMAINS ? null : domain;
+        this._data.setDomain(this.key(), value);
+        this.changed.emit(value);
     }
 }

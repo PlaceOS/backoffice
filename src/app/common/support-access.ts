@@ -113,7 +113,8 @@ function publishAccess(user: User, groups: readonly GroupsCurrentGroup[]) {
  * Load effective memberships for the signed-in user. Resolves once access is
  * usable. Sys admins can open every route without groups, so unless a saved
  * group scopes their first queries, they are published at once and the group
- * list fills in when it arrives.
+ * list fills in when it arrives. For other users, rejects when the membership
+ * request fails, so the caller can retry. A failure is not "no groups".
  */
 export async function loadSupportAccess(user: User) {
     const version = ++load_version;
@@ -140,8 +141,12 @@ export async function loadSupportAccess(user: User) {
     }
     access.set({ user: null, groups: [] });
     selected_id.set('');
-    const list = await groups.catch(() => []);
-    if (version === load_version) publishAccess(user, list);
+    const list = await groups.catch((error: unknown) => {
+        // A newer load replaces this one, so only its failure is reported
+        if (version === load_version) throw error;
+        return null;
+    });
+    if (list && version === load_version) publishAccess(user, list);
 }
 
 /** Membership bits enable actions. The API checks zone grants on each request. */
@@ -209,13 +214,28 @@ export function querySupportZones(
     });
 }
 
-/** Module set of one support group, shared by list loads and searches */
-let module_cache: { group_id: string; modules: Promise<Module[]> } | null =
-    null;
+/**
+ * Time that a loaded module set stays in use. A walk of a large group takes
+ * some seconds (500 systems = 63 batches of requests). 60 s keeps the set
+ * when the user goes to a different section and comes back, but module
+ * changes that other users make show again after one minute.
+ */
+const MODULE_CACHE_TTL_MS = 60 * 1000;
 
 /**
- * Drop the cached support group modules. Called when the user, group or
- * resource section changes, and after a module is saved or removed.
+ * Module set of one support group, shared by list loads and searches.
+ * `expires` is Infinity while the walk runs, so a long walk is not restarted.
+ */
+let module_cache: {
+    group_id: string;
+    modules: Promise<Module[]>;
+    expires: number;
+} | null = null;
+
+/**
+ * Drop the cached support group modules. Called when the user or access
+ * changes, and after a module is saved or removed. A group change and
+ * `MODULE_CACHE_TTL_MS` also replace the set.
  */
 export function clearSupportModuleCache() {
     module_cache = null;
@@ -231,7 +251,11 @@ async function loadGroupModules(entry: {
     const modules: Module[] = [];
     // Bound concurrent requests when a group contains many systems.
     for (let index = 0; index < systems.length; index += 8) {
-        if (superseded()) return [];
+        if (superseded()) {
+            // The walk did not finish, so its set must not be reused
+            if (module_cache === entry) module_cache = null;
+            return [];
+        }
         const pages = await Promise.all(
             systems.slice(index, index + 8).map((system) =>
                 collectPages(
@@ -272,14 +296,21 @@ export async function querySupportModules(
         return modules_v7.query(options, call_options).then(orThrowPage);
     const group_id = selected_id();
     let entry = module_cache;
-    if (entry?.group_id !== group_id) {
-        const next = { group_id, modules: null as Promise<Module[]> };
+    if (entry?.group_id !== group_id || Date.now() >= entry.expires) {
+        const next = {
+            group_id,
+            modules: null as Promise<Module[]>,
+            expires: Infinity,
+        };
         module_cache = entry = next;
         next.modules = loadGroupModules(next);
-        // A failed walk must not be reused by the next search
-        next.modules.catch(() => {
-            if (module_cache === next) module_cache = null;
-        });
+        next.modules.then(
+            () => (next.expires = Date.now() + MODULE_CACHE_TTL_MS),
+            // A failed walk must not be reused by the next search
+            () => {
+                if (module_cache === next) module_cache = null;
+            },
+        );
     }
     const search = (options.q || '').toLowerCase();
     const data = (await entry.modules).filter(

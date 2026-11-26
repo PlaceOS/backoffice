@@ -11,7 +11,7 @@ import {
 } from '@placeos/ts-client';
 import { unique } from '../../common/general';
 import { notifyError, notifyWarn } from '../../common/notifications';
-import { newItem } from '../../common/placeos';
+import { newItem, typedRow } from '../../common/placeos';
 import { HashMap, Identity, PlaceResource } from '../../common/types';
 import { DialogCloseDirective } from '../../ui/controls/dialog';
 import { DialogTitleDirective } from '../../ui/dialog-title.directive';
@@ -238,9 +238,18 @@ export class BulkItemModalComponent<
         return this._data.name;
     }
 
-    public get save() {
-        return this._data.save;
-    }
+    /**
+     * Saves a row with its cells converted to the field types. The system
+     * `modules` cell stays as it is: the system save reads module and driver
+     * ids from it, also when they are split by spaces.
+     */
+    public readonly save = (item: Record<string, unknown>) => {
+        const schema = this._data.schema;
+        if (!this.is_system || item['modules'] === undefined)
+            return this._data.save(typedRow(schema, item));
+        const { modules, ...cells } = item;
+        return this._data.save({ ...typedRow(schema, cells), modules });
+    };
 
     public get is_system(): boolean {
         return this._kind?.kind === 'systems';

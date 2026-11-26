@@ -265,6 +265,22 @@ describe('actions.ts', () => {
             expect(ACTIONS.drivers.delete_extra).toBeDefined();
             expect(typeof ACTIONS.drivers.delete_extra).toBe('function');
         });
+
+        it('warns that modules are deleted when their count fails', async () => {
+            vi.mocked(client.modules.query).mockImplementationOnce(
+                fromV1Mock(
+                    () => Promise.reject({ status: 500 }),
+                    ['...'],
+                    'page',
+                ),
+            );
+
+            const extra = await ACTIONS.drivers.delete_extra({
+                id: 'driver-1',
+            } as client.Driver);
+
+            expect(extra).toEqual(['error', 'DRIVERS.DELETE_MODULES_UNKNOWN']);
+        });
     });
 
     describe('modules actions', () => {
@@ -476,6 +492,33 @@ describe('actions.ts', () => {
             });
             expect(client.systems.start).toHaveBeenCalledWith({
                 sys_id: 'sys-new',
+            });
+        });
+
+        it('gives the created system when it cannot start', async () => {
+            vi.mocked(client.systems.create).mockImplementationOnce(
+                fromV1Mock(
+                    () => Promise.resolve({ id: 'sys-new' } as any),
+                    ['body'],
+                ),
+            );
+            vi.mocked(client.systems.start).mockImplementationOnce(
+                fromV1Mock(
+                    () => Promise.reject({ status: 500 }),
+                    ['sys_id', '...'],
+                ),
+            );
+
+            const saved = await ACTIONS.systems.save({
+                name: 'New System',
+                support_url: '',
+                start_modules: true,
+            } as any);
+
+            // The row shows as saved, so a retry does not create it again
+            expect(saved).toMatchObject({
+                id: 'sys-new',
+                save_warning: 'SYSTEMS.MODULES_WARNING',
             });
         });
 

@@ -101,7 +101,10 @@ describe('SystemStateService', () => {
                 SystemStateService,
                 {
                     provide: ActiveItemService,
-                    useValue: { activeOf: () => active() },
+                    useValue: {
+                        activeOf: () => active(),
+                        replaceItem: vi.fn(),
+                    },
                 },
                 { provide: PlaceDebugService, useValue: {} },
                 { provide: Dialog, useValue: { open: vi.fn() } },
@@ -239,6 +242,44 @@ describe('SystemStateService', () => {
             'zone-3',
         ]);
         expect(systems.sysZones).not.toHaveBeenCalled();
+    });
+
+    it('keeps the modules that are not loaded when it sorts by class', async () => {
+        // The module tab loaded one page: mod-2 and mod-3 of five modules
+        vi.mocked(modules.query).mockResolvedValue(
+            mockPage({
+                data: [
+                    newItem(Module, { id: 'mod-3', name: 'Alpha' }),
+                    newItem(Module, { id: 'mod-2', name: 'Beta' }),
+                ],
+            }),
+        );
+        vi.mocked(openConfirmModal).mockResolvedValue({
+            reason: 'done',
+            loading: vi.fn(),
+            close: vi.fn(),
+        });
+        vi.mocked(systems.update).mockResolvedValue(mockReply(system));
+        openTab('modules');
+        service.modules();
+        active.set(
+            newItem(System, {
+                id: 'sys-1',
+                modules: ['mod-1', 'mod-2', 'mod-3', 'mod-4', 'mod-5'],
+            }),
+        );
+        await stable();
+
+        await service.sortModulesByType(true);
+
+        const [call] = vi.mocked(systems.update).mock.calls[0];
+        expect(call.body.modules).toEqual([
+            'mod-3',
+            'mod-2',
+            'mod-1',
+            'mod-4',
+            'mod-5',
+        ]);
     });
 
     it('does not stop the system when the user cancels', async () => {
