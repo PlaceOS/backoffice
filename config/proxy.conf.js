@@ -1,8 +1,12 @@
 // Override to develop against another environment, e.g. the local PlaceOS
-// stack: `PLACEOS_DOMAIN=localhost:8443 bun run start`
+// stack, which has a self-signed certificate:
+// `PLACEOS_DOMAIN=localhost:9543 PLACEOS_SELF_SIGNED=true bun run start`
 const domain = process.env.PLACEOS_DOMAIN || 'placeos-dev.aca.im';
+// Plain HTTP to the upstream
 const secure = process.env.PLACEOS_INSECURE !== 'true';
-const valid_ssl = false;
+// The proxy checks the upstream TLS certificate. Set PLACEOS_SELF_SIGNED=true
+// only for a local backend with a self-signed certificate.
+const verify_tls = process.env.PLACEOS_SELF_SIGNED !== 'true';
 
 const PROXY_CONFIG = {};
 
@@ -21,7 +25,7 @@ const ws_context = ['/api', '/control'];
 function add(endpoint, extras = {}) {
     PROXY_CONFIG[`${endpoint}/**`] = {
         target: `http${secure ? 's' : ''}://${domain}`,
-        secure: valid_ssl,
+        secure: verify_tls,
         changeOrigin: true,
         ...extras,
     };
