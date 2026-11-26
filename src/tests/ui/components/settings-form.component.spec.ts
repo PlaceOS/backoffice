@@ -37,6 +37,7 @@ vi.mock('../../../app/users/users.service', () => ({
 }));
 
 import { Settings } from '@placeos/ts-client';
+import { ActiveItemService } from '../../../app/common/item.service';
 import { newItem } from '../../../app/common/placeos';
 import { SettingsFormComponent } from '../../../app/ui/forms/settings-form.component';
 import { BackofficeUsersService } from '../../../app/users/users.service';
@@ -130,6 +131,50 @@ describe('SettingsFormComponent', () => {
         expect(mocks.notifyError).toHaveBeenCalledWith(
             'COMMON.SETTINGS_SAVE_ERROR',
         );
+    });
+
+    it('shows a saved level on the active item', async () => {
+        const updateSettings = vi.fn();
+        TestBed.overrideProvider(ActiveItemService, {
+            useValue: { updateSettings },
+        });
+        mocks.updateSettings.mockImplementation((id, details) =>
+            Promise.resolve({ ...details, id, parent_id: 'sys-1' }),
+        );
+        const component = createForm();
+        component.updateSetting(1, 'level1: changed');
+
+        component.save(1);
+        await new Promise((resolve) => setTimeout(resolve));
+
+        // A form that opens later reads the item, so it shows the save
+        expect(updateSettings).toHaveBeenCalledWith(
+            1,
+            expect.objectContaining({
+                parent_id: 'sys-1',
+                settings_string: 'level1: changed',
+            }),
+        );
+    });
+
+    it('keeps the levels that saved when Save All partly fails', async () => {
+        // Level 0 fails. Level 1 saves.
+        mocks.updateSettings.mockImplementation((id, details) =>
+            id === 'settings-0'
+                ? Promise.reject(new Error('500'))
+                : Promise.resolve(details),
+        );
+        const component = createForm();
+        component.updateSetting(0, 'level0: changed');
+        component.updateSetting(1, 'level1: changed');
+
+        component.saveAll();
+        await new Promise((resolve) => setTimeout(resolve));
+        TestBed.tick();
+
+        expect(component.settingDirty(0)).toBe(true);
+        expect(component.settingDirty(1)).toBe(false);
+        expect(component.saving()).toEqual([false, false, false, false]);
     });
 
     it('never saves admin settings for support users', () => {

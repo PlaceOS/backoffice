@@ -54,7 +54,6 @@ export interface ModuleLike {
                             (ngModelChange)="module_filter.set($event)"
                             (mousedown)="$event.stopPropagation()"
                             (click)="$event.stopPropagation()"
-                            (keydown)="$event.stopPropagation()"
                             [placeholder]="
                                 'COMMON.SEARCH_FOR'
                                     | translate: { name: 'modules' }
@@ -226,8 +225,8 @@ export class SelectModuleComponent
      * @param value The new value for the component
      */
     public writeValue(value: ModuleLike) {
-        if (!value) return;
-        this.module.set(value);
+        // A cleared form gives `null`. Show the cleared value too.
+        this.module.set(value || undefined);
     }
 
     /**

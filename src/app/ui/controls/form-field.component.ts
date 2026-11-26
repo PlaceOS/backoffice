@@ -10,6 +10,9 @@ import { FormField } from '@angular/forms/signals';
 
 let next_id = 0;
 
+/** The control in the box. For a chip list it is the text input, not an inline chip editor */
+const CONTROL = 'input:not(.chip-edit), textarea, app-select';
+
 /**
  * Outlined box for an input, textarea, `app-select` or `app-chip-list`.
  *
@@ -65,9 +68,9 @@ export class FormFieldComponent {
      * shows is read. Other ids on the control are kept.
      */
     private _describeControl() {
-        const control = this._element.nativeElement.querySelector(
-            '.field-box :is(input, textarea, app-select)',
-        );
+        const control = this._element.nativeElement
+            .querySelector('.field-box')
+            ?.querySelector(CONTROL);
         if (!control) return;
         const ids = (control.getAttribute('aria-describedby') || '')
             .split(/\s+/)
@@ -84,7 +87,7 @@ export class FormFieldComponent {
         const target = event.target as HTMLElement;
         if (!target.classList.contains('field-box')) return;
         this._element.nativeElement
-            .querySelector<HTMLElement>('input, textarea, app-select')
+            .querySelector<HTMLElement>(CONTROL)
             ?.focus();
     }
 }

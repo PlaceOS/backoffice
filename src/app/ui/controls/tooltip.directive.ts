@@ -35,6 +35,8 @@ export type TooltipPosition =
 
 /** Least space between the arrow and the ends of the tooltip */
 const ARROW_INSET = 12;
+/** Time in ms that the tooltip stays after the pointer leaves, so the pointer can move onto it */
+const HIDE_DELAY = 100;
 
 /** Where each position puts the tooltip, without its offset */
 const PLACES: Record<TooltipPosition, ConnectedPosition> = {
@@ -77,28 +79,34 @@ const PLACES: Record<TooltipPosition, ConnectedPosition> = {
 };
 
 /**
- * The position with its offset from the trigger: the arrow, then a gap to its
- * tip. Above the trigger, the shadow under the tip needs room, and so does
- * `raise`, how far the trigger's top edge rises on hover.
+ * Space between the tooltip and the trigger on this side: the arrow, then a
+ * gap to its tip. Above the trigger, the shadow under the tip needs room.
+ */
+function gapOf(side: string): number {
+    const gap = TOOLTIP_ARROW + PANEL_GAP;
+    return side === 'above' ? gap + PANEL_SHADOW : gap;
+}
+
+/**
+ * The position with its offset from the trigger. Above the trigger, `raise`,
+ * how far the trigger's top edge rises on hover, also needs room.
  */
 function positionOf(
     position: TooltipPosition,
     raise: number,
 ): ConnectedPosition {
     const place = PLACES[position];
-    const offset = TOOLTIP_ARROW + PANEL_GAP;
-    switch (sideOf(place)) {
+    const side = sideOf(place);
+    const gap = gapOf(side);
+    switch (side) {
         case 'above':
-            return {
-                ...place,
-                offsetY: -(offset + PANEL_SHADOW + raise),
-            };
+            return { ...place, offsetY: -(gap + raise) };
         case 'below':
-            return { ...place, offsetY: offset };
+            return { ...place, offsetY: gap };
         case 'left':
-            return { ...place, offsetX: -offset };
+            return { ...place, offsetX: -gap };
         default:
-            return { ...place, offsetX: offset };
+            return { ...place, offsetX: gap };
     }
 }
 
@@ -133,7 +141,9 @@ function sideOf(
 
 @Component({
     selector: 'app-tooltip-panel',
-    template: `{{ text }}`,
+    // The bridge is a clear area over the gap to the trigger, so a pointer
+    // that moves slowly onto the tooltip is on it all the way
+    template: `{{ text }}<span class="tooltip-bridge"></span>`,
     host: {
         class: 'tooltip-panel',
         'aria-hidden': 'true',
@@ -148,6 +158,8 @@ export class TooltipPanelComponent {
 
 /**
  * Show a short text next to the element on mouse hover and keyboard focus.
+ * The tooltip stays while the pointer is on the element or on the tooltip.
+ * Escape closes it, before it closes a dialog under it.
  * Screen readers get the text as the description of the element.
  * For rich content use `customTooltip` instead.
  */
@@ -156,9 +168,8 @@ export class TooltipPanelComponent {
     host: {
         class: 'tooltip-trigger',
         '(mouseenter)': 'show()',
-        '(mouseleave)': 'hide()',
+        '(mouseleave)': 'hideSoon()',
         '(pointerdown)': 'hide()',
-        '(keydown.escape)': 'hide()',
     },
 })
 export class TooltipDirective implements OnDestroy {
@@ -174,7 +185,12 @@ export class TooltipDirective implements OnDestroy {
     /** Box of the trigger at rest, when the tooltip was shown */
     private _origin: { x: number; y: number; width: number; height: number };
     private _side = 'below';
+    /** How far the trigger rose on hover, when the tooltip was shown */
+    private _raise = 0;
     private _described = '';
+    private _hide_timer: ReturnType<typeof setTimeout> | undefined;
+    /** Whether the trigger has keyboard focus, which keeps the tooltip */
+    private _keyboard_focus = false;
 
     /** Text of the tooltip. Nothing shows when it is empty */
     public readonly text = input<string | null | undefined>('', {
@@ -198,12 +214,14 @@ export class TooltipDirective implements OnDestroy {
         });
         // Show for keyboard focus only, so a click does not leave it open
         this._focus.monitor(this._element).subscribe((origin) => {
+            this._keyboard_focus = origin === 'keyboard';
             if (origin === 'keyboard') this.show();
             else if (!origin) this.hide();
         });
     }
 
     public show() {
+        clearTimeout(this._hide_timer);
         const text = this.text();
         if (!text || this._panel) return;
         const position = this.position();
@@ -226,6 +244,13 @@ export class TooltipDirective implements OnDestroy {
                 positionStrategy: strategy,
                 scrollStrategy: this._overlay.scrollStrategies.close(),
                 panelClass: 'tooltip-pane',
+                // Take only Escape, so other keys go to overlays below
+                eventPredicate: (event) =>
+                    (event as KeyboardEvent).key === 'Escape',
+            });
+            this._overlay_ref.keydownEvents().subscribe((event) => {
+                event.preventDefault();
+                this.hide();
             });
             // The scroll strategy detaches the tooltip without a call to hide
             this._overlay_ref.detachments().subscribe(() => {
@@ -244,9 +269,9 @@ export class TooltipDirective implements OnDestroy {
             width: box.width,
             height: box.height,
         };
-        const raise = element.matches(':hover')
+        const raise = (this._raise = element.matches(':hover')
             ? parseFloat(style.getPropertyValue('--hover-raise')) || 0
-            : 0;
+            : 0);
         this._strategy
             .setOrigin(this._origin)
             .withPositions([
@@ -257,6 +282,13 @@ export class TooltipDirective implements OnDestroy {
         this._panel = this._overlay_ref.attach(
             new ComponentPortal(TooltipPanelComponent),
         );
+        // The pointer can move onto the tooltip without it closing. A pointer
+        // on the bridge is on the tooltip
+        const panel: HTMLElement = this._panel.location.nativeElement;
+        panel.addEventListener('mouseover', () =>
+            clearTimeout(this._hide_timer),
+        );
+        panel.addEventListener('mouseleave', () => this.hideSoon());
         this._setText(text);
         this._overlay_ref.updatePosition();
         this._placeArrow();
@@ -265,12 +297,22 @@ export class TooltipDirective implements OnDestroy {
         this._resize = this._viewport.change().subscribe(() => this.hide());
     }
 
+    /** Hide after a short delay, which a pointer on the trigger or tooltip cancels */
+    public hideSoon() {
+        clearTimeout(this._hide_timer);
+        // A pointer that leaves does not close the tooltip of a focused trigger
+        if (this._keyboard_focus) return;
+        this._hide_timer = setTimeout(() => this.hide(), HIDE_DELAY);
+    }
+
     public hide() {
+        clearTimeout(this._hide_timer);
         this._overlay_ref?.detach();
         this._panel = undefined;
     }
 
     public ngOnDestroy() {
+        clearTimeout(this._hide_timer);
         this._resize?.unsubscribe();
         this._focus.stopMonitoring(this._element);
         if (this._described) {
@@ -285,7 +327,9 @@ export class TooltipDirective implements OnDestroy {
     /**
      * Point the arrow at the centre of the trigger. The tooltip is pushed
      * inside the viewport near its edges, so its own centre may be off the
-     * trigger. The arrow stays clear of the rounded corners.
+     * trigger. The arrow stays clear of the rounded corners. The bridge
+     * fills the gap to the trigger. Below a raised trigger, the gap is larger
+     * by the raise, because the tooltip is placed from the box at rest.
      */
     private _placeArrow() {
         const panel: HTMLElement = this._panel?.location.nativeElement;
@@ -299,6 +343,8 @@ export class TooltipDirective implements OnDestroy {
         const size = vertical ? box.width : box.height;
         const at = Math.min(Math.max(centre, ARROW_INSET), size - ARROW_INSET);
         panel.style.setProperty('--arrow-at', `${at}px`);
+        const raise = this._side === 'below' ? this._raise : 0;
+        panel.style.setProperty('--bridge', `${gapOf(this._side) + raise}px`);
     }
 
     private _setText(text: string) {

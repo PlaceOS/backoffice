@@ -105,6 +105,8 @@
     --error: hsla(354, 75%, 53%, 1); /* Red */
     --error-light: #ffebee; /* Red */
     --error-content: hsl(0, 0%, 100%); /* White content on red background */
+    /* Error text. Contrast 5.65:1 on base-100 and 4.70:1 on base-200 */
+    --error-text: hsl(354, 75%, 44%); /* #C41C2D */
 
     /* Shape and motion of the controls, after Sentry's design system */
     --radius-sm: 5px;
@@ -182,6 +184,8 @@
     --error: hsla(354, 75%, 53%, 1); /* Red */
     --error-light: hsla(354, 75%, 22%, 0.5); /* Red */
     --error-content: hsl(0, 0%, 100%); /* White content on red background */
+    /* Error text. Contrast 5.56:1 on base-100 and 4.80:1 on base-200 */
+    --error-text: hsl(354, 75%, 66%); /* #E96774 */
 
     --shadow-high: 0 4px 0 2px rgb(0 0 24 / 0.1), 0 1px 0 1px rgb(0 0 24 / 0.1);
     --backdrop: rgb(16 8 32 / 0.5);
@@ -238,7 +242,6 @@ span.highlight {
 .mono {
     font-family: 'Fira Code Variable', monospace;
 }
-
 
 #placeos .markdown {
     ol {
@@ -535,7 +538,6 @@ span.highlight {
     font-family: 'Fira Code Variable', monospace;
 }
 
-
 #placeos .markdown {
     ol {
         list-style-type: decimal;
@@ -781,7 +783,7 @@ form {
         font-weight: 500;
 
         &.error {
-            color: var(--error);
+            color: var(--error-text);
         }
 
         > span {
@@ -814,7 +816,7 @@ form {
             position: absolute;
             bottom: 0.5rem;
             left: 1rem;
-            color: var(--error);
+            color: var(--error-text);
             font-size: 0.75rem;
             font-weight: 400;
         }
@@ -913,7 +915,7 @@ app-form-field:has(:disabled, app-select.disabled, [readonly]) .field-box {
 
     [error] {
         display: none;
-        color: var(--error);
+        color: var(--error-text);
     }
 
     [hint] {
@@ -1332,11 +1334,22 @@ input[type='checkbox'][role='switch'] {
     }
 }
 
+/* Loading indicators do not move for reduced motion. They keep a fixed
+   shape and pulse their opacity, so they still show that work continues. */
 @media (prefers-reduced-motion: reduce) {
-    .progress-loop,
-    .spinner svg.spin,
-    .spinner svg.spin circle {
-        animation-duration: 4s;
+    .spinner svg.spin {
+        animation: loading-pulse 2s ease-in-out infinite;
+
+        circle {
+            animation: none;
+            /* A fixed arc. The inline full-circle dash needs !important */
+            stroke-dasharray: 200 283 !important;
+        }
+    }
+
+    .progress-loop {
+        width: 100%;
+        animation: loading-pulse 2s ease-in-out infinite;
     }
 
     .cdk-dialog-container,
@@ -1428,6 +1441,12 @@ input[type='checkbox'][role='switch'] {
         background-color: var(--base-200);
     }
 
+    /* The fill alone is too faint to show focus */
+    &:focus-visible {
+        outline: 2px solid var(--base-content);
+        outline-offset: -2px;
+    }
+
     &[disabled] {
         opacity: 0.4;
         cursor: default;
@@ -1469,6 +1488,11 @@ input[type='checkbox'][role='switch'] {
     animation: fade-in-scale 150ms ease-out;
     /* Solid darker base below, like the raised buttons */
     box-shadow: 0 2px 0 0 color-mix(in srgb, var(--toast-accent) 55%, black);
+
+    /* Fade in without the scale for reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        animation-name: fade-in;
+    }
 
     /* Set by animate.leave in the toast outlet while the toast closes */
     &.toast-leave {
@@ -1572,7 +1596,6 @@ input[type='checkbox'][role='switch'] {
     line-height: 1.4;
     text-align: center;
     overflow-wrap: anywhere;
-    pointer-events: none;
     animation: fade-in 100ms ease-out;
 
     /* The arrow is two triangles at 45 degrees: the border colour, then the
@@ -1673,6 +1696,44 @@ input[type='checkbox'][role='switch'] {
             0 calc(var(--size) + var(--shadow)),
             100% 100%
         );
+    }
+
+    /* A clear area over the gap between the tooltip and the trigger, so the
+       pointer stays on the tooltip as it moves across. `--bridge` is the gap.
+       Offsets start inside the 1px border, so the area also covers it. */
+    .tooltip-bridge {
+        position: absolute;
+        --reach: calc(var(--bridge, 0px) + 1px);
+    }
+
+    &[data-side='above'] .tooltip-bridge,
+    &[data-side='below'] .tooltip-bridge {
+        left: -1px;
+        right: -1px;
+        height: var(--reach);
+    }
+
+    &[data-side='above'] .tooltip-bridge {
+        top: 100%;
+    }
+
+    &[data-side='below'] .tooltip-bridge {
+        bottom: 100%;
+    }
+
+    &[data-side='left'] .tooltip-bridge,
+    &[data-side='right'] .tooltip-bridge {
+        top: -1px;
+        bottom: -1px;
+        width: var(--reach);
+    }
+
+    &[data-side='left'] .tooltip-bridge {
+        left: 100%;
+    }
+
+    &[data-side='right'] .tooltip-bridge {
+        right: 100%;
     }
 }
 
@@ -1935,6 +1996,12 @@ a[icon] {
     ::view-transition-old(*),
     ::view-transition-new(*) {
         animation: none !important;
+    }
+}
+
+@keyframes loading-pulse {
+    50% {
+        opacity: 0.4;
     }
 }
 

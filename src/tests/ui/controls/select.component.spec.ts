@@ -16,9 +16,12 @@ import { SelectComponent } from '../../../app/ui/controls/select.component';
             [multiple]="multiple()"
             placeholder="Pick one"
         >
-            <app-option value="a">Alpha</app-option>
-            <app-option value="b">Beta</app-option>
-            <app-option value="c" disabled>Gamma</app-option>
+            <div select-search><input aria-label="Search" /></div>
+            @for (option of shown(); track option.value) {
+                <app-option [value]="option.value" [disabled]="option.disabled">
+                    {{ option.label }}
+                </app-option>
+            }
         </app-select>
     `,
     imports: [FormsModule, SelectComponent, OptionComponent],
@@ -26,6 +29,12 @@ import { SelectComponent } from '../../../app/ui/controls/select.component';
 class HostComponent {
     public value: string | string[] = 'a';
     public readonly multiple = signal(false);
+    /** The options. A test removes some, as a search does. */
+    public readonly shown = signal([
+        { value: 'a', label: 'Alpha', disabled: false },
+        { value: 'b', label: 'Beta', disabled: false },
+        { value: 'c', label: 'Gamma', disabled: true },
+    ]);
 }
 
 async function setup(multiple = false, value: string | string[] = 'a') {
@@ -110,6 +119,78 @@ describe('SelectComponent', () => {
         await press('Enter', 13);
         expect(fixture.componentInstance.value).toBe('a');
         expect(select.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('picks an option with the arrow keys and Enter from its search input', async () => {
+        const { fixture, select, open, option } = await setup();
+        await open();
+        await new Promise((done) => requestAnimationFrame(done));
+        const search = document.querySelector<HTMLInputElement>(
+            '[select-search] input',
+        );
+        const press = async (key: string, keyCode: number) => {
+            search.dispatchEvent(
+                new KeyboardEvent('keydown', { key, keyCode, bubbles: true }),
+            );
+            await fixture.whenStable();
+        };
+
+        await press('ArrowDown', 40);
+        expect(search.getAttribute('aria-activedescendant')).toBe(
+            option('Beta').id,
+        );
+        // Enter that confirms IME text does not pick
+        search.dispatchEvent(
+            new KeyboardEvent('keydown', {
+                key: 'Enter',
+                keyCode: 13,
+                isComposing: true,
+                bubbles: true,
+            }),
+        );
+        await fixture.whenStable();
+        expect(select.getAttribute('aria-expanded')).toBe('true');
+        await press('Enter', 13);
+
+        expect(fixture.componentInstance.value).toBe('b');
+        expect(select.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('clears the active option of the search input when a search removes it', async () => {
+        const { fixture, open, option } = await setup();
+        await open();
+        await new Promise((done) => requestAnimationFrame(done));
+        const search = document.querySelector<HTMLInputElement>(
+            '[select-search] input',
+        );
+        search.dispatchEvent(
+            new KeyboardEvent('keydown', {
+                key: 'ArrowDown',
+                keyCode: 40,
+                bubbles: true,
+            }),
+        );
+        await fixture.whenStable();
+        expect(search.getAttribute('aria-activedescendant')).toBe(
+            option('Beta').id,
+        );
+
+        fixture.componentInstance.shown.update((list) =>
+            list.filter(({ value }) => value !== 'b'),
+        );
+        await fixture.whenStable();
+
+        expect(search.hasAttribute('aria-activedescendant')).toBe(false);
+        // Enter has no option to pick, so the value stays
+        search.dispatchEvent(
+            new KeyboardEvent('keydown', {
+                key: 'Enter',
+                keyCode: 13,
+                bubbles: true,
+            }),
+        );
+        await fixture.whenStable();
+        expect(fixture.componentInstance.value).toBe('a');
     });
 
     it('marks the control touched when the panel closes', async () => {

@@ -1,9 +1,10 @@
 import { provideZonelessChangeDetection } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChipListComponent } from '../../../app/ui/controls/chip-list.component';
 
 describe('ChipListComponent', () => {
+    let fixture: ComponentFixture<ChipListComponent>;
     let component: ChipListComponent;
     let input: HTMLInputElement;
     let changed: ReturnType<typeof vi.fn>;
@@ -12,7 +13,7 @@ describe('ChipListComponent', () => {
         TestBed.configureTestingModule({
             providers: [provideZonelessChangeDetection()],
         });
-        const fixture = TestBed.createComponent(ChipListComponent);
+        fixture = TestBed.createComponent(ChipListComponent);
         component = fixture.componentInstance;
         changed = vi.fn();
         component.registerOnChange(changed);
@@ -60,6 +61,48 @@ describe('ChipListComponent', () => {
         it('merges the item into an existing duplicate', () => {
             component.finishEdit('b', 'c');
             expect(component.value()).toEqual(['a', 'c']);
+        });
+    });
+
+    describe('focus after a keyboard action', () => {
+        /** Chip buttons are Edit then Remove */
+        const chipButton = (index: number, name: 'edit' | 'remove') => {
+            const buttons = fixture.nativeElement
+                .querySelectorAll('.chip')
+                [index].querySelectorAll('.chip-action');
+            return name === 'edit' ? buttons[0] : buttons[buttons.length - 1];
+        };
+
+        beforeEach(async () => {
+            fixture.componentRef.setInput('editable', true);
+            await fixture.whenStable();
+        });
+
+        it('moves the focus to the Edit button when Escape stops an edit', async () => {
+            component.startEdit('b');
+            await fixture.whenStable();
+            const editor: HTMLInputElement =
+                fixture.nativeElement.querySelector('.chip-edit');
+            editor.dispatchEvent(
+                new KeyboardEvent('keydown', { key: 'Escape' }),
+            );
+            await fixture.whenStable();
+            expect(document.activeElement).toBe(chipButton(1, 'edit'));
+        });
+
+        it('moves the focus to the next Remove button after a remove', async () => {
+            chipButton(1, 'remove').click();
+            await fixture.whenStable();
+            expect(component.value()).toEqual(['a', 'c']);
+            expect(document.activeElement).toBe(chipButton(1, 'remove'));
+        });
+
+        it('moves the focus to the text input when no chip stays', async () => {
+            component.writeValue(['a']);
+            await fixture.whenStable();
+            chipButton(0, 'remove').click();
+            await fixture.whenStable();
+            expect(document.activeElement).toBe(input);
         });
     });
 });

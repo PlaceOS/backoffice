@@ -125,6 +125,7 @@ export interface ItemAction {
                     <button
                         cdkMenuItem
                         class="flex items-center space-x-2"
+                        aria-keyshortcuts="Alt+Shift+E"
                         (click)="editItem()"
                     >
                         <icon class="text-2xl">edit</icon>
@@ -133,7 +134,7 @@ export interface ItemAction {
                                 'COMMON.EDIT_TYPE' | translate: { name: type() }
                             }}
                         </div>
-                        <span class="keycap">E</span>
+                        <span class="keycap" aria-hidden="true">Alt ⇧ E</span>
                     </button>
                 }
                 @if (canCopy()) {

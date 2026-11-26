@@ -10,13 +10,22 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { metadata, Metadata as MetadataV7 } from '@placeos/ts-client';
+import {
+    type JsonValue,
+    metadata,
+    Metadata as MetadataV7,
+} from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
 import { VERSION } from '../../env/version';
 import { AsyncHandler } from '../common/async-handler.class';
 import { describeError, readError } from '../common/errors';
 import { escapeHtml, parseMetadataDetails } from '../common/general';
-import { notifyError, notifySuccess } from '../common/notifications';
+import { i18n } from '../common/locale.service';
+import {
+    notifyError,
+    notifySuccess,
+    notifyWarn,
+} from '../common/notifications';
 import { loadMetadataBlocks, newItem } from '../common/placeos';
 import { HashMap, PlaceResource } from '../common/types';
 import { currentUser } from '../common/user-state';
@@ -253,6 +262,11 @@ export class MetadataDisplayComponent
     /** Search text for filtering metadata */
     public readonly search_text = signal('');
     public readonly change = signal(0);
+    /**
+     * Names that a save writes now. A rename shows in the list only after
+     * its old block is removed, so a second save to the same name must wait
+     */
+    private readonly _saving_names = new Set<string>();
     public readonly names = computed(() => {
         this.change();
         const name_map = {};
@@ -373,37 +387,54 @@ export class MetadataDisplayComponent
         });
     }
 
-    public saveMetadata(field: MetadataV7) {
+    public saveMetadata(field: Metadata) {
         const form = this.form_map()[field.name];
         if (
             !form.name ||
             this.metadata()
                 .filter((i) => i.name !== field.name)
                 .some((item) => item.name === form.name) ||
+            this._saving_names.has(form.name) ||
             validateJSONString({ value: form.details } as never)
         ) {
             return notifyError(`JSON for property "${form.name}" is invalid`);
         }
         const value = form;
+        // Parse before the loading state, so empty or invalid JSON cannot
+        // leave the save button disabled
+        let data: JsonValue;
+        try {
+            data = JSON.parse(value.details);
+        } catch {
+            return notifyError(`JSON for property "${form.name}" is invalid`);
+        }
         this.loading.update((m) => ({ ...m, [field.name]: true }));
         const desc = value.description;
         const new_desc = replaceDescTag(desc, `${VERSION.hash}|B`);
-        const data = JSON.parse(value.details);
-        if (/^\[.*?\]/.test(desc)) {
+        if (
+            /^\[.*?\]/.test(desc) &&
+            data &&
+            typeof data === 'object' &&
+            !Array.isArray(data)
+        ) {
             const user = currentUser();
-            data.edited_by = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                auth_id: user.authority_id,
-                role: user.sys_admin
-                    ? 'Admin'
-                    : user.support
-                      ? 'Support'
-                      : 'User',
+            data = {
+                ...data,
+                edited_by: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    auth_id: user.authority_id,
+                    role: user.sys_admin
+                        ? 'Admin'
+                        : user.support
+                          ? 'Support'
+                          : 'User',
+                },
             };
         }
-        metadata
+        this._saving_names.add(value.name);
+        return metadata
             .update({
                 id: this.item().id,
                 body: {
@@ -416,31 +447,45 @@ export class MetadataDisplayComponent
                 },
             })
             .then(orThrow)
-            .then((item: MetadataV7) => {
+            .then(async (item: MetadataV7) => {
+                // A rename saves a new block. Remove the old block after it.
+                // A block that was never saved has no old block.
+                const remove_error =
+                    field.name !== value.name && !field.new
+                        ? await metadata
+                              .destroy({ id: this.item().id, name: field.name })
+                              .then(orThrow)
+                              .then(
+                                  () => null,
+                                  (err) => describeError(err),
+                              )
+                        : null;
                 this.loading.update((m) => ({ ...m, [field.name]: false }));
                 const index = this.metadata().findIndex(
                     (i) => i.name === field.name,
                 );
                 this.edited.update((m) => ({ ...m, [field.name]: false }));
-                if (field.name !== value.name) {
-                    metadata
-                        .destroy({ id: this.item().id, name: field.name })
-                        .then(orThrow)
-                        .catch((err) =>
-                            notifyError(
-                                `Error removing old "${
-                                    field.name
-                                }" metadata. Error: ${describeError(err)}`,
-                            ),
-                        );
-                }
                 if (index >= 0) {
                     this.metadata.update((l) => {
-                        l.splice(index, 1, { ...item, new: false });
+                        // Both blocks are on the server, so show both
+                        l.splice(index, remove_error === null ? 1 : 0, {
+                            ...item,
+                            new: false,
+                        });
                         return l;
                     });
                 }
-                notifySuccess(`Saved "${value.name}" metadata.`);
+                if (remove_error === null) {
+                    notifySuccess(`Saved "${value.name}" metadata.`);
+                } else {
+                    notifyWarn(
+                        i18n('COMMON.METADATA_RENAME_PARTIAL', {
+                            name: value.name,
+                            old_name: field.name,
+                            error: remove_error,
+                        }),
+                    );
+                }
                 this.generateForms();
             })
             .catch((err) => {
@@ -450,7 +495,8 @@ export class MetadataDisplayComponent
                         value.name
                     }" metadata. Error: ${describeError(err)}`,
                 );
-            });
+            })
+            .finally(() => this._saving_names.delete(value.name));
     }
 
     /** Build a form for each block. Unsaved edits are kept unless `reset` is set */

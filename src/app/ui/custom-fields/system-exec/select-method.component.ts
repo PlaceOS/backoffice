@@ -59,7 +59,6 @@ export interface ModuleFunction extends SystemsFunctionDetails {
                                 (ngModelChange)="method_filter.set($event)"
                                 (mousedown)="$event.stopPropagation()"
                                 (click)="$event.stopPropagation()"
-                                (keydown)="$event.stopPropagation()"
                                 [placeholder]="
                                     'COMMON.SEARCH_FOR'
                                         | translate: { name: 'methods' }

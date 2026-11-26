@@ -6,7 +6,19 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { form, FormField, required } from '@angular/forms/signals';
 import { describe, expect, it } from 'vitest';
+import { ChipListComponent } from '../../../app/ui/controls/chip-list.component';
 import { FormFieldComponent } from '../../../app/ui/controls/form-field.component';
+
+@Component({
+    template: `
+        <app-form-field>
+            <app-chip-list editable [value]="['a', 'b']" />
+            <div hint>One item for each line</div>
+        </app-form-field>
+    `,
+    imports: [FormFieldComponent, ChipListComponent],
+})
+class ChipHostComponent {}
 
 @Component({
     template: `
@@ -69,5 +81,26 @@ describe('FormFieldComponent', () => {
         input.dispatchEvent(new Event('input'));
         await fixture.whenStable();
         expect(field.classList).not.toContain('field-invalid');
+    });
+
+    it('describes the chip text input, not an inline chip editor', async () => {
+        TestBed.configureTestingModule({
+            providers: [provideZonelessChangeDetection()],
+        });
+        const fixture = TestBed.createComponent(ChipHostComponent);
+        await fixture.whenStable();
+        const element: HTMLElement = fixture.nativeElement;
+        element.querySelector<HTMLElement>('.chip-action').click();
+        await fixture.whenStable();
+        expect(
+            element
+                .querySelector('.chip-edit')
+                .hasAttribute('aria-describedby'),
+        ).toBe(false);
+        expect(
+            element
+                .querySelector('.chip-input')
+                .getAttribute('aria-describedby'),
+        ).toMatch(/app-form-field-subscript/);
     });
 });

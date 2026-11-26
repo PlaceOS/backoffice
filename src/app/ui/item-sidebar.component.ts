@@ -7,6 +7,7 @@ import {
     effect,
     ElementRef,
     inject,
+    Injector,
     input,
     signal,
     viewChild,
@@ -15,6 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import {
+    type Domain,
     type Group,
     groups as groups_v7,
     type Module,
@@ -23,8 +25,15 @@ import {
     type Zone,
 } from '@placeos/ts-client';
 import { orThrowPage, PlaceDriverRole } from '@placeos/ts-client/compat';
+import { AdminDataService } from '../admin/admin-data.service';
+import { AdminDomainSelectComponent } from '../admin/admin-domain-select.component';
 import { AsyncHandler } from '../common/async-handler.class';
-import { ActiveItemService } from '../common/item.service';
+import { refocusIfLost } from '../common/focus';
+import {
+    ActiveItemService,
+    tagQuery,
+    USER_DOMAIN_KEY,
+} from '../common/item.service';
 import { reportLoadError } from '../common/load-error';
 import { FormFieldComponent } from './controls/form-field.component';
 import { OptionComponent } from './controls/option.component';
@@ -119,6 +128,16 @@ interface GroupTreeItem {
                 >
                     {{ 'USERS.INCLUDE_DELETED' | translate }}
                 </settings-toggle>
+                <!-- Domains load for admins only -->
+                @if (domain_list().length) {
+                    <admin-domain-select
+                        class="block px-1"
+                        all
+                        field_class="no-subscript w-full"
+                        [key]="user_domain_key"
+                        (changed)="setUserDomain($event)"
+                    />
+                }
             }
             <p class="w-full px-2 text-sm opacity-60">
                 @let t = total();
@@ -248,11 +267,30 @@ interface GroupTreeItem {
                         [item_template]="item_display"
                         (scrolled)="atBottom($event)"
                     >
-                        <div
-                            class="bg-base-200 p-2 text-center text-sm opacity-30"
-                        >
-                            {{ 'COMMON.END_OF_LIST' | translate }}
-                        </div>
+                        @if (list_failed()) {
+                            <div
+                                role="alert"
+                                class="bg-base-200 flex items-center justify-center gap-2 p-2 text-sm"
+                            >
+                                {{ 'COMMON.LIST_LOAD_ERROR' | translate }}
+                                <button
+                                    btn
+                                    ripple
+                                    class="clear"
+                                    [attr.aria-busy]="loading()"
+                                    [attr.aria-disabled]="loading()"
+                                    (click)="retryList()"
+                                >
+                                    {{ 'COMMON.RETRY' | translate }}
+                                </button>
+                            </div>
+                        } @else {
+                            <div
+                                class="bg-base-200 p-2 text-center text-sm opacity-30"
+                            >
+                                {{ 'COMMON.END_OF_LIST' | translate }}
+                            </div>
+                        }
                     </virtual-scroll>
                     <ng-template #item_display let-item="item" let-idx="index">
                         <a
@@ -338,6 +376,22 @@ interface GroupTreeItem {
                             }
                         </a>
                     </ng-template>
+                } @else if (list_failed()) {
+                    <div
+                        role="alert"
+                        class="flex flex-col items-center gap-2 p-8"
+                    >
+                        <p>{{ 'COMMON.LIST_LOAD_ERROR' | translate }}</p>
+                        <button
+                            btn
+                            ripple
+                            [attr.aria-busy]="loading()"
+                            [attr.aria-disabled]="loading()"
+                            (click)="retryList()"
+                        >
+                            {{ 'COMMON.RETRY' | translate }}
+                        </button>
+                    </div>
                 } @else if (!loading()) {
                     <!-- The search box shows a spinner while the list loads -->
                     <div
@@ -387,6 +441,7 @@ interface GroupTreeItem {
         VirtualScrollComponent,
         SettingsToggleComponent,
         SkipToContentComponent,
+        AdminDomainSelectComponent,
     ],
 })
 export class ItemSidebarComponent
@@ -408,8 +463,38 @@ export class ItemSidebarComponent
     public readonly expanded_groups = signal<Record<string, boolean>>({});
 
     public readonly include_deleted = this._service.include_deleted;
-    public readonly setIncludeDeleted = (include: boolean) =>
+    public readonly setIncludeDeleted = (include: boolean) => {
+        this._resetLoadMore();
         this._service.setIncludeDeleted(include);
+    };
+    public readonly user_domain_key = USER_DOMAIN_KEY;
+    public readonly domain_list = inject(AdminDataService).domain_list;
+    public readonly setUserDomain = (domain: Domain | null) => {
+        this._resetLoadMore();
+        this._service.setUserDomain(domain);
+    };
+    /** Whether the last page request failed */
+    public readonly list_failed = this._service.list_failed;
+
+    /** Request the page that failed again */
+    public retryList() {
+        this._retried = true;
+        this._service.moreItems();
+    }
+    private _retried = false;
+    private readonly _injector = inject(Injector);
+    /** A retry that loads removes Retry. Then the search box gets the focus. */
+    private readonly _refocus_after_retry = effect(() => {
+        if (this.list_failed() || !this._retried) return;
+        this._retried = false;
+        refocusIfLost(this._injector, () => this._input()?.nativeElement);
+    });
+
+    /** A new query starts a new list, so load-more must not wait */
+    private _resetLoadMore() {
+        this.last_total = 0;
+        this.last_check = 0;
+    }
 
     public last_total = 0;
     public last_check = 0;
@@ -505,19 +590,8 @@ export class ItemSidebarComponent
     }
 
     public updateSearch(str: string) {
-        let search_str = '';
-        if (this.selected_filters.length) {
-            search_str += `tags:(${this.selected_filters
-                .map((_) => `+${_.trim()}`)
-                .join(' AND ')
-                .trim()})`;
-        }
-        if (str) {
-            if (search_str.length > 0) {
-                search_str += ` AND (+${str.trim()})`;
-            } else search_str += str.trim();
-        }
-        this._service.setSearch(search_str);
+        this._resetLoadMore();
+        this._service.setSearch(tagQuery(str, this.selected_filters));
     }
 
     public displayName(item: { display_name?: string; name?: string }) {
@@ -549,6 +623,8 @@ export class ItemSidebarComponent
         const last_check = this.last_check;
         return (
             this.last_total !== this._service.list_items().length ||
+            // A failed page has no new rows. Try it again at once.
+            this._service.list_failed() ||
             now - last_check > 60 * 1000
         );
     }

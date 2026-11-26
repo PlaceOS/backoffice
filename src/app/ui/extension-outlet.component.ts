@@ -38,6 +38,19 @@ export interface FrameMessage<T = JsonValue> {
 }
 
 /** Value of the message content if it is a plain object */
+/** Path of the download URL of an upload, as `uploadURL` in uploads.ts makes it */
+const UPLOAD_DOWNLOAD_PATH = /^\/api\/engine\/v2\/uploads\/[\w-]+\/url$/;
+
+/** Whether `value` is `text`, or holds it as a value at any depth. Keys do not count. */
+function holdsValue(value: unknown, text: string, depth = 0): boolean {
+    if (value === text) return true;
+    // Item data is shallow. The bound stops a cycle.
+    if (!value || typeof value !== 'object' || depth > 8) return false;
+    return Object.values(value).some((child) =>
+        holdsValue(child, text, depth + 1),
+    );
+}
+
 const contentFields = (content: unknown): HashMap<unknown> =>
     content && typeof content === 'object' && !Array.isArray(content)
         ? (content as HashMap<unknown>)
@@ -174,7 +187,8 @@ export class ExtensionOutletComponent extends AsyncHandler {
     /** Merge the message content into the active item and save it */
     private async updateItem(item: PlaceResource, message: FrameMessage) {
         const updated_item = await this._service.actions
-            .save({ ...item, ...contentFields(message.content) })
+            // The frame cannot change which item it saves, or make a new one
+            .save({ ...item, ...contentFields(message.content), id: item.id })
             .catch((error) => {
                 notifyError(
                     i18n('COMMON.ITEM_ERROR', { error: describeError(error) }),
@@ -228,15 +242,26 @@ export class ExtensionOutletComponent extends AsyncHandler {
     private async loadResource(item: PlaceResource, message: FrameMessage) {
         const src = message.name;
         if (!src) throw new Error('Resource URL is required');
-        // If not an API call, just load the image
-        if (!src.includes('/api/engine/v2/uploads')) return src;
-        // Prevent resolving resources not owned by the parent item
-        if (!JSON.stringify(item).includes(src)) return src;
+        // Only the download URL of an upload on this origin gets
+        // credentials. The URL parser resolves `..`, so another API cannot
+        // pass the path check.
+        const upload_url = URL.canParse(src, location.origin)
+            ? new URL(src, location.origin)
+            : null;
+        if (
+            upload_url?.origin !== location.origin ||
+            upload_url.search ||
+            !UPLOAD_DOWNLOAD_PATH.test(upload_url.pathname)
+        )
+            return src;
+        // The item must hold the whole URL as a value, not only part of one
+        if (!holdsValue(item, src)) return src;
         // If image has already been loaded, just use the cached version
         if (RESOURCE_STORE.has(src)) return RESOURCE_STORE.get(src);
 
-        if (!(await setAuthCookie('/api/'))) throw new Error('Not signed in');
-        const response = await fetch(src);
+        if (!(await setAuthCookie('/api/engine/v2/uploads')))
+            throw new Error('Not signed in');
+        const response = await fetch(upload_url);
         if (!response.ok) throw new Error(`Failed to load ${src}`);
         const blob = await response.blob();
 

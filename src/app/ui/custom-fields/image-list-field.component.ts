@@ -86,14 +86,6 @@ import { TranslatePipe } from '../translate.pipe';
                             <button
                                 type="button"
                                 icon
-                                (click)="viewImage(url)"
-                                [attr.aria-label]="'COMMON.VIEW' | translate"
-                            >
-                                <icon>visibility</icon>
-                            </button>
-                            <button
-                                type="button"
-                                icon
                                 [disabled]="disabled()"
                                 (click)="removeImage(url)"
                                 [attr.aria-label]="'COMMON.REMOVE' | translate"
@@ -287,10 +279,6 @@ export class ImageListFieldComponent
     public copyLink(url: string) {
         this._clipboard.copy(url);
         notifySuccess('Copied image URL to clipboard');
-    }
-
-    public viewImage(_url: string) {
-        // TODO: Implement image viewer
     }
 
     public removeImage(url: string) {

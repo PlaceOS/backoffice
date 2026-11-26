@@ -45,11 +45,15 @@ import { TranslatePipe } from './translate.pipe';
             </div>
             @if (!is_public()) {
                 <div class="flex flex-col space-y-2">
-                    <label for="permissions">{{
+                    <label id="permissions-label" for="permissions">{{
                         'COMMON.PERMISSIONS' | translate
                     }}</label>
                     <app-form-field>
-                        <app-select id="permissions" [(ngModel)]="permissions">
+                        <app-select
+                            id="permissions"
+                            aria-labelledby="permissions-label"
+                            [(ngModel)]="permissions"
+                        >
                             <app-option value="none">
                                 {{ 'COMMON.NONE' | translate }}</app-option
                             >
