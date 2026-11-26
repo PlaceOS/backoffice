@@ -96,9 +96,6 @@ jobs:
         needs: [resolve, test, build]
         runs-on: ubuntu-latest
         timeout-minutes: 3
-        env:
-            SHA: ${{ needs.resolve.outputs.sha }}
-            TAG: ${{ needs.resolve.outputs.tag }}
         steps:
             - uses: actions/checkout@v6
               with:
@@ -117,7 +114,7 @@ jobs:
                   echo '{ "git": { "deploymentEnabled": false } }' > dist/backoffice/browser/vercel.json
 
             - name: Deploy the application
-              uses: MrYuion/git-publish-subdir-action@develop
+              uses: MrYuion/git-publish-subdir-action@dd41bb412c2d90b8579e0ad7276ec210dfec9ac8 # develop
               env:
                   REPO: self
                   BRANCH: build/prod
@@ -125,8 +122,13 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   MESSAGE: 'build(backoffice): ${{ needs.resolve.outputs.tag }} from {sha}'
 
-            # Pushes nothing when a retry already pushed the tag
+            # Pushes nothing when a retry already pushed the tag. `TAG` is set
+            # only here: the deploy action above reads a `TAG` variable and
+            # tags its build commit with it.
             - name: Push the release tag
+              env:
+                  SHA: ${{ needs.resolve.outputs.sha }}
+                  TAG: ${{ needs.resolve.outputs.tag }}
               run: git push origin "${SHA}:refs/tags/${TAG}"
 
             - name: Update Pipeline Chat Status
