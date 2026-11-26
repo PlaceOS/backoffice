@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 - Hide optional UI when its deferred chunk fails to load
 - Stop failed startup imports from raising unhandled chunk errors
+- Cancel in-flight requests when a newer request starts
 
 #### Auth
 

@@ -1,0 +1,236 @@
+import {
+  groupMembership
+} from "./chunk-GWNW3HCP.js";
+import {
+  openedTabs
+} from "./chunk-X2O3T64J.js";
+import {
+  ActiveItemService
+} from "./chunk-JAQA72XL.js";
+import {
+  openConfirmModal
+} from "./chunk-WCMJAQOC.js";
+import {
+  describeError
+} from "./chunk-HS2B2TZM.js";
+import {
+  notifyError,
+  notifySuccess
+} from "./chunk-V2X4XHND.js";
+import {
+  loadMetadataBlocks
+} from "./chunk-TXVXL5KT.js";
+import {
+  Dialog
+} from "./chunk-762ECDWF.js";
+import {
+  i18n
+} from "./chunk-UA77DMWK.js";
+import {
+  groups_exports,
+  groups_users_exports,
+  users_exports
+} from "./chunk-PRQVSGD2.js";
+import {
+  orThrow,
+  orThrowPage
+} from "./chunk-LD3K5ATK.js";
+import {
+  escapeHtml
+} from "./chunk-Y2QSYZTA.js";
+import {
+  Service,
+  computed,
+  inject,
+  resource,
+  setClassMetadata,
+  signal,
+  ɵɵdefineService
+} from "./chunk-6G3VFYSX.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-RQBZITXC.js";
+
+// src/app/users/users-state.service.ts
+var UsersStateService = class _UsersStateService {
+  _service = inject(ActiveItemService);
+  _dialog = inject(Dialog);
+  _change = signal(
+    0,
+    ...ngDevMode ? [{ debugName: "_change" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  loading = computed(
+    () => this.group_members.saving() || this._metadata_count.isLoading() || this._groups.isLoading(),
+    ...ngDevMode ? [{ debugName: "loading" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  item = computed(
+    () => this._service.activeOf("users"),
+    ...ngDevMode ? [{ debugName: "item" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  // The metadata tab uses this load again, so the blocks load one time
+  _metadata_count = resource(__spreadProps(__spreadValues({}, ngDevMode ? { debugName: "_metadata_count" } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    params: () => ({
+      item: this.item(),
+      change: this._change()
+    }),
+    loader: async ({ params }) => {
+      const { item } = params;
+      if (!item)
+        return 0;
+      return loadMetadataBlocks(item.id).then((blocks) => blocks.length).catch(() => 0);
+    }
+  }));
+  counts = computed(
+    () => ({
+      metadata: this._metadata_count.value() || 0,
+      groups: this._groups.value()?.total || 0
+    }),
+    ...ngDevMode ? [{ debugName: "counts" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  _user_id = computed(
+    () => this.item()?.id || void 0,
+    ...ngDevMode ? [{ debugName: "_user_id" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  // The group list only loads once its tab is opened. Until then a single
+  // row query gives the tab count.
+  _opened_tabs = openedTabs(this._user_id);
+  _load_groups = computed(
+    () => this._opened_tabs().has("groups"),
+    ...ngDevMode ? [{ debugName: "_load_groups" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  _groups = resource(__spreadProps(__spreadValues({}, ngDevMode ? { debugName: "_groups" } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    params: () => ({
+      item: this.item(),
+      change: this._change(),
+      full: this._load_groups()
+    }),
+    loader: async ({ params }) => {
+      const { item, full } = params;
+      const empty = { data: [], total: 0 };
+      if (!item)
+        return empty;
+      const response = await groups_users_exports.query({ user_id: item.id, limit: full ? 1e3 : 1 }).then(orThrowPage).catch((error) => {
+        notifyError(i18n("USERS.GROUPS_LOAD_ERROR", {
+          error: describeError(error)
+        }));
+        return empty;
+      });
+      if (!full)
+        return __spreadProps(__spreadValues({}, empty), { total: response.total });
+      return {
+        total: response.total,
+        data: [...response.data].sort((a, b) => (a.group?.name || a.group_id).localeCompare(b.group?.name || b.group_id))
+      };
+    }
+  }));
+  groups = computed(
+    () => this._groups.value()?.data || [],
+    ...ngDevMode ? [{ debugName: "groups" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  get active_item() {
+    return this._service.activeOf("users");
+  }
+  /** Group memberships of the active user */
+  group_members = groupMembership(this._dialog, {
+    one: "USERS.GROUP",
+    many: "USERS.GROUPS",
+    search: "GROUPS.SEARCH",
+    column: "GROUPS.SINGULAR",
+    member_key: "group",
+    route: "groups",
+    no_permissions: "COMMON.DEFAULT",
+    rows: () => this.groups(),
+    authority_id: () => this.active_item?.authority_id,
+    // The API lists the groups of the current domain only
+    query: (q) => groups_exports.query({ q, limit: 20 }).then(orThrowPage).then((response) => [...response.data]),
+    member_id: (row) => row.group_id,
+    member_name: (row) => row.group?.name || row.group_id,
+    member_detail: (row) => row.group_id,
+    item_authority: (group) => group.authority_id,
+    add: (group_id) => groups_users_exports.create({
+      body: { user_id: this.active_item.id, group_id }
+    }).then(orThrow),
+    remove: (row) => groups_users_exports.destroy({ user_id: row.user_id, group_id: row.group_id }).then(orThrow),
+    update: (row, { permissions }) => groups_users_exports.update({
+      user_id: row.user_id,
+      group_id: row.group_id,
+      body: { permissions }
+    }).then(orThrow),
+    changed: () => this.changed()
+  });
+  /** Restore the selected user after confirmation. */
+  async revive() {
+    const item = this.active_item;
+    if (!item?.id || !item.deleted || !this._service.canMutate(4))
+      return;
+    const details = await openConfirmModal({
+      title: i18n("USERS.REVIVE"),
+      content: i18n("USERS.REVIVE_MSG", {
+        name: escapeHtml(item.name)
+      }),
+      confirm_text: i18n("USERS.REVIVE"),
+      icon: { type: "icon", content: "restore_from_trash" }
+    }, this._dialog);
+    if (details.reason !== "done")
+      return;
+    details.loading(i18n("USERS.REVIVE_LOADING"));
+    try {
+      await users_exports.revive({ id: item.id }).then(orThrow);
+      if (this.active_item === item) {
+        this._service.replaceItem(__spreadProps(__spreadValues({}, item), { deleted: false }));
+      }
+      this.changed();
+      notifySuccess(i18n("USERS.REVIVE_SUCCESS"));
+    } catch (error) {
+      notifyError(i18n("USERS.REVIVE_ERROR", { error: describeError(error) }));
+    } finally {
+      details.close();
+    }
+  }
+  changed() {
+    this._change.set(Date.now());
+  }
+  static \u0275fac = function UsersStateService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _UsersStateService)();
+  };
+  static \u0275prov = /* @__PURE__ */ \u0275\u0275defineService({ token: _UsersStateService, factory: _UsersStateService.\u0275fac });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(UsersStateService, [{
+    type: Service
+  }], null, null);
+})();
+
+export {
+  UsersStateService
+};
+//# debugId=fb3be8ae-6f00-55c2-a3d2-7d919ed62eac
+//# sourceMappingURL=chunk-KGMDQVGF.js.map
