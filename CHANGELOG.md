@@ -12,11 +12,16 @@ All notable changes to this project will be documented in this file.
 - Link tab panels, name loaders and reorder by keyboard
 - Set page language from the loaded translations
 
+#### Admin
+
+- Domain-correct imports and uploads, retries and live build jobs
+
 #### App
 
 - Hide optional UI when its deferred chunk fails to load
 - Stop failed startup imports from raising unhandled chunk errors
 - Cancel in-flight requests when a newer request starts
+- Fix module sort, zone order, driver save and settings retry
 
 #### Auth
 
@@ -33,6 +38,15 @@ All notable changes to this project will be documented in this file.
 - E2e tests run on Ubuntu 24.04, where Playwright can install Chromium
 - Release backoffice with each PlaceOS release
 - Limit workflow token permissions and release only develop commits
+
+#### Common
+
+- Fix data loss, races and hidden errors in shared services
+- Save edited boolean bulk cells, keep settings saved during a failed read
+
+#### Dev
+
+- Check TLS certificates in the dev proxy
 
 #### Extensions
 
@@ -81,6 +95,7 @@ All notable changes to this project will be documented in this file.
 - Empty uploads and invalid email domains show an error toast
 - Sidebar highlight slides from the last link, not the top
 - Sidebar loads applications once, popup refreshes on open
+- Keyboard, focus and phone layout fixes in shared UI
 
 ### Documentation
 

@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/common/focus.ts"
+  ],
+  "sourcesContent": [
+    "import { afterNextRender, DestroyRef, Injector } from '@angular/core';\n\n/**\n * Give focus to `target` after the next render, but only if that render\n * removed the focused control, so the focus is on the page body. Use it after\n * an action that replaces the control that started it, such as a Retry\n * button. Focus that the user moved to another control stays there.\n */\nexport function refocusIfLost(\n    injector: Injector,\n    target: () => HTMLElement | null | undefined,\n) {\n    // The view can close while the action runs. Then there is nothing to do.\n    if (injector.get(DestroyRef).destroyed) return;\n    afterNextRender(\n        () => {\n            const active = document.activeElement;\n            if (active && active !== document.body) return;\n            target()?.focus();\n        },\n        { injector },\n    );\n}\n"
+  ],
+  "mappings": ";;;;;;AAQO,SAAS,cACZ,UACA,QACF;AAEE,MAAI,SAAS,IAAI,UAAU,EAAE,UAAW;AACxC;AAAA,IACI,MAAM;AACF,YAAM,SAAS,SAAS;AACxB,UAAI,UAAU,WAAW,SAAS,KAAM;AACxC,aAAO,GAAG,MAAM;AAAA,IACpB;AAAA,IACA,EAAE,SAAS;AAAA,EACf;AACJ;",
+  "names": [],
+  "debugId": "e368972a-126a-5993-a039-84c3dbf3b007"
+}

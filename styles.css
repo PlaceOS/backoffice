@@ -1487,6 +1487,12 @@ input:where([type=button], [type=reset], [type=submit]),
   top: calc(0.25rem * 4);
   top: calc(var(--spacing) * 4);
 }
+#placeos .top-\[calc\(100\%\+0\.5rem\)\] {
+  top: calc(100% + 0.5rem);
+}
+#placeos .top-full {
+  top: 100%;
+}
 #placeos .-right-1 {
   right: calc(0.25rem * -1);
   right: calc(var(--spacing) * -1);
@@ -1764,6 +1770,10 @@ input:where([type=button], [type=reset], [type=submit]),
   margin-top: calc(0.25rem * 8);
   margin-top: calc(var(--spacing) * 8);
 }
+#placeos .mr-1 {
+  margin-right: calc(0.25rem * 1);
+  margin-right: calc(var(--spacing) * 1);
+}
 #placeos .mr-2 {
   margin-right: calc(0.25rem * 2);
   margin-right: calc(var(--spacing) * 2);
@@ -1964,8 +1974,8 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .h-\[65vh\] {
   height: 65vh;
 }
-#placeos .h-\[768px\] {
-  height: 768px;
+#placeos .h-\[calc\(100dvh-12rem\)\] {
+  height: calc(100dvh - 12rem);
 }
 #placeos .h-\[calc\(100vh-6rem\)\] {
   height: calc(100vh - 6rem);
@@ -1982,15 +1992,16 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .h-screen {
   height: 100vh;
 }
+#placeos .max-h-48 {
+  max-height: calc(0.25rem * 48);
+  max-height: calc(var(--spacing) * 48);
+}
 #placeos .max-h-80 {
   max-height: calc(0.25rem * 80);
   max-height: calc(var(--spacing) * 80);
 }
 #placeos .max-h-\[65vh\] {
   max-height: 65vh;
-}
-#placeos .max-h-\[75vh\] {
-  max-height: 75vh;
 }
 #placeos .max-h-full {
   max-height: 100%;
@@ -3524,6 +3535,13 @@ input:where([type=button], [type=reset], [type=submit]),
 #placeos .whitespace-nowrap {
   white-space: nowrap;
 }
+#placeos .whitespace-pre-wrap {
+  white-space: pre-wrap;
+}
+#placeos .text-\(--error-text\) {
+  color: hsl(354, 75%, 44%);
+  color: var(--error-text);
+}
 #placeos .text-base-100 {
   color: hsl(0, 0%, 98%);
   color: var(--base-100);
@@ -4030,6 +4048,17 @@ input:where([type=button], [type=reset], [type=submit]),
   background-color: hsl(0, 0%, 90%);
   background-color: var(--base-200);
 }
+#placeos .focus-visible\:outline-2:focus-visible {
+  outline-style: var(--tw-outline-style);
+  outline-width: 2px;
+}
+#placeos .focus-visible\:outline-offset-2:focus-visible {
+  outline-offset: 2px;
+}
+#placeos .focus-visible\:outline-solid:focus-visible {
+  --tw-outline-style: solid;
+  outline-style: solid;
+}
 @media (min-width: 40rem) {
   #placeos .sm\:pointer-events-auto {
     pointer-events: auto;
@@ -4454,6 +4483,7 @@ input:where([type=button], [type=reset], [type=submit]),
   --error: hsla(354, 75%, 53%, 1);
   --error-light: #ffebee;
   --error-content: hsl(0, 0%, 100%);
+  --error-text: hsl(354, 75%, 44%);
   --radius-sm: 5px;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -4500,6 +4530,7 @@ input:where([type=button], [type=reset], [type=submit]),
   --error: hsla(354, 75%, 53%, 1);
   --error-light: hsla(354, 75%, 22%, 0.5);
   --error-content: hsl(0, 0%, 100%);
+  --error-text: hsl(354, 75%, 66%);
   --shadow-high: 0 4px 0 2px rgba(0, 0, 24, 0.1), 0 1px 0 1px rgba(0, 0, 24, 0.1);
   --backdrop: rgba(16, 8, 32, 0.5);
 }
@@ -5141,8 +5172,8 @@ form label[for] {
   font-weight: 500;
 }
 form label[for].error {
-  color: hsla(354, 75%, 53%, 1);
-  color: var(--error);
+  color: hsl(354, 75%, 44%);
+  color: var(--error-text);
 }
 form label[for] > span {
   color: #ffb300;
@@ -5170,8 +5201,8 @@ form .field div.error {
   position: absolute;
   bottom: 0.5rem;
   left: 1rem;
-  color: hsla(354, 75%, 53%, 1);
-  color: var(--error);
+  color: hsl(354, 75%, 44%);
+  color: var(--error-text);
   font-size: 0.75rem;
   font-weight: 400;
 }
@@ -5277,8 +5308,8 @@ app-form-field:has(:disabled, app-select.disabled, [readonly]) .field-box {
 }
 .field-subscript [error] {
   display: none;
-  color: hsla(354, 75%, 53%, 1);
-  color: var(--error);
+  color: hsl(354, 75%, 44%);
+  color: var(--error-text);
 }
 .field-subscript [hint] {
   opacity: 0.7;
@@ -5703,10 +5734,16 @@ input[type=checkbox][role=switch]:focus-visible {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .progress-loop,
-  .spinner svg.spin,
+  .spinner svg.spin {
+    animation: loading-pulse 2s ease-in-out infinite;
+  }
   .spinner svg.spin circle {
-    animation-duration: 4s;
+    animation: none;
+    stroke-dasharray: 200 283 !important;
+  }
+  .progress-loop {
+    width: 100%;
+    animation: loading-pulse 2s ease-in-out infinite;
   }
   .cdk-dialog-container,
   .select-panel,
@@ -5792,6 +5829,11 @@ input[type=checkbox][role=switch]:focus-visible {
   background-color: hsl(0, 0%, 90%);
   background-color: var(--base-200);
 }
+.cdk-menu-item:focus-visible {
+  outline: 2px solid hsl(0, 0%, 0%);
+  outline: 2px solid var(--base-content);
+  outline-offset: -2px;
+}
 .cdk-menu-item[disabled] {
   opacity: 0.4;
   cursor: default;
@@ -5841,6 +5883,11 @@ input[type=checkbox][role=switch]:focus-visible {
 @supports (color: color-mix(in lab, red, red)) {
   .toast {
     box-shadow: 0 2px 0 0 color-mix(in srgb, var(--toast-accent) 55%, black);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation-name: fade-in;
   }
 }
 .toast.toast-leave {
@@ -5940,7 +5987,6 @@ input[type=checkbox][role=switch]:focus-visible {
   line-height: 1.4;
   text-align: center;
   word-wrap: anywhere;
-  pointer-events: none;
   animation: fade-in 100ms ease-out;
   --arrow-out: calc(var(--arrow) + 1px);
   --arrow-in: calc(var(--arrow) + 1px - 1.4142px);
@@ -6004,6 +6050,34 @@ input[type=checkbox][role=switch]:focus-visible {
 .tooltip-panel[data-side=right]::before {
   height: calc(var(--size) * 2 + var(--shadow));
   clip-path: polygon(100% 0, 0 var(--size), 0 calc(var(--size) + var(--shadow)), 100% 100%);
+}
+.tooltip-panel .tooltip-bridge {
+  position: absolute;
+  --reach: calc(var(--bridge, 0px) + 1px);
+}
+.tooltip-panel[data-side=above] .tooltip-bridge,
+.tooltip-panel[data-side=below] .tooltip-bridge {
+  left: -1px;
+  right: -1px;
+  height: var(--reach);
+}
+.tooltip-panel[data-side=above] .tooltip-bridge {
+  top: 100%;
+}
+.tooltip-panel[data-side=below] .tooltip-bridge {
+  bottom: 100%;
+}
+.tooltip-panel[data-side=left] .tooltip-bridge,
+.tooltip-panel[data-side=right] .tooltip-bridge {
+  top: -1px;
+  bottom: -1px;
+  width: var(--reach);
+}
+.tooltip-panel[data-side=left] .tooltip-bridge {
+  left: 100%;
+}
+.tooltip-panel[data-side=right] .tooltip-bridge {
+  right: 100%;
 }
 @property --hover-raise { syntax: "<length>"; inherits: false; initial-value: 0px; }
 button[btn]:not([icon]),
@@ -6310,6 +6384,11 @@ a[icon][disabled] {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
+  }
+}
+@keyframes loading-pulse {
+  50% {
+    opacity: 0.4;
   }
 }
 @keyframes fade-out {
