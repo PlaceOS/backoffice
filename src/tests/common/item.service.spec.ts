@@ -472,6 +472,21 @@ describe('item settings', () => {
         expect(service.item()?.settings?.[1]).toBe(saved);
     });
 
+    it('reads the settings again when a save ends during a failed read', async () => {
+        // The first read fails. The read after the save gives it.
+        const saved = level(1, 'saved: 2');
+        mocks.query_settings
+            .mockRejectedValueOnce(new Error('offline'))
+            .mockResolvedValue(mockPage({ data: [saved] }));
+        const finishLoad = await openSystemHeld();
+
+        service.updateSettings(1, saved);
+        await finishLoad();
+
+        expect(service.item()?.settings?.[1].settings_string).toBe('saved: 2');
+        expect(service.settings_error()).toBe(false);
+    });
+
     it('does not show a save of another item on the item that loads', async () => {
         mocks.query_settings.mockResolvedValue(
             mockPage({ data: [level(1, 'old: 1')] }),

@@ -353,6 +353,7 @@ export class ActiveItemService extends AsyncHandler {
                 return;
             // A settings save can end while the item loads, for example the
             // first settings of a new driver. Show it on the loaded item.
+            const late_saves = this._unapplied_settings.size > 0;
             if (settings) {
                 for (const [level, saved] of this._unapplied_settings)
                     settings[level] = saved;
@@ -367,6 +368,9 @@ export class ActiveItemService extends AsyncHandler {
             this._settings_error.set(
                 !!item && !settings && SETTINGS_TYPES.has(this._type),
             );
+            // The read failed, but a save ended while it ran, so the server
+            // has settings now. Read them again. The error goes when they load.
+            if (item && !settings && late_saves) this.refreshSettings(`${id}`);
             const name = this._type[0].toUpperCase() + this._type.slice(1);
             this._name.set(name);
             this._settings.title = name;

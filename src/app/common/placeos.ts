@@ -305,8 +305,8 @@ function listCell(value: string): string[] {
 
 /**
  * `row` with each text value converted to the type of its schema field: a
- * number for a number field, and a list (see `listCell`) for a list of
- * values. A CSV cell that is not JSON, and an edit of a bulk import row, are
+ * number for a number field, `true` or `false` for a boolean field, and a
+ * list (see `listCell`) for a list of values. A CSV cell that is not JSON, and an edit of a bulk import row, are
  * text, and the API rejects text for these fields. Other values stay as they
  * are.
  */
@@ -324,6 +324,9 @@ export function typedRow(
             if (isValueList(field)) return [key, listCell(value)];
             if (!value.trim()) return [key, value];
             const kind = (field.kind === 'nullable' ? field.inner : field).kind;
+            const text = value.trim().toLowerCase();
+            if (kind === 'boolean' && (text === 'true' || text === 'false'))
+                return [key, text === 'true'];
             const number = Number(value);
             if (
                 (kind === 'number' || kind === 'integer') &&

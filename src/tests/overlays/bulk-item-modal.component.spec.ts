@@ -99,6 +99,15 @@ describe('bulk item field types', () => {
         });
     });
 
+    it('saves a true or false cell as a boolean', async () => {
+        const { component, save } = modal(System);
+
+        // A Review edit is text
+        await component.save({ name: 'Room', bookable: 'False' });
+
+        expect(save).toHaveBeenCalledWith({ name: 'Room', bookable: false });
+    });
+
     it('keeps a system modules cell as text for the system save', async () => {
         const { component, save } = modal(System);
 
