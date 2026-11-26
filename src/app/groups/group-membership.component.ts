@@ -204,8 +204,12 @@ export class GroupMembershipComponent {
             },
         ];
     });
-    public readonly query_fn = (q: string) =>
-        this.members().options.query(q, this.members().options.authority_id());
+    public readonly query_fn = (q: string, signal?: AbortSignal) =>
+        this.members().options.query(
+            q,
+            this.members().options.authority_id(),
+            signal,
+        );
     public readonly exclude_fn = (item: { id: string; name: string }) =>
         this.members().exclude(item);
 }

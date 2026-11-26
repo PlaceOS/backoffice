@@ -149,10 +149,13 @@ describe('group membership actions', () => {
             'z-user',
         ]);
         expect(service.counts()).toEqual({ users: 2, zones: 0 });
-        expect(mocks.queryGroupUsers).toHaveBeenCalledWith({
-            group_id: 'group-1',
-            limit: 1000,
-        });
+        expect(mocks.queryGroupUsers).toHaveBeenCalledWith(
+            {
+                group_id: 'group-1',
+                limit: 1000,
+            },
+            { signal: expect.any(AbortSignal) },
+        );
     });
 
     it('only counts members until their tab is opened', async () => {
@@ -168,10 +171,13 @@ describe('group membership actions', () => {
         await TestBed.inject(ApplicationRef).whenStable();
         expect(service.users()).toEqual([]);
         expect(service.counts()).toEqual({ users: 7, zones: 0 });
-        expect(mocks.queryGroupUsers).toHaveBeenCalledExactlyOnceWith({
-            group_id: 'group-1',
-            limit: 1,
-        });
+        expect(mocks.queryGroupUsers).toHaveBeenCalledExactlyOnceWith(
+            {
+                group_id: 'group-1',
+                limit: 1,
+            },
+            { signal: expect.any(AbortSignal) },
+        );
     });
 
     it('reports failed membership queries and recovers to empty lists', async () => {

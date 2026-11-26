@@ -518,9 +518,9 @@ export class SystemModulesComponent {
         },
     ];
     /** Query method for modules */
-    public readonly query_fn = (_: string) =>
+    public readonly query_fn = (_: string, signal?: AbortSignal) =>
         modules_v7
-            .query({ q: _, no_logic: true })
+            .query({ q: _, no_logic: true }, { signal })
             .then(orThrowPage)
             .then((resp) =>
                 resp.data.map((mod) => ({ ...mod, extra: mod.driver?.name })),

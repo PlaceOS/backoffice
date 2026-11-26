@@ -31,10 +31,10 @@ export class ModuleStateService {
 
     private readonly _associated_settings = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
+        loader: async ({ params: item, abortSignal }) => {
             if (!item) return [];
             return modules
-                .settings({ id: item.id })
+                .settings({ id: item.id }, { signal: abortSignal })
                 .then(orThrow)
                 .catch(() => []);
         },
@@ -46,10 +46,10 @@ export class ModuleStateService {
 
     private readonly _driver = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
+        loader: async ({ params: item, abortSignal }) => {
             if (!item) return null;
             return drivers
-                .show({ id: item.driver_id })
+                .show({ id: item.driver_id }, { signal: abortSignal })
                 .then(orThrow)
                 .catch(() => null);
         },
@@ -59,10 +59,13 @@ export class ModuleStateService {
 
     private readonly _system = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
+        loader: async ({ params: item, abortSignal }) => {
             if (!item?.control_system_id) return null;
             return systems
-                .show({ sys_id: item.control_system_id })
+                .show(
+                    { sys_id: item.control_system_id },
+                    { signal: abortSignal },
+                )
                 .then(orThrow)
                 .catch(() => null);
         },
@@ -72,10 +75,10 @@ export class ModuleStateService {
 
     private readonly _edge = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
+        loader: async ({ params: item, abortSignal }) => {
             if (!item?.edge_id) return null;
             return edges
-                .show({ id: item.edge_id })
+                .show({ id: item.edge_id }, { signal: abortSignal })
                 .then(orThrow)
                 .catch(() => null);
         },
@@ -85,21 +88,19 @@ export class ModuleStateService {
 
     private readonly _system_list = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
-            if (!item) return { data: [] as readonly System[], total: 0 };
+        loader: async ({ params: item, abortSignal }) => {
+            const empty = { data: [] as readonly System[], total: 0 };
+            if (!item) return empty;
             this._loading.set(true);
             try {
-                const response = await querySystems({
-                    module_id: item.id,
-                }).catch(
-                    reportLoadError({
-                        data: [] as readonly System[],
-                        total: 0,
-                    }),
-                );
+                const response = await querySystems(
+                    { module_id: item.id },
+                    { signal: abortSignal },
+                ).catch(reportLoadError(empty));
                 return { data: response.data, total: response.total };
             } finally {
-                this._loading.set(false);
+                // The newer load owns `loading` once this one is aborted
+                if (!abortSignal.aborted) this._loading.set(false);
             }
         },
     });

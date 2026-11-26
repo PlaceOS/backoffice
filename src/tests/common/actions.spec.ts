@@ -169,17 +169,23 @@ describe('actions.ts', () => {
 
         it('should call queryDomains with query', () => {
             ACTIONS.domains.query('test');
-            expect(client.domains.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: ['id', 'name', 'domain'],
-            });
+            expect(client.domains.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
+                    fields: ['id', 'name', 'domain'],
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call showDomain for show', () => {
             ACTIONS.domains.show('domain-123');
-            expect(client.domains.show).toHaveBeenCalledWith({
-                id: 'domain-123',
-            });
+            expect(client.domains.show).toHaveBeenCalledWith(
+                {
+                    id: 'domain-123',
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call addDomain for new item', () => {
@@ -213,17 +219,23 @@ describe('actions.ts', () => {
 
         it('should call queryDrivers with query', () => {
             ACTIONS.drivers.query('test');
-            expect(client.drivers.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: ['id', 'name', 'module_name'],
-            });
+            expect(client.drivers.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
+                    fields: ['id', 'name', 'module_name'],
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call showDriver for show', () => {
             ACTIONS.drivers.show('driver-123');
-            expect(client.drivers.show).toHaveBeenCalledWith({
-                id: 'driver-123',
-            });
+            expect(client.drivers.show).toHaveBeenCalledWith(
+                {
+                    id: 'driver-123',
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call addDriver for new item', () => {
@@ -262,15 +274,21 @@ describe('actions.ts', () => {
 
         it('should call queryModules with query', () => {
             ACTIONS.modules.query('test');
-            expect(client.modules.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: ['id', 'name', 'custom_name', 'module_name'],
-            });
+            expect(client.modules.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
+                    fields: ['id', 'name', 'custom_name', 'module_name'],
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call showModule for show', () => {
             ACTIONS.modules.show('mod-123');
-            expect(client.modules.show).toHaveBeenCalledWith({ id: 'mod-123' });
+            expect(client.modules.show).toHaveBeenCalledWith(
+                { id: 'mod-123' },
+                { signal: undefined },
+            );
         });
 
         it('should call addModule for new item', () => {
@@ -307,17 +325,23 @@ describe('actions.ts', () => {
 
         it('should call queryRepositories with query', () => {
             ACTIONS.repositories.query('test');
-            expect(client.repositories.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: ['id', 'name', 'repo_type'],
-            });
+            expect(client.repositories.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
+                    fields: ['id', 'name', 'repo_type'],
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call showRepository for show', () => {
             ACTIONS.repositories.show('repo-123');
-            expect(client.repositories.show).toHaveBeenCalledWith({
-                id: 'repo-123',
-            });
+            expect(client.repositories.show).toHaveBeenCalledWith(
+                {
+                    id: 'repo-123',
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call addRepository for new item', () => {
@@ -353,17 +377,23 @@ describe('actions.ts', () => {
 
         it('should call querySystems with query', () => {
             ACTIONS.systems.query('test');
-            expect(client.systems.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: ['id', 'name', 'display_name'],
-            });
+            expect(client.systems.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
+                    fields: ['id', 'name', 'display_name'],
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call showSystem for show', () => {
             ACTIONS.systems.show('sys-123');
-            expect(client.systems.show).toHaveBeenCalledWith({
-                sys_id: 'sys-123',
-            });
+            expect(client.systems.show).toHaveBeenCalledWith(
+                {
+                    sys_id: 'sys-123',
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call addSystem for new item', () => {
@@ -475,17 +505,23 @@ describe('actions.ts', () => {
 
         it('should call queryTriggers with query', () => {
             ACTIONS.triggers.query('test');
-            expect(client.triggers.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: ['id', 'name', 'display_name'],
-            });
+            expect(client.triggers.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
+                    fields: ['id', 'name', 'display_name'],
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call showTrigger for show', () => {
             ACTIONS.triggers.show('trig-123');
-            expect(client.triggers.show).toHaveBeenCalledWith({
-                id: 'trig-123',
-            });
+            expect(client.triggers.show).toHaveBeenCalledWith(
+                {
+                    id: 'trig-123',
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call addTrigger for new item', () => {
@@ -519,26 +555,9 @@ describe('actions.ts', () => {
 
         it('should call queryUsers with query', () => {
             ACTIONS.users.query('test');
-            expect(client.users.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: [
-                    'id',
-                    'name',
-                    'email',
-                    'authority_id',
-                    'groups',
-                    'deleted',
-                ],
-            });
-        });
-
-        it.each([true, false])(
-            'passes include_deleted=%s to the users API',
-            (include_deleted) => {
-                ACTIONS.users.query('alex', { include_deleted });
-                expect(client.users.query).toHaveBeenCalledWith({
-                    q: 'alex',
-                    include_deleted,
+            expect(client.users.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
                     fields: [
                         'id',
                         'name',
@@ -547,13 +566,40 @@ describe('actions.ts', () => {
                         'groups',
                         'deleted',
                     ],
-                });
+                },
+                { signal: undefined },
+            );
+        });
+
+        it.each([true, false])(
+            'passes include_deleted=%s to the users API and the signal to the call',
+            (include_deleted) => {
+                const { signal } = new AbortController();
+                ACTIONS.users.query('alex', { include_deleted, signal });
+                expect(client.users.query).toHaveBeenCalledWith(
+                    {
+                        q: 'alex',
+                        include_deleted,
+                        fields: [
+                            'id',
+                            'name',
+                            'email',
+                            'authority_id',
+                            'groups',
+                            'deleted',
+                        ],
+                    },
+                    { signal },
+                );
             },
         );
 
         it('should call showUser for show', () => {
             ACTIONS.users.show('user-123');
-            expect(client.users.show).toHaveBeenCalledWith({ id: 'user-123' });
+            expect(client.users.show).toHaveBeenCalledWith(
+                { id: 'user-123' },
+                { signal: undefined },
+            );
         });
 
         it('should call addUser for new item', () => {
@@ -587,15 +633,21 @@ describe('actions.ts', () => {
 
         it('should call queryZones with query', () => {
             ACTIONS.zones.query('test');
-            expect(client.zones.query).toHaveBeenCalledWith({
-                q: 'test',
-                fields: ['id', 'name', 'display_name', 'tags'],
-            });
+            expect(client.zones.query).toHaveBeenCalledWith(
+                {
+                    q: 'test',
+                    fields: ['id', 'name', 'display_name', 'tags'],
+                },
+                { signal: undefined },
+            );
         });
 
         it('should call showZone for show', () => {
             ACTIONS.zones.show('zone-123');
-            expect(client.zones.show).toHaveBeenCalledWith({ id: 'zone-123' });
+            expect(client.zones.show).toHaveBeenCalledWith(
+                { id: 'zone-123' },
+                { signal: undefined },
+            );
         });
 
         it('should call addZone for new item', () => {

@@ -1,5 +1,6 @@
 import { computed, signal } from '@angular/core';
 import {
+    type CallOptions,
     groups as groups_v7,
     type GroupsCurrentGroup,
     type Module,
@@ -150,8 +151,13 @@ export function canUseSupportAction(permission: number) {
     );
 }
 
+/**
+ * Query the systems that the support group can see.
+ * @param call_options `signal` cancels the request and its next pages
+ */
 export function querySupportSystems(
     options: Parameters<typeof systems_v7.query>[0] = {},
+    call_options?: CallOptions,
 ) {
     if (
         selected_id() &&
@@ -161,20 +167,27 @@ export function querySupportSystems(
         return Promise.resolve(staticPage<System>([]));
     }
     return systems_v7
-        .query({
-            ...options,
-            ...(isSubsystemUser() ? { subsystem: 'support' } : {}),
-            ...(selected_id() ? { group_id: selected_id() } : {}),
-        })
+        .query(
+            {
+                ...options,
+                ...(isSubsystemUser() ? { subsystem: 'support' } : {}),
+                ...(selected_id() ? { group_id: selected_id() } : {}),
+            },
+            call_options,
+        )
         .then(orThrowPage);
 }
 
-/** Browse group anchors first; child queries use the selected parent. */
+/**
+ * Browse group anchors first; child queries use the selected parent.
+ * @param call_options `signal` cancels the requests and their next pages
+ */
 export function querySupportZones(
     options: Parameters<typeof zones.query>[0] = {},
+    call_options?: CallOptions,
 ): QueryResponse<Zone> {
     if ((!isSubsystemUser() && !selected_id()) || options.parent_id) {
-        return zones.query(options).then(orThrowPage);
+        return zones.query(options, call_options).then(orThrowPage);
     }
     const groups = active_groups().filter(
         ({ permissions }) => hasSupportRole() || !!(permissions & 1),
@@ -183,7 +196,9 @@ export function querySupportZones(
         groups.map(async ({ group }) => {
             // Ask for large pages, as the pages load one after another
             const query = { limit: 1000, ...options, group_id: group.id };
-            return collectPages(zones.query(query).then(orThrowPage));
+            return collectPages(
+                zones.query(query, call_options).then(orThrowPage),
+            );
         }),
     ).then((results) => {
         const data = [
@@ -246,12 +261,15 @@ async function loadGroupModules(entry: {
  * systems. The walk runs once per group and searches filter it in the browser.
  * `modules.query` ignores other filters with `control_system_id`, so only `q`
  * applies here.
+ * @param call_options `signal` cancels a direct query. It does not cancel the
+ * shared group walk, as other searches use it
  */
 export async function querySupportModules(
     options: Parameters<typeof modules_v7.query>[0] = {},
+    call_options?: CallOptions,
 ): QueryResponse<Module> {
     if (!selected_id() || options.control_system_id)
-        return modules_v7.query(options).then(orThrowPage);
+        return modules_v7.query(options, call_options).then(orThrowPage);
     const group_id = selected_id();
     let entry = module_cache;
     if (entry?.group_id !== group_id) {

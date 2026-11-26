@@ -93,9 +93,9 @@ export class ZonesComponent {
     });
 
     private readonly _zone_tags = resource({
-        loader: async () =>
+        loader: async ({ abortSignal }) =>
             zones
-                .tags({})
+                .tags({}, { signal: abortSignal })
                 .then(orThrow)
                 .catch(() => []),
     });

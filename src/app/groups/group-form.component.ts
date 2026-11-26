@@ -251,9 +251,9 @@ export class GroupFormComponent implements OnInit {
      */
     public readonly query_parent_groups = computed(() => {
         const authority_id = this._authority_id();
-        return (q: string) =>
+        return (q: string, signal?: AbortSignal) =>
             groups
-                .query({ q, limit: 20 })
+                .query({ q, limit: 20 }, { signal })
                 .then(orThrowPage)
                 .then(({ data }) =>
                     this._excludeSubtree(

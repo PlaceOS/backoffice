@@ -100,9 +100,35 @@ describe('ItemSearchFieldComponent', () => {
 
         field.componentInstance.search_str.set(' lob ');
         await sleep(450);
-        expect(query_fn).toHaveBeenCalledExactlyOnceWith('lob');
+        expect(query_fn).toHaveBeenCalledExactlyOnceWith(
+            'lob',
+            expect.any(AbortSignal),
+        );
         expect(field.componentInstance.item_list()).toEqual([
             { id: 'sys-1', name: 'Lobby' },
         ]);
+    });
+
+    it('should abort the query in flight when a newer search starts', async () => {
+        const signals: AbortSignal[] = [];
+        const query_fn = vi.fn((_: string, signal: AbortSignal) => {
+            signals.push(signal);
+            return new Promise<SystemLike[]>(() => undefined);
+        });
+        const field = TestBed.createComponent(ItemSearchFieldComponent);
+        field.componentRef.setInput('query_fn', query_fn);
+        field.detectChanges();
+
+        field.componentInstance.search_str.set('lob');
+        await sleep(450);
+        field.componentInstance.search_str.set('lobby');
+        await sleep(450);
+        expect(query_fn).toHaveBeenLastCalledWith(
+            'lobby',
+            expect.any(AbortSignal),
+        );
+        expect(signals.at(-2).aborted).toBe(true);
+        expect(signals.at(-1).aborted).toBe(false);
+        expect(field.componentInstance.loading()).toBe(true);
     });
 });

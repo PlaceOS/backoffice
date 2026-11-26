@@ -110,10 +110,13 @@ describe('domain tab loading', () => {
         active.set(newItem(Domain, { id: 'domain-1' }));
         await settle();
         for (const query of Object.values(mocks)) {
-            expect(query).toHaveBeenCalledExactlyOnceWith({
-                authority_id: 'domain-1',
-                limit: 1,
-            });
+            expect(query).toHaveBeenCalledExactlyOnceWith(
+                {
+                    authority_id: 'domain-1',
+                    limit: 1,
+                },
+                { signal: expect.any(AbortSignal) },
+            );
         }
         expect(service.counts()).toEqual({
             users: 25,
@@ -135,10 +138,13 @@ describe('domain tab loading', () => {
             ),
         );
         await settle();
-        expect(mocks.queryUsers).toHaveBeenLastCalledWith({
-            authority_id: 'domain-1',
-            limit: 1000,
-        });
+        expect(mocks.queryUsers).toHaveBeenLastCalledWith(
+            {
+                authority_id: 'domain-1',
+                limit: 1000,
+            },
+            { signal: expect.any(AbortSignal) },
+        );
         expect(mocks.queryApplications).toHaveBeenCalledTimes(1);
         expect(service.counts().users).toBe(1000);
         expect(service.users()[0].name).toBe('Alex');
@@ -201,10 +207,13 @@ describe('domain tab loading', () => {
             ),
         );
         await settle();
-        expect(mocks.queryUsers).toHaveBeenLastCalledWith({
-            authority_id: 'domain-2',
-            limit: 1,
-        });
+        expect(mocks.queryUsers).toHaveBeenLastCalledWith(
+            {
+                authority_id: 'domain-2',
+                limit: 1,
+            },
+            { signal: expect.any(AbortSignal) },
+        );
         expect(service.users()).toEqual([]);
     });
 });

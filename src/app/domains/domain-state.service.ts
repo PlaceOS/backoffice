@@ -99,14 +99,18 @@ export class DomainStateService {
                       full: this._load_users(),
                   }
                 : undefined,
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
+            const empty = { data: [] as User[], total: 0 };
             const response = await users
-                .query({
-                    authority_id: params.id,
-                    limit: params.full ? 1000 : 1,
-                })
+                .query(
+                    {
+                        authority_id: params.id,
+                        limit: params.full ? 1000 : 1,
+                    },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
-                .catch(reportLoadError({ data: [] as User[], total: 0 }));
+                .catch(reportLoadError(empty));
             return {
                 ...response,
                 data: response.data
@@ -128,16 +132,17 @@ export class DomainStateService {
                       full: this._load_auth(),
                   }
                 : undefined,
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
+            const options = { signal: abortSignal };
             const q = {
                 authority_id: params.id,
                 ...(params.full ? {} : { limit: 1 }),
             };
             // One failing source type should not hide the others
             const results = await Promise.allSettled([
-                saml_authentications.query(q).then(orThrowPage),
-                oauth_authentications.query(q).then(orThrowPage),
-                ldap_authentications.query(q).then(orThrowPage),
+                saml_authentications.query(q, options).then(orThrowPage),
+                oauth_authentications.query(q, options).then(orThrowPage),
+                ldap_authentications.query(q, options).then(orThrowPage),
             ]);
             const responses = results
                 .filter((result) => result.status === 'fulfilled')
@@ -165,16 +170,18 @@ export class DomainStateService {
                       full: this._load_applications(),
                   }
                 : undefined,
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
+            const empty = { data: [] as Application[], total: 0 };
             const response = await oauth_applications
-                .query({
-                    authority_id: params.id,
-                    ...(params.full ? {} : { limit: 1 }),
-                })
+                .query(
+                    {
+                        authority_id: params.id,
+                        ...(params.full ? {} : { limit: 1 }),
+                    },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
-                .catch(
-                    reportLoadError({ data: [] as Application[], total: 0 }),
-                );
+                .catch(reportLoadError(empty));
             // The API document gives no schema for the list, so parse each item
             return {
                 ...response,

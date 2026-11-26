@@ -117,15 +117,18 @@ export class SelectModuleComponent
 
     private readonly _modules = resource({
         params: () => ({ id: this._system(), change: this._change() }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             if (!params.id) return [] as (ModuleLike & { running: boolean })[];
             this.loading.set(true);
             try {
                 const mod_list = await modules
-                    .query({
-                        control_system_id: params.id,
-                        limit: 500,
-                    })
+                    .query(
+                        {
+                            control_system_id: params.id,
+                            limit: 500,
+                        },
+                        { signal: abortSignal },
+                    )
                     .then(orThrowPage)
                     .then(({ data }) => [...data])
                     .catch((): Module[] => []);
@@ -142,7 +145,8 @@ export class SelectModuleComponent
                     index: calculateModuleIndex(mod_list, mod),
                 }));
             } finally {
-                this.loading.set(false);
+                // The newer load owns `loading` once this one is aborted
+                if (!abortSignal.aborted) this.loading.set(false);
             }
         },
     });

@@ -86,7 +86,7 @@ export class SystemStateService extends AsyncHandler {
             item: this.item(),
             changed: this._settings_change(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item } = params;
             if (!item) return [];
             // The active item service already loaded the system's own settings
@@ -94,7 +94,7 @@ export class SystemStateService extends AsyncHandler {
             return isSubsystemUser()
                 ? own_settings.filter((setting) => !!setting?.id)
                 : systems
-                      .settings({ sys_id: item.id })
+                      .settings({ sys_id: item.id }, { signal: abortSignal })
                       .then(orThrow)
                       .catch(() => []);
         },
@@ -155,10 +155,13 @@ export class SystemStateService extends AsyncHandler {
             this.setLoading('modules', true);
             try {
                 const response = await modules_v7
-                    .query({
-                        control_system_id: item.id,
-                        limit: 200,
-                    })
+                    .query(
+                        {
+                            control_system_id: item.id,
+                            limit: 200,
+                        },
+                        { signal: abortSignal },
+                    )
                     .then(orThrowPage)
                     .catch(reportLoadError({ data: [] }));
                 // A newer load or another system took over. Leave its state alone.
@@ -221,7 +224,7 @@ export class SystemStateService extends AsyncHandler {
 
     private readonly _zones = resource({
         params: () => ({ item: this.item(), load: this._load_zones() }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item, load } = params;
             if (!item || !load) return [] as Zone[];
             this.setLoading('zones', true);
@@ -233,7 +236,7 @@ export class SystemStateService extends AsyncHandler {
                               await Promise.all(
                                   item.zones.map((id) =>
                                       zones_v7
-                                          .show({ id })
+                                          .show({ id }, { signal: abortSignal })
                                           .then(orThrow)
                                           .catch(() => null),
                                   ),
@@ -241,7 +244,10 @@ export class SystemStateService extends AsyncHandler {
                           ).filter((zone) => !!zone),
                       }
                     : await systems
-                          .sysZones({ sys_id: item.id })
+                          .sysZones(
+                              { sys_id: item.id },
+                              { signal: abortSignal },
+                          )
                           .then(orThrowPage)
                           .catch(reportLoadError({ data: [] }));
                 const zones = [...response.data];
@@ -251,7 +257,7 @@ export class SystemStateService extends AsyncHandler {
                 );
                 return zones;
             } finally {
-                this.setLoading('zones', false);
+                if (!abortSignal.aborted) this.setLoading('zones', false);
             }
         },
     });
@@ -264,19 +270,22 @@ export class SystemStateService extends AsyncHandler {
             changed: this._triggers_change(),
             full: this._load_triggers(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item, full } = params;
             const empty = { data: [] as readonly TriggerInstance[], total: 0 };
             if (!item) return empty;
             this.setLoading('triggers', true);
             try {
                 const response = await system_triggers
-                    .query({ sys_id: item.id, ...(full ? {} : { limit: 1 }) })
+                    .query(
+                        { sys_id: item.id, ...(full ? {} : { limit: 1 }) },
+                        { signal: abortSignal },
+                    )
                     .then(orThrowPage)
                     .catch(full ? reportLoadError(empty) : () => empty);
                 return full ? response : { ...empty, total: response.total };
             } finally {
-                this.setLoading('triggers', false);
+                if (!abortSignal.aborted) this.setLoading('triggers', false);
             }
         },
     });
@@ -417,8 +426,8 @@ export class SystemStateService extends AsyncHandler {
         >(await selectItemModal(), {
             data: {
                 service_name: 'module to system',
-                query_fn: (_) =>
-                    querySystems({ q: _ }).then((resp) =>
+                query_fn: (_, signal) =>
+                    querySystems({ q: _ }, { signal }).then((resp) =>
                         resp.data.filter((_) => _.id !== item.id),
                     ),
             },
@@ -456,9 +465,9 @@ export class SystemStateService extends AsyncHandler {
         >(await selectItemModal(), {
             data: {
                 service_name: 'Triggers',
-                query_fn: (_) =>
+                query_fn: (_, signal) =>
                     triggers
-                        .query({ q: _ })
+                        .query({ q: _ }, { signal })
                         .then(orThrowPage)
                         .then((resp) => [...resp.data]),
             },

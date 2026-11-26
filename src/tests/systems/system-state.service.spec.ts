@@ -133,10 +133,13 @@ describe('SystemStateService', () => {
 
         expect(modules.query).not.toHaveBeenCalled();
         expect(systems.sysZones).not.toHaveBeenCalled();
-        expect(system_triggers.query).toHaveBeenCalledWith({
-            sys_id: 'sys-1',
-            limit: 1,
-        });
+        expect(system_triggers.query).toHaveBeenCalledWith(
+            {
+                sys_id: 'sys-1',
+                limit: 1,
+            },
+            { signal: expect.any(AbortSignal) },
+        );
         expect(service.counts().triggers).toBe(3);
 
         openTab('modules');

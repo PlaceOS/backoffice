@@ -530,8 +530,8 @@ export class SystemFormComponent {
     );
 
     /** Function for querying zones */
-    public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).then((resp) => resp.data);
+    public readonly query_fn = (_: string, signal?: AbortSignal) =>
+        queryZones({ q: _ }, { signal }).then((resp) => resp.data);
 
     private _timezone = computed(() => this.formModel().timezone || '');
     public filtered_timezones = computed(() => {

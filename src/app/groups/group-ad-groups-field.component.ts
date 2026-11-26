@@ -155,7 +155,8 @@ export class GroupAdGroupsFieldComponent {
             .map(([id, [name, permissions]]) => ({ id, name, permissions }))
             .sort((a, b) => a.name.localeCompare(b.name)),
     );
-    public readonly query_fn = (q: string) => searchStaffGroups(q);
+    public readonly query_fn = (q: string, signal?: AbortSignal) =>
+        searchStaffGroups(q, signal);
     public readonly exclude_fn = (group: StaffDirectoryGroup) =>
         !!this.mappings()[group.id.trim().toLowerCase()];
 

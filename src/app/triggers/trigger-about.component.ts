@@ -339,9 +339,9 @@ export class TriggerAboutComponent {
         () => this.item.actions?.mailers || ([] as TriggerActionsEmail[]),
     );
     /** Query function for systems */
-    public readonly query_fn = (q: string) =>
+    public readonly query_fn = (q: string, signal?: AbortSignal) =>
         systems
-            .query({ q })
+            .query({ q }, { signal })
             .then(orThrowPage)
             .then((resp) => resp.data as System[]);
 

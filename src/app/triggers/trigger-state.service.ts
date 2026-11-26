@@ -50,13 +50,14 @@ export class TriggerStateService {
 
     private readonly _instances = resource({
         params: () => ({ item: this.item(), changed: this._change() }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item } = params;
-            if (!item) return [] as readonly TriggerInstance[];
+            const empty = [] as readonly TriggerInstance[];
+            if (!item) return empty;
             return triggers
-                .instances({ id: item.id })
+                .instances({ id: item.id }, { signal: abortSignal })
                 .then(orThrow)
-                .catch(reportLoadError([] as readonly TriggerInstance[]));
+                .catch(reportLoadError(empty));
         },
     });
 

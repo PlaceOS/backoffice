@@ -255,8 +255,8 @@ export class SystemZonesComponent {
     );
 
     /** Query function for systems */
-    public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).then((resp) => resp.data);
+    public readonly query_fn = (_: string, signal?: AbortSignal) =>
+        queryZones({ q: _ }, { signal }).then((resp) => resp.data);
 
     public readonly exclude_fn = (zone: Zone, __: string) =>
         this.item.zones.indexOf(zone.id) >= 0;

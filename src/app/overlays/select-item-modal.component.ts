@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, inject } from '@angular/core';
 
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
-import { DialogEvent } from '../common/types';
+import { DialogEvent, type SearchFn } from '../common/types';
 import { DialogCloseDirective } from '../ui/controls/dialog';
 import { SpinnerComponent } from '../ui/controls/spinner.component';
 import { ItemSearchFieldComponent } from '../ui/custom-fields/item-search-field.component';
@@ -11,7 +11,7 @@ import { TranslatePipe } from '../ui/translate.pipe';
 
 export interface SelectItemModalData<T = unknown> {
     service_name: string;
-    query_fn: (query: string) => Promise<readonly T[]>;
+    query_fn: SearchFn<T>;
 }
 
 @Component({
@@ -92,7 +92,7 @@ export class SelectItemModalComponent {
 
     public readonly filter_fn = () => false;
 
-    public get query_fn(): (query: string) => Promise<readonly unknown[]> {
+    public get query_fn(): SearchFn<unknown> {
         return this._data.query_fn;
     }
 

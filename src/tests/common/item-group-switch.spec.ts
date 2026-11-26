@@ -118,6 +118,9 @@ it('clears the active resource and ignores old list and detail responses after s
     await vi.advanceTimersByTimeAsync(1);
     service.switchGroup('group-2');
     expect(service.active_item).toBeNull();
+    // The old list and item requests are cancelled
+    expect(mocks.query.mock.calls[0][1].signal.aborted).toBe(true);
+    expect(mocks.show.mock.calls[0][1].aborted).toBe(true);
     await vi.advanceTimersByTimeAsync(20);
     expect(service.list()).toEqual([{ id: 'sys-new', name: 'New room' }]);
     old_list.resolve({
@@ -173,6 +176,7 @@ it('reloads users with the deleted filter and ignores an older response', async 
     expect(service.include_deleted()).toBe(false);
     expect(mocks.query).toHaveBeenLastCalledWith('', {
         include_deleted: false,
+        signal: expect.any(AbortSignal),
     });
     service.setSearch('alex');
     await vi.advanceTimersByTimeAsync(350);
@@ -181,11 +185,15 @@ it('reloads users with the deleted filter and ignores an older response', async 
     await vi.advanceTimersByTimeAsync(350);
     expect(mocks.query).toHaveBeenLastCalledWith('alex', {
         include_deleted: true,
+        signal: expect.any(AbortSignal),
     });
     service.setIncludeDeleted(false);
     await vi.advanceTimersByTimeAsync(350);
+    // The newer query cancels the one in flight
+    expect(mocks.query.mock.calls.at(-2)[1].signal.aborted).toBe(true);
     expect(mocks.query).toHaveBeenLastCalledWith('alex', {
         include_deleted: false,
+        signal: expect.any(AbortSignal),
     });
     old_list.resolve({
         data: [{ id: 'user-deleted', name: 'Alex' }],

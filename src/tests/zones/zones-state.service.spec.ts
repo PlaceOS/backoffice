@@ -121,10 +121,13 @@ describe('zone tabs', () => {
         const url = '/zones/zone-1/systems';
         navigation.next(new NavigationEnd(1, url, url));
         await TestBed.inject(ApplicationRef).whenStable();
-        expect(mocks.querySystems).toHaveBeenLastCalledWith({
-            zone_id: ['zone-1'],
-            limit: 500,
-        });
+        expect(mocks.querySystems).toHaveBeenLastCalledWith(
+            {
+                zone_id: ['zone-1'],
+                limit: 500,
+            },
+            { signal: expect.any(AbortSignal) },
+        );
         expect(service.systems()).toEqual(systems);
         expect(service.counts().systems).toBe(2);
     });

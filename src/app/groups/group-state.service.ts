@@ -11,7 +11,7 @@ import {
     zones,
 } from '@placeos/ts-client';
 import { orThrow, orThrowPage } from '@placeos/ts-client/compat';
-import { describeError } from '../common/errors';
+import { describeError, isAborted } from '../common/errors';
 import { ActiveItemService } from '../common/item.service';
 import { i18n } from '../common/locale.service';
 import { notifyError } from '../common/notifications';
@@ -51,14 +51,18 @@ export class GroupStateService {
             changed: this._changed(),
             full: this._load_users(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item, full } = params;
             const empty = { data: [] as GroupUser[], total: 0 };
             if (!item) return empty;
             const response = await groups_users
-                .query({ group_id: item.id, limit: full ? 1000 : 1 })
+                .query(
+                    { group_id: item.id, limit: full ? 1000 : 1 },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
                 .catch((error) => {
+                    if (isAborted(error)) return empty;
                     notifyError(
                         i18n('GROUPS.USERS_LOAD_ERROR', {
                             error: describeError(error),
@@ -86,14 +90,18 @@ export class GroupStateService {
             changed: this._changed(),
             full: this._load_zones(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item, full } = params;
             const empty = { data: [] as GroupZone[], total: 0 };
             if (!item) return empty;
             const response = await groups_zones
-                .query({ group_id: item.id, limit: full ? 1000 : 1 })
+                .query(
+                    { group_id: item.id, limit: full ? 1000 : 1 },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
                 .catch((error) => {
+                    if (isAborted(error)) return empty;
                     notifyError(
                         i18n('GROUPS.ZONES_LOAD_ERROR', {
                             error: describeError(error),
@@ -139,9 +147,9 @@ export class GroupStateService {
             no_permissions: 'COMMON.NONE',
             rows: () => this.users(),
             authority_id: () => this.active_item?.authority_id,
-            query: (q, authority_id) =>
+            query: (q, authority_id, signal) =>
                 users
-                    .query({ q, limit: 20, authority_id })
+                    .query({ q, limit: 20, authority_id }, { signal })
                     .then(orThrowPage)
                     .then((response) =>
                         response.data.map((user) => newItem(User, user)),
@@ -194,9 +202,9 @@ export class GroupStateService {
             rows: () => this.zones(),
             authority_id: () => this.active_item?.authority_id,
             // Zones have no domain, so the search is not filtered by it
-            query: (q) =>
+            query: (q, _authority_id, signal) =>
                 zones
-                    .query({ q, limit: 20 })
+                    .query({ q, limit: 20 }, { signal })
                     .then(orThrowPage)
                     .then((response) => [...response.data]),
             member_id: (row) => row.zone_id,

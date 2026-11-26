@@ -281,18 +281,22 @@ export class UploadLibraryComponent extends AsyncHandler implements OnInit {
             search: this.search_term(),
             refresh: this.refresh(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { domain, search } = params;
             if (!domain) return [] as UploadInfo[];
             // The server lists the uploads of the authority of the request.
             // It ignored the `authority_id` that 6.x sent
             const response = await uploads
-                .query({ limit: 1000, file_search: search || null })
+                .query(
+                    { limit: 1000, file_search: search || null },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
                 .catch(async (err) => {
-                    notifyError(
-                        `Failed to load uploads. Error: ${await readError(err)}`,
-                    );
+                    if (!abortSignal.aborted)
+                        notifyError(
+                            `Failed to load uploads. Error: ${await readError(err)}`,
+                        );
                     return { data: [] as readonly Upload[] };
                 });
             return response.data

@@ -378,23 +378,26 @@ export class ModuleFormComponent implements OnInit {
         { id: 'critical', name: 'COMMON.ALERT_CRITICAL' },
     ];
 
-    public readonly driver_query_fn = (_: string) =>
+    public readonly driver_query_fn = (_: string, signal?: AbortSignal) =>
         drivers
-            .query({
-                q: _,
-                ...(isSubsystemUser() && !this.formModel().id
-                    ? { role: 'logic' as const }
-                    : {}),
-            })
+            .query(
+                {
+                    q: _,
+                    ...(isSubsystemUser() && !this.formModel().id
+                        ? { role: 'logic' as const }
+                        : {}),
+                },
+                { signal },
+            )
             .then(orThrowPage)
             .then((resp) => resp.data);
 
-    public readonly system_query_fn = (_: string) =>
-        querySystems({ q: _ }).then((resp) => resp.data);
+    public readonly system_query_fn = (_: string, signal?: AbortSignal) =>
+        querySystems({ q: _ }, { signal }).then((resp) => resp.data);
 
-    public readonly edge_query_fn = (_: string) =>
+    public readonly edge_query_fn = (_: string, signal?: AbortSignal) =>
         edges
-            .query({ q: _ })
+            .query({ q: _ }, { signal })
             .then(orThrowPage)
             .then((resp) => resp.data);
 

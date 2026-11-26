@@ -209,9 +209,9 @@ export class SystemTriggerFormComponent extends AsyncHandler implements OnInit {
     /** Playlist names keyed by playlist ID. IDs without a name show the ID. */
     public readonly playlist_names = signal<Record<string, string>>({});
 
-    public readonly query_fn = (q: string) =>
+    public readonly query_fn = (q: string, signal?: AbortSignal) =>
         playlist_v7
-            .query({ q, limit: 20 })
+            .query({ q, limit: 20 }, { signal })
             .then(orThrowPage)
             .then((resp) => resp.data);
     public readonly exclude_fn = (playlist: Playlist) =>

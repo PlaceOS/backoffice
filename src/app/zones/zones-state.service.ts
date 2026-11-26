@@ -87,18 +87,24 @@ export class ZonesStateService {
             changed: this._change(),
             full: this._load_systems(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item, full } = params;
             const empty = { data: [] as System[], total: 0 };
             if (!item) return empty;
             if (!full) {
-                return querySystems({ zone_id: [item.id], limit: 1 })
+                return querySystems(
+                    { zone_id: [item.id], limit: 1 },
+                    { signal: abortSignal },
+                )
                     .then(({ total }) => ({ ...empty, total }))
                     .catch(() => empty);
             }
             // Load every page so the list matches the tab count
             const data = await collectPages(
-                querySystems({ zone_id: [item.id], limit: 500 }),
+                querySystems(
+                    { zone_id: [item.id], limit: 500 },
+                    { signal: abortSignal },
+                ),
             ).catch(reportLoadError([] as System[]));
             return { data, total: data.length };
         },
@@ -111,12 +117,12 @@ export class ZonesStateService {
             item: this.item(),
             changed: this._change(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item } = params;
             const empty = { data: [] as Trigger[], total: 0 };
             if (!item || isSubsystemUser()) return empty;
             const data = await zones
-                .triggerInstances({ id: item.id })
+                .triggerInstances({ id: item.id }, { signal: abortSignal })
                 .then(orThrow)
                 .catch(reportLoadError([] as Trigger[]));
             return { data, total: data.length };
@@ -148,18 +154,24 @@ export class ZonesStateService {
             changed: this._change(),
             full: this._load_children(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item, full } = params;
             const empty = { data: [] as Zone[], total: 0 };
             if (!item) return empty;
             if (!full) {
-                return queryZones({ parent_id: [item.id], limit: 1 })
+                return queryZones(
+                    { parent_id: [item.id], limit: 1 },
+                    { signal: abortSignal },
+                )
                     .then(({ total }) => ({ ...empty, total }))
                     .catch(() => empty);
             }
             // Load every page so the list matches the tab count
             const data = await collectPages(
-                queryZones({ parent_id: [item.id], limit: 500 }),
+                queryZones(
+                    { parent_id: [item.id], limit: 500 },
+                    { signal: abortSignal },
+                ),
             ).catch(reportLoadError([] as Zone[]));
             return { data, total: data.length };
         },
@@ -175,12 +187,15 @@ export class ZonesStateService {
             changed: this._change(),
             full: this._load_groups(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { item, full } = params;
             const empty = { data: [] as GroupZone[], total: 0 };
             if (!item) return empty;
             const response = await groups_zones
-                .query({ zone_id: item.id, limit: full ? 1000 : 1 })
+                .query(
+                    { zone_id: item.id, limit: full ? 1000 : 1 },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
                 .catch(reportLoadError(empty));
             if (!full) return { ...empty, total: response.total };
@@ -214,9 +229,9 @@ export class ZonesStateService {
         >(SelectItemModalComponent, {
             data: {
                 service_name: 'Triggers',
-                query_fn: (_) =>
+                query_fn: (_, signal) =>
                     triggers
-                        .query({ q: _ })
+                        .query({ q: _ }, { signal })
                         .then(orThrowPage)
                         .then((resp) => resp.data),
             },

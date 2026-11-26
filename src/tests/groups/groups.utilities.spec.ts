@@ -95,7 +95,10 @@ describe('hasStaffGroupSearch', () => {
         mocks.queryTenants.mockRejectedValue(new Error('Forbidden'));
         mocks.queryGroups.mockResolvedValueOnce(mockReply([]));
         expect(await hasStaffGroupSearch('auth-1')).toBe(true);
-        expect(mocks.queryGroups).toHaveBeenLastCalledWith({ q: '' });
+        expect(mocks.queryGroups).toHaveBeenLastCalledWith(
+            { q: '' },
+            { signal: undefined },
+        );
         mocks.queryGroups.mockRejectedValue(new Error('Not Implemented'));
         expect(await hasStaffGroupSearch('auth-1')).toBe(false);
     });

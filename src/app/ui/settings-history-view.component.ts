@@ -158,18 +158,25 @@ export class SettingsHistoryViewComponent {
 
     private readonly _settings = resource({
         params: () => this._service.item()?.id,
-        loader: async ({ params: id }) =>
+        loader: async ({ params: id, abortSignal }) =>
             id
-                ? (await settings.query({ parent_id: [id] }).then(orThrowPage))
-                      .data
+                ? (
+                      await settings
+                          .query({ parent_id: [id] }, { signal: abortSignal })
+                          .then(orThrowPage)
+                  ).data
                 : [],
     });
     public readonly settings = computed(() => this._settings.value() || []);
 
     private readonly _history = resource({
         params: () => this.active_setting()?.id,
-        loader: async ({ params: id }) =>
-            id ? settings.history({ id }).then(orThrow) : [],
+        loader: async ({ params: id, abortSignal }) =>
+            id
+                ? settings
+                      .history({ id }, { signal: abortSignal })
+                      .then(orThrow)
+                : [],
     });
     public readonly history = computed(
         () => this._history.value() || ([] as Settings[]),

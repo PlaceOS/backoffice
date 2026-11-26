@@ -11,6 +11,17 @@ export function httpError(error: unknown) {
 }
 
 /**
+ * Whether the error is from a request that an `AbortSignal` cancelled. A
+ * cancelled request was replaced by a newer one, so do not show it to the user.
+ */
+export function isAborted(error: unknown) {
+    return (
+        (error instanceof CallFailed && error.error.kind === 'aborted') ||
+        (error instanceof DOMException && error.name === 'AbortError')
+    );
+}
+
+/**
  * Readable text for a caught error. Use it wherever an error is shown to the
  * user. For an HTTP error it gives the status only, as 6.x did. Use
  * `readError` when the message from the API in the body is wanted.

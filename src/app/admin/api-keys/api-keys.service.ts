@@ -54,7 +54,8 @@ export class APIKeyService {
     public readonly loading = this._loading.asReadonly();
 
     private readonly _available_scopes = resource({
-        loader: () => root.scopes().then(orThrow),
+        loader: ({ abortSignal }) =>
+            root.scopes({}, { signal: abortSignal }).then(orThrow),
     });
 
     public readonly available_scopes = computed(() =>
@@ -66,17 +67,18 @@ export class APIKeyService {
             domain: this._domain(),
             change: this._change(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { domain } = params;
             this._loading.set(true);
             try {
                 if (!domain) return [] as PlaceAPIKeyDetails[];
                 const response = await api_keys
-                    .query({ authority_id: domain.id })
+                    .query({ authority_id: domain.id }, { signal: abortSignal })
                     .then(orThrowPage);
                 return [...response.data];
             } finally {
-                this._loading.set(false);
+                // The newer load owns `loading` once this one is aborted
+                if (!abortSignal.aborted) this._loading.set(false);
             }
         },
     });

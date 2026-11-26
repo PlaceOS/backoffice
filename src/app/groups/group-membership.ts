@@ -40,7 +40,11 @@ export interface GroupMembershipOptions<Row, Item extends GroupBulkAddItem> {
     /** Domain that members must belong to */
     authority_id: () => string | undefined;
     /** Find items that can become members */
-    query: (q: string, authority_id: string | undefined) => Promise<Item[]>;
+    query: (
+        q: string,
+        authority_id: string | undefined,
+        signal?: AbortSignal,
+    ) => Promise<Item[]>;
     /** ID of the member item of a row */
     member_id: (row: Row) => string;
     /** Display name of the member item of a row */
@@ -119,8 +123,8 @@ export function groupMembership<
                     empty_message: `${many}_BULK_EMPTY`,
                     show_permissions,
                     permissions: options.bulk_permissions?.(),
-                    query_fn: (q: string) =>
-                        options.query(q, options.authority_id()),
+                    query_fn: (q: string, signal?: AbortSignal) =>
+                        options.query(q, options.authority_id(), signal),
                     exclude,
                 },
                 panelClass: 'bulk-add-dialog',

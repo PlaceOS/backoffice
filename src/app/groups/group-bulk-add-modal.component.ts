@@ -27,7 +27,8 @@ export interface GroupBulkAddModalData<T extends GroupBulkAddItem> {
     title: string;
     placeholder: string;
     empty_message: string;
-    query_fn: (query: string) => Promise<T[]>;
+    /** `signal` aborts when a newer search starts */
+    query_fn: (query: string, signal?: AbortSignal) => Promise<T[]>;
     exclude?: (item: T, search: string) => boolean;
     show_permissions?: boolean;
     /** Initial permissions for the added items */
@@ -246,14 +247,17 @@ export class GroupBulkAddModalComponent<T extends GroupBulkAddItem> {
     public readonly hasPermission = hasGroupPermission;
     private readonly _items = resource({
         params: () => this.search().trim(),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             this.loading.set(true);
             try {
-                const items = await this.query_fn(params).catch(() => []);
+                const items = await this.query_fn(params, abortSignal).catch(
+                    () => [],
+                );
                 const search = params.toLowerCase();
                 return items.filter((item) => !this.exclude_fn(item, search));
             } finally {
-                this.loading.set(false);
+                // The newer search owns `loading` once this one is aborted
+                if (!abortSignal.aborted) this.loading.set(false);
             }
         },
     });

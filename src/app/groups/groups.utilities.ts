@@ -88,7 +88,10 @@ export async function hasStaffGroupSearch(authority_id: string) {
     }
 }
 
-/** Searches directory groups of the current domain's staff API tenant */
-export async function searchStaffGroups(q: string) {
-    return staff_groups.query({ q }).then(orThrow);
+/**
+ * Searches directory groups of the current domain's staff API tenant
+ * @param signal Cancels the request
+ */
+export async function searchStaffGroups(q: string, signal?: AbortSignal) {
+    return staff_groups.query({ q }, { signal }).then(orThrow);
 }

@@ -32,9 +32,12 @@ export class DriverStateService {
 
     private readonly _updates_available = resource({
         params: () => this._poll(),
-        loader: async () => {
+        loader: async ({ abortSignal }) => {
             const response = await drivers
-                .query({ update_available: true, limit: 1 })
+                .query(
+                    { update_available: true, limit: 1 },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
                 .catch(() => ({ total: 0 }));
             return response.total > 0;
@@ -50,12 +53,15 @@ export class DriverStateService {
             item: this.item(),
             changed: this._modules_change(),
         }),
-        loader: async ({ params: { item } }) => {
+        loader: async ({ params: { item }, abortSignal }) => {
             if (!item) return { data: [] as Module[], total: 0 };
             // Load every page so the list matches the tab count
             const data = await collectPages(
                 modules
-                    .query({ driver_id: item.id, limit: 500 })
+                    .query(
+                        { driver_id: item.id, limit: 500 },
+                        { signal: abortSignal },
+                    )
                     .then(orThrowPage),
             ).catch(reportLoadError([] as Module[]));
             return { data, total: data.length };
@@ -70,10 +76,10 @@ export class DriverStateService {
 
     private readonly _docs = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
+        loader: async ({ params: item, abortSignal }) => {
             if (!item) return '';
             return drivers
-                .readme({ id: item.id })
+                .readme({ id: item.id }, { signal: abortSignal })
                 .then(orThrow)
                 .catch(() => '');
         },

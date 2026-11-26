@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import {
     type CallError,
+    type CallOptions,
     Domain,
     domains as domains_v7,
     Driver,
@@ -60,12 +61,16 @@ export interface ItemCascade<T> {
     plan: (_: T) => Promise<CascadePlan>;
 }
 
+/** Options of `ItemActions.query`. `signal` cancels the query and its next pages */
+export interface ItemQueryOptions {
+    include_deleted?: boolean;
+    signal?: AbortSignal;
+}
+
 export interface ItemActions<T> {
-    query: (
-        _?: string,
-        options?: { include_deleted?: boolean },
-    ) => QueryResponse<T>;
-    show: (_: string) => Promise<T>;
+    query: (_?: string, options?: ItemQueryOptions) => QueryResponse<T>;
+    /** Load one item. `signal` cancels the request */
+    show: (_: string, signal?: AbortSignal) => Promise<T>;
     /** Creates the item, or updates it when it has an `id` */
     save: (_: Partial<T>) => Promise<T>;
     remove: (_: T) => Promise<unknown>;
@@ -79,7 +84,10 @@ export interface ItemActions<T> {
 }
 
 /** A call of the API that gives a reply with data of type `O` */
-type ApiCall<I, O> = (input: I) => Promise<Result<Reply<O>, CallError>>;
+type ApiCall<I, O> = (
+    input: I,
+    options?: CallOptions,
+) => Promise<Result<Reply<O>, CallError>>;
 
 /** The operations of an item type with plain query, show, create, update and destroy calls */
 interface CrudApi<T, B> {
@@ -100,8 +108,10 @@ function crudActions<T extends { readonly id?: string }, B>(
     fields: readonly string[],
 ) {
     return {
-        query: (q?: string) => api.query({ q, fields }).then(orThrowPage),
-        show: (id: string) => api.show({ id }).then(orThrow),
+        query: (q?: string, { signal }: ItemQueryOptions = {}) =>
+            api.query({ q, fields }, { signal }).then(orThrowPage),
+        show: (id: string, signal?: AbortSignal) =>
+            api.show({ id }, { signal }).then(orThrow),
         save: (item: Partial<T>) =>
             item.id
                 ? api
@@ -168,12 +178,15 @@ const groups: ItemActions<Group> = {
 };
 
 const modules: ItemActions<Module> = {
-    query: (_) =>
-        querySupportModules({
-            q: _,
-            fields: ['id', 'name', 'custom_name', 'module_name'],
-        }),
-    show: (_) => modules_v7.show({ id: _ }).then(orThrow),
+    query: (_, { signal } = {}) =>
+        querySupportModules(
+            {
+                q: _,
+                fields: ['id', 'name', 'custom_name', 'module_name'],
+            },
+            { signal },
+        ),
+    show: (_, signal) => modules_v7.show({ id: _ }, { signal }).then(orThrow),
     // The support group module list is cached, so drop it once this lands
     save: (item) =>
         (item.id
@@ -213,12 +226,16 @@ const repositories: ItemActions<Repository> = {
 };
 
 const systems: ItemActions<System> = {
-    query: (_) =>
-        querySystems({
-            q: _,
-            fields: ['id', 'name', 'display_name'],
-        }),
-    show: (_) => systems_v7.show({ sys_id: _ }).then(orThrow),
+    query: (_, { signal } = {}) =>
+        querySystems(
+            {
+                q: _,
+                fields: ['id', 'name', 'display_name'],
+            },
+            { signal },
+        ),
+    show: (_, signal) =>
+        systems_v7.show({ sys_id: _ }, { signal }).then(orThrow),
     save: saveSystem,
     remove: (item) => systems_v7.destroy({ sys_id: item.id }).then(orThrow),
     schema: System,
@@ -342,23 +359,27 @@ const triggers: ItemActions<Trigger> = {
 };
 
 const users: ItemActions<User> = {
-    query: (_, options) =>
+    query: (_, { signal, ...options } = {}) =>
         users_v7
-            .query({
-                ...options,
-                q: _,
-                fields: [
-                    'id',
-                    'name',
-                    'email',
-                    'authority_id',
-                    'groups',
-                    'deleted',
-                ],
-            })
+            .query(
+                {
+                    ...options,
+                    q: _,
+                    fields: [
+                        'id',
+                        'name',
+                        'email',
+                        'authority_id',
+                        'groups',
+                        'deleted',
+                    ],
+                },
+                { signal },
+            )
             .then(orThrowPage)
             .then((page) => mapPage(page, toUser)),
-    show: (_) => users_v7.show({ id: _ }).then(orThrow).then(toUser),
+    show: (_, signal) =>
+        users_v7.show({ id: _ }, { signal }).then(orThrow).then(toUser),
     save: (item) =>
         item.id
             ? users_v7
@@ -382,7 +403,8 @@ const ZONE_FIELDS = ['id', 'name', 'display_name', 'tags'];
 const zones: ItemActions<Zone> = {
     ...crudActions(zones_v7, Zone, ZONE_FIELDS),
     // The zone list of a support user or a selected group starts at its group zones
-    query: (_) => queryZones({ q: _, fields: ZONE_FIELDS }),
+    query: (_, { signal } = {}) =>
+        queryZones({ q: _, fields: ZONE_FIELDS }, { signal }),
     loadModal: () =>
         import('../zones/zone-form.component').then((m) => m.ZoneFormComponent),
     delete_message: ``,

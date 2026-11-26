@@ -331,11 +331,11 @@ export class DriverFormComponent implements OnInit {
     } | null>(null);
 
     private readonly _repo_list = resource({
-        loader: async () => {
+        loader: async ({ abortSignal }) => {
             this._setLoadingType('repository', true);
             try {
                 const { data } = await repositories
-                    .query({ limit: 1000 })
+                    .query({ limit: 1000 }, { signal: abortSignal })
                     .then(orThrowPage);
                 return data.filter(
                     (repo) => repo.repo_type === PlaceRepositoryType.Driver,
@@ -349,12 +349,12 @@ export class DriverFormComponent implements OnInit {
 
     private readonly _driver_list = resource({
         params: () => this.repo()?.id,
-        loader: async ({ params: repo_id }) => {
+        loader: async ({ params: repo_id, abortSignal }) => {
             if (!repo_id) return [];
             this._setLoadingType('drivers', true);
             try {
                 const list = await repositories
-                    .drivers({ id: repo_id })
+                    .drivers({ id: repo_id }, { signal: abortSignal })
                     .then(orThrow)
                     .catch(() => [] as string[]);
                 return list.map((_) => ({
@@ -362,7 +362,9 @@ export class DriverFormComponent implements OnInit {
                     name: _.replace(/\//g, ' > '),
                 }));
             } finally {
-                this._setLoadingType('drivers', false);
+                // The newer load owns the flag once this one is aborted
+                if (!abortSignal.aborted)
+                    this._setLoadingType('drivers', false);
             }
         },
     });
@@ -375,9 +377,13 @@ export class DriverFormComponent implements OnInit {
             repo_id: this.repo()?.id,
             driver_id: this.driver()?.id,
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             if (!params.repo_id || !params.driver_id) return [];
-            return this._loadCommitList(params.repo_id, params.driver_id);
+            return this._loadCommitList(
+                params.repo_id,
+                params.driver_id,
+                abortSignal,
+            );
         },
     });
     public readonly commit_list = computed(
@@ -596,11 +602,18 @@ export class DriverFormComponent implements OnInit {
             });
     }
 
-    private async _loadCommitList(repo_id: string, driver_id: string) {
+    private async _loadCommitList(
+        repo_id: string,
+        driver_id: string,
+        signal?: AbortSignal,
+    ) {
         this._setLoadingType('commits', true);
         try {
             const list = await repositories
-                .commits({ id: repo_id, driver: driver_id, limit: 1000 })
+                .commits(
+                    { id: repo_id, driver: driver_id, limit: 1000 },
+                    { signal },
+                )
                 .then(orThrow)
                 .catch(() => [] as GitRepositoryCommit[]);
             return list.map((item) => ({
@@ -609,7 +622,8 @@ export class DriverFormComponent implements OnInit {
                 extra: this._date_pipe.transform(item.date),
             }));
         } finally {
-            this._setLoadingType('commits', false);
+            // The newer load owns the flag once this one is aborted
+            if (!signal?.aborted) this._setLoadingType('commits', false);
         }
     }
 

@@ -347,8 +347,8 @@ export class ZoneFormComponent implements OnInit {
         zones.show({ id }).then(orThrow),
     );
     /** Query function for zones. Hides this zone's descendants to prevent cycles */
-    public readonly query_fn = (_: string) =>
-        queryZones({ q: _ }).then((resp) =>
+    public readonly query_fn = (_: string, signal?: AbortSignal) =>
+        queryZones({ q: _ }, { signal }).then((resp) =>
             this._excludeSubtree(resp.data as Zone[], this.formModel().id),
         );
     /** Function to exclude zones */

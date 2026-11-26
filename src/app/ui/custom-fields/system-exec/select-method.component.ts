@@ -132,16 +132,19 @@ export class SelectMethodComponent
             id: this._system(),
             module: this._module(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { id, module } = params;
             if (!id || !module?.module) return [] as ModuleFunction[];
             this.loading.set(true);
             try {
                 const fn_mapping = await systems
-                    .functions({
-                        sys_id: id,
-                        module_slug: `${module.module}_${module.index}`,
-                    })
+                    .functions(
+                        {
+                            sys_id: id,
+                            module_slug: `${module.module}_${module.index}`,
+                        },
+                        { signal: abortSignal },
+                    )
                     .then(orThrow)
                     .catch(() => ({}));
                 return Object.keys(fn_mapping || {})
@@ -151,7 +154,8 @@ export class SelectMethodComponent
                     }))
                     .sort((a, b) => a.name.localeCompare(b.name));
             } finally {
-                this.loading.set(false);
+                // The newer load owns `loading` once this one is aborted
+                if (!abortSignal.aborted) this.loading.set(false);
             }
         },
     });

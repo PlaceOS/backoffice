@@ -123,9 +123,15 @@ export class ZoneTreeExportModalComponent {
         return null;
     }
 
-    public readonly query_fn = (query: string): Promise<Zone[]> =>
+    public readonly query_fn = (
+        query: string,
+        signal?: AbortSignal,
+    ): Promise<Zone[]> =>
         zones
-            .query({ q: query, include_children_count: true, limit: 100 })
+            .query(
+                { q: query, include_children_count: true, limit: 100 },
+                { signal },
+            )
             .then(orThrowPage)
             .then((resp) =>
                 resp.data.map((zone) => {

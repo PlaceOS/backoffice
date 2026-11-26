@@ -183,12 +183,18 @@ export class DriverUpdateListModalComponent {
     private readonly _change = signal(0);
     private readonly _drivers_with_updates = resource({
         params: () => this._change(),
-        loader: async () => {
+        loader: async ({ abortSignal }) => {
             this.loading.set(i18n('DRIVERS.LOADING'));
+            const empty = { data: [] as Driver[], total: 0 };
             const response = await drivers_v7
-                .query({ update_available: true, limit: 1000 })
+                .query(
+                    { update_available: true, limit: 1000 },
+                    { signal: abortSignal },
+                )
                 .then(orThrowPage)
-                .catch(reportLoadError({ data: [] as Driver[], total: 0 }));
+                .catch(reportLoadError(empty));
+            // The newer load owns the selection and `loading`
+            if (abortSignal.aborted) return empty;
             const data = response.data
                 .filter((_) => _.commit !== _.update_info?.commit)
                 .sort((a, b) => a.name.localeCompare(b.name));

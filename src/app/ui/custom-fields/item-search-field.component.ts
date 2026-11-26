@@ -26,7 +26,7 @@ import { PlaceDriverRole } from '@placeos/ts-client/compat';
 import { NgTemplateOutlet } from '@angular/common';
 import { AsyncHandler } from '../../common/async-handler.class';
 import { escapeHtml } from '../../common/general';
-import { HashMap } from '../../common/types';
+import { HashMap, type SearchFn } from '../../common/types';
 import {
     AutocompleteComponent,
     AutocompleteTriggerDirective,
@@ -239,10 +239,11 @@ export class ItemSearchFieldComponent<T extends SearchItem>
     public readonly minLength = input(0);
     /** Whether item list is loading */
     public readonly loading = model<boolean>(false);
-    /** Service used for searching items. A new function queries again */
-    public readonly query_fn = input<(_: string) => Promise<readonly T[]>>(() =>
-        Promise.resolve([]),
-    );
+    /**
+     * Service used for searching items. A new function queries again.
+     * `signal` aborts when a newer search starts, so pass it to the request
+     */
+    public readonly query_fn = input<SearchFn<T>>(() => Promise.resolve([]));
     /** Currently selected item */
     public active_item = signal(null);
     /** Current display value of the search input field  */
@@ -255,7 +256,7 @@ export class ItemSearchFieldComponent<T extends SearchItem>
             min_length: this.minLength(),
             query_fn: this.query_fn(),
         }),
-        loader: async ({ params }) => {
+        loader: async ({ params, abortSignal }) => {
             const { query, options, min_length, query_fn } = params;
             const trimmed_query = query.trim();
             this.loading.set(true);
@@ -264,14 +265,17 @@ export class ItemSearchFieldComponent<T extends SearchItem>
                     options && options.length > 0
                         ? options
                         : !min_length || trimmed_query.length >= min_length
-                          ? await query_fn(trimmed_query).catch((): T[] => [])
+                          ? await query_fn(trimmed_query, abortSignal).catch(
+                                (): T[] => [],
+                            )
                           : [];
                 const search = trimmed_query.toLowerCase();
                 return list.filter((item: T) =>
                     this.exclude() ? !this.exclude()(item, search) : true,
                 );
             } finally {
-                this.loading.set(false);
+                // The newer search owns `loading` once this one is aborted
+                if (!abortSignal.aborted) this.loading.set(false);
             }
         },
     });

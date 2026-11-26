@@ -55,6 +55,15 @@ export interface AppComponentExtension {
 /** A page of a `query` call, from `.then(orThrowPage)` */
 export type QueryResponse<T> = Promise<Page<readonly T[]>>;
 
+/**
+ * Search for items that match `query`. `signal` aborts when a newer search
+ * starts, so pass it to the request.
+ */
+export type SearchFn<T> = (
+    query: string,
+    signal?: AbortSignal,
+) => Promise<readonly T[]>;
+
 /** A page with no next page, from data the app already has */
 export function staticPage<T>(data: readonly T[]): Page<readonly T[]> {
     return { data, total: data.length, next_offset: null, next: null };

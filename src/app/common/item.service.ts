@@ -128,6 +128,10 @@ export class ActiveItemService extends AsyncHandler {
     private _scope_version = 0;
     /** Id of the latest `setItem` call, so stale responses are dropped */
     private _item_request = 0;
+    /** Cancels the item load in flight. A new load or section replaces it */
+    private _item_abort: AbortController | null = null;
+    /** Cancels the list query in flight and its next pages. A new query replaces it */
+    private _list_abort: AbortController | null = null;
     /** Id of the latest settings refresh, so stale responses are dropped */
     private _settings_request = 0;
     private _items_changed = signal(0);
@@ -201,6 +205,8 @@ export class ActiveItemService extends AsyncHandler {
         if (id === selected_support_group_id() || !selectSupportGroup(id))
             return;
         this._scope_version++;
+        this._item_abort?.abort();
+        this._list_abort?.abort();
         this._active_item.set(null);
         this._next_query.set(null);
         this._list.set([]);
@@ -264,6 +270,8 @@ export class ActiveItemService extends AsyncHandler {
             this._type = (this._urlSegments()[0] ?? '') as ResourceType;
             if (!this.type)
                 return this.timeout('setItem', () => this.setItem(id));
+            this._item_abort?.abort();
+            const { signal } = (this._item_abort = new AbortController());
             this._loading.set(true);
             this._active_item.set(null);
             const actions = this.actions;
@@ -272,12 +280,18 @@ export class ActiveItemService extends AsyncHandler {
             // that the server left out get `[]`, as in 6.x
             const [item, settings] = await Promise.all([
                 actions
-                    .show(id)
+                    .show(id, signal)
                     .then((loaded) => withEmptyLists(actions.schema, loaded))
-                    .catch(() => notifyError(`Error loading ${id}`)),
-                SETTINGS_TYPES.has(this._type) ? this.loadSettings(id) : null,
+                    .catch(() => {
+                        if (!signal.aborted)
+                            notifyError(`Error loading ${id}`);
+                    }),
+                SETTINGS_TYPES.has(this._type)
+                    ? this.loadSettings(id, signal)
+                    : null,
             ]);
             if (
+                signal.aborted ||
                 scope_version !== this._scope_version ||
                 request !== this._item_request
             )
@@ -692,6 +706,9 @@ export class ActiveItemService extends AsyncHandler {
         const old_type = this._type;
         this._type = (url[0] ?? '') as ResourceType;
         if (old_type !== this._type) {
+            // The item of the old section must not load into the new one
+            this._item_abort?.abort();
+            this._loading.set(false);
             this._include_deleted.set(false);
             this._list_version++;
             // Entering a section starts from fresh data
@@ -714,7 +731,13 @@ export class ActiveItemService extends AsyncHandler {
         }
     }
 
+    /**
+     * Load the next page of the list, or the first page when the list was
+     * reset. A first page cancels the query in flight, as its results are
+     * no longer shown.
+     */
     private updateList() {
+        if (!this._next_query()) this._list_abort?.abort();
         const type = this._type;
         const search = this._search();
         const list_version = this._list_version;
@@ -745,15 +768,23 @@ export class ActiveItemService extends AsyncHandler {
                 this._loading_list.set(true);
                 let next = this._next_query();
                 if (!next) {
+                    this._list_abort?.abort();
+                    this._list_abort = new AbortController();
+                    // Next pages use the signal of the first page
+                    const { signal } = this._list_abort;
                     next = () =>
                         this.actions.query(
                             search,
                             type === 'users'
-                                ? { include_deleted: this._include_deleted() }
-                                : undefined,
+                                ? {
+                                      include_deleted: this._include_deleted(),
+                                      signal,
+                                  }
+                                : { signal },
                         );
                     this._list.set([]);
                 }
+                const signal = this._list_abort?.signal;
                 // `next()` gives `null` when the offset does not move forward
                 const resp = await (
                     next() ??
@@ -762,15 +793,17 @@ export class ActiveItemService extends AsyncHandler {
                         total: this._count(),
                     })
                 ).catch((err) => {
-                    log(
-                        'Service',
-                        `Error loading ${type} list.`,
-                        [err],
-                        'warn',
-                    );
+                    if (!signal?.aborted)
+                        log(
+                            'Service',
+                            `Error loading ${type} list.`,
+                            [err],
+                            'warn',
+                        );
                     return null;
                 });
                 if (
+                    signal?.aborted ||
                     scope_version !== this._scope_version ||
                     list_version !== this._list_version
                 )
@@ -845,10 +878,11 @@ export class ActiveItemService extends AsyncHandler {
     /**
      * Settings of each encryption level for the item, with a blank entry for
      * missing levels. Resolves `null` if they cannot be loaded.
+     * @param signal Cancels the request
      */
-    private async loadSettings(id: string) {
+    private async loadSettings(id: string, signal?: AbortSignal) {
         const response = await settings_v7
-            .query({ parent_id: [id] })
+            .query({ parent_id: [id] }, { signal })
             .then(orThrowPage)
             .catch(() => null);
         return response ? settingsLevels(response.data) : null;

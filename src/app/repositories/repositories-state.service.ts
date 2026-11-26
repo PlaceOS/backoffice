@@ -32,20 +32,22 @@ export class RepositoriesStateService {
 
     private readonly _driver_list = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
+        loader: async ({ params: item, abortSignal }) => {
             if (!item || item.repo_type === PlaceRepositoryType.Interface)
                 return [] as string[];
             this._loading.set(true);
             this._driver_list_error.set('');
             try {
                 return await repositories
-                    .drivers({ id: item.id })
+                    .drivers({ id: item.id }, { signal: abortSignal })
                     .then(orThrow);
             } catch (err) {
-                this._driver_list_error.set(describeError(err));
+                if (!abortSignal.aborted)
+                    this._driver_list_error.set(describeError(err));
                 return [];
             } finally {
-                this._loading.set(false);
+                // The newer load owns `loading` once this one is aborted
+                if (!abortSignal.aborted) this._loading.set(false);
             }
         },
     });
@@ -89,16 +91,17 @@ export class RepositoriesStateService {
 
     private readonly _commit = resource({
         params: () => this.item(),
-        loader: async ({ params: item }) => {
+        loader: async ({ params: item, abortSignal }) => {
             if (!item) return 'HEAD';
             this._commit_error.set('');
             let details: readonly GitRepositoryCommit[] = [];
             try {
                 details = await repositories
-                    .commits({ id: item.id, limit: 1 })
+                    .commits({ id: item.id, limit: 1 }, { signal: abortSignal })
                     .then(orThrow);
             } catch (err) {
-                this._commit_error.set(describeError(err));
+                if (!abortSignal.aborted)
+                    this._commit_error.set(describeError(err));
             }
             return details[0]?.commit || 'HEAD';
         },
