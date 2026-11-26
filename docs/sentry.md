@@ -99,8 +99,8 @@ upload starts on the next run of the **BUILD** workflow.
 ## How the upload works
 
 The **Upload source maps to Sentry** step in
-[`.github/workflows/build.yml`](../.github/workflows/build.yml) does these
-steps:
+[`.github/workflows/build-app.yml`](../.github/workflows/build-app.yml) does
+these steps. The **BUILD** and **RELEASE** workflows both use it:
 
 1. `sentry-cli sourcemaps inject` adds a debug ID to each script and its map.
    Sentry uses the debug ID to find the map for a script.

@@ -12,6 +12,7 @@ change detection, and the PlaceOS TypeScript client.
 ## Requirements
 
 - [Bun 1.3.11](https://bun.sh/)
+- Node.js 22.22.3 or later in 22.x, 24.15 or later in 24.x, or 26 or later (Angular 22 needs it, and Nx runs with it)
 - A PlaceOS backend (the development proxy uses `placeos-dev.aca.im` by default)
 
 ## Getting started
@@ -24,9 +25,12 @@ bun run start
 Open [http://localhost:4200](http://localhost:4200). `bun install` also generates
 the local version metadata used by the application.
 
-To use another PlaceOS backend, update `domain`, `secure`, and `valid_ssl` in
-[`config/proxy.conf.js`](config/proxy.conf.js), then restart the development
-server.
+To use another PlaceOS backend, set `PLACEOS_DOMAIN` when you start the
+development server. `PLACEOS_INSECURE=true` uses plain HTTP. The proxy checks
+the TLS certificate of the backend. For a local backend with a self-signed
+certificate, also set `PLACEOS_SELF_SIGNED=true`, for example
+`PLACEOS_DOMAIN=localhost:9543 PLACEOS_SELF_SIGNED=true bun run start`. See
+[`config/proxy.conf.js`](config/proxy.conf.js).
 
 ## Commands
 
@@ -86,7 +90,7 @@ The `Demo Site` workflow moves `backoffice-demo` to `develop` once per day (17:0
 ## Stack
 
 - Angular 22 with the Angular CDK and the app's own controls (`src/app/ui/controls`)
-- Nx 22 with the Angular application builder
+- Nx 23 with the Angular application builder
 - Vitest and Playwright
 - Tailwind CSS 4
 - `@placeos/ts-client` for PlaceOS APIs

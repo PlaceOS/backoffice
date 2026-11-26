@@ -116,8 +116,9 @@ The Users section allows administrators to manage platform users, their roles, p
 
 **AC-USR-004-2: Modify Information**
 - Given I am editing a user
-- When I change user details (name, email)
+- When I change user details (for example, the name)
 - Then my changes should be reflected in the form
+- And the email field is read-only, because the email cannot change after the user is created
 
 **AC-USR-004-3: Modify Roles**
 - Given I am editing a user
@@ -291,6 +292,9 @@ The Users section allows administrators to manage platform users, their roles, p
 ---
 
 ## US-USR-010: View User History
+
+> Not implemented. PlaceOS has no API for the change history of a user, so
+> Backoffice has no History tab.
 
 **As a** system administrator,
 **I want** to view the change history of a user account,

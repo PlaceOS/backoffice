@@ -23,7 +23,11 @@ After updating `material-symbols`, regenerate the fonts and review the rendered 
 python3 -m venv /tmp/backoffice-font-tools
 /tmp/backoffice-font-tools/bin/pip install 'fonttools[woff]==4.61.1'
 /tmp/backoffice-font-tools/bin/python config/build-icon-fonts.py
+/tmp/backoffice-font-tools/bin/pip install brotli
+PATH="/tmp/backoffice-font-tools/bin:$PATH" bun config/icon-subset.ts
 ```
+
+The last command makes the default subset font again from the new fonts.
 
 Normal builds use the checked-in fonts and do not require Python or network access
 to generate them. Do not add the original variable fonts to the build asset list.
@@ -49,8 +53,9 @@ statically.
 
 ## Themes and caching
 
-`src/material-theme.scss` retains the indigo-pink palette and includes the Material
-components used by the app. Add the matching theme mixin when adding a component.
+The app does not use Angular Material. The shared controls are in
+`src/app/ui/controls`, and their styles and the theme colors are in
+`src/styles.css`.
 
 The service worker prefetches the app shell. It downloads optional JavaScript
 chunks only when requested. An unvisited page can require a network connection;
