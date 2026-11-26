@@ -4,7 +4,9 @@ import {
     asList,
     createResource,
     getJson,
+    lastWord,
     uniqueName,
+    waitForListed,
 } from '../../support/api';
 import { expect, test } from '../../support/fixtures';
 import { SystemsPage } from '../pages';
@@ -67,6 +69,15 @@ test.describe('Systems on the local backend', () => {
             const zone = await createZone(api, cleanup);
             const match = await createSystem(api, cleanup, [zone.id]);
             const other = await createSystem(api, cleanup, [zone.id]);
+            // Search comes from Elasticsearch, which indexes a new item late
+            for (const system of [match, other]) {
+                await waitForListed(
+                    api,
+                    `${ENGINE_API}/systems`,
+                    lastWord(system.name),
+                    system.id,
+                );
+            }
             await systems.goto();
 
             // The search matches any word, so search the unique word only
@@ -83,6 +94,12 @@ test.describe('Systems on the local backend', () => {
         }) => {
             const zone = await createZone(api, cleanup);
             const system = await createSystem(api, cleanup, [zone.id]);
+            await waitForListed(
+                api,
+                `${ENGINE_API}/systems`,
+                lastWord(system.name),
+                system.id,
+            );
             await systems.goto();
             await systems.search(system.name);
 
@@ -99,6 +116,14 @@ test.describe('Systems on the local backend', () => {
             cleanup,
         }) => {
             const zone = await createZone(api, cleanup);
+            // The zone picker searches Elasticsearch, and does not search
+            // again while it waits for an option
+            await waitForListed(
+                api,
+                `${ENGINE_API}/zones`,
+                lastWord(zone.name),
+                zone.id,
+            );
             const name = uniqueName('E2E System');
             await systems.goto();
 
@@ -283,6 +308,13 @@ test.describe('Systems on the local backend', () => {
             const zone = await createZone(api, cleanup);
             const system = await createSystem(api, cleanup, [zone.id]);
             const mod = await createDeviceModule(api, cleanup);
+            // The module picker searches Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/modules`,
+                mod.custom_name ?? '',
+                mod.id,
+            );
             await systems.gotoItem(system.id, 'modules');
 
             const add = systems.tabContent.locator('[add-module]');
@@ -379,6 +411,13 @@ test.describe('Systems on the local backend', () => {
             const zone = await createZone(api, cleanup);
             const added = await createZone(api, cleanup);
             const system = await createSystem(api, cleanup, [zone.id]);
+            // The zone picker searches Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/zones`,
+                lastWord(added.name),
+                added.id,
+            );
             await systems.gotoItem(system.id, 'zones');
 
             await systems.tabContent
@@ -434,6 +473,13 @@ test.describe('Systems on the local backend', () => {
             const zone = await createZone(api, cleanup);
             const system = await createSystem(api, cleanup, [zone.id]);
             const trigger = await createTrigger(api, cleanup);
+            // The trigger picker searches Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/triggers`,
+                lastWord(trigger.name),
+                trigger.id,
+            );
             await systems.gotoItem(system.id, 'triggers');
 
             await systems.tabContent

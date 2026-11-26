@@ -1,5 +1,12 @@
 import { APIRequestContext } from '@playwright/test';
-import { ENGINE_API, asList, getJson, uniqueName } from '../../support/api';
+import {
+    ENGINE_API,
+    asList,
+    getJson,
+    lastWord,
+    uniqueName,
+    waitForListed,
+} from '../../support/api';
 import { expect, test } from '../../support/fixtures';
 import { FeaturePage } from '../pages';
 import {
@@ -40,6 +47,15 @@ test.describe('Zones on the local backend', () => {
         }) => {
             const match = await createZone(api, cleanup);
             const other = await createZone(api, cleanup);
+            // Search comes from Elasticsearch, which indexes a new item late
+            for (const zone of [match, other]) {
+                await waitForListed(
+                    api,
+                    `${ENGINE_API}/zones`,
+                    lastWord(zone.name),
+                    zone.id,
+                );
+            }
             await zones.goto();
 
             // The search matches any word, so search the unique word only
@@ -55,6 +71,12 @@ test.describe('Zones on the local backend', () => {
             cleanup,
         }) => {
             const zone = await createZone(api, cleanup);
+            await waitForListed(
+                api,
+                `${ENGINE_API}/zones`,
+                lastWord(zone.name),
+                zone.id,
+            );
             await zones.goto();
             await zones.search(zone.name);
 
@@ -142,6 +164,13 @@ test.describe('Zones on the local backend', () => {
             cleanup,
         }) => {
             const parent = await createZone(api, cleanup);
+            // The parent picker searches Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/zones`,
+                lastWord(parent.name),
+                parent.id,
+            );
             const name = uniqueName('E2E Child');
             await zones.goto();
 
@@ -213,6 +242,13 @@ test.describe('Zones on the local backend', () => {
             const zone = await createZone(api, cleanup, {
                 parent_id: old_parent.id,
             });
+            // The parent picker searches Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/zones`,
+                lastWord(new_parent.name),
+                new_parent.id,
+            );
             await zones.gotoItem(zone.id);
 
             await zones.openEditModal();
@@ -328,6 +364,13 @@ test.describe('Zones on the local backend', () => {
         }) => {
             const zone = await createZone(api, cleanup);
             const trigger = await createTrigger(api, cleanup);
+            // The trigger picker searches Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/triggers`,
+                lastWord(trigger.name),
+                trigger.id,
+            );
             await zones.gotoItem(zone.id, 'triggers');
 
             await zones.tabContent

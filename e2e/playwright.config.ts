@@ -7,17 +7,13 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * Environment Variables:
  * - BASE_URL: Base URL for the application (default: http://localhost:4200)
- * - USE_MOCK: Set to 'false' to use live environment (default: true)
- * - API_DOMAIN: API domain for live environment
- * - API_PORT: API port for live environment
- * - API_PROTOCOL: API protocol (http/https) for live environment
+ * - USE_MOCK: Do not set it. This suite refuses USE_MOCK=false: the dev
+ *   server proxy then targets the shared dev deployment, and the specs create
+ *   and delete data. Use `bun run e2e:local` for a real backend.
  *
  * Usage:
  *   # Run tests with mock data (default)
  *   bun run e2e
- *
- *   # Run tests against live environment
- *   USE_MOCK=false API_DOMAIN=placeos-dev.aca.im bunx nx e2e backoffice
  *
  *   # Run specific test file
  *   bunx nx e2e backoffice --grep "Systems"
@@ -30,8 +26,14 @@ try {
     // dotenv not available, continue without it
 }
 
-// Determine if using mock mode
-const useMock = process.env['USE_MOCK'] !== 'false';
+// Stop before the dev server starts. An old e2e/.env can still set it.
+if (process.env['USE_MOCK'] === 'false') {
+    throw new Error(
+        'USE_MOCK=false is not supported: the mock suite would change data on ' +
+            'the shared dev backend. Remove it from e2e/.env, and use ' +
+            '`bun run e2e:local` for a real backend.',
+    );
+}
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 
 /**
@@ -54,7 +56,7 @@ export default defineConfig({
     },
 
     /* Retry failed tests */
-    retries: useMock ? 1 : 2,
+    retries: 1,
 
     /* Reporter configuration */
     reporter: [['html', { open: 'never' }], ['list']],

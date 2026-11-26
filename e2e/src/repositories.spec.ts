@@ -6,8 +6,8 @@ import { FeaturePage } from './pages';
  *
  * Tests for user stories in `user-stories/repositories.md` (US-REP-*)
  *
- * The mock backend has no branch, pull or remote lookup endpoints, so
- * creating a repository, pulling and branch selection are not covered.
+ * The mock backend lists the branches `master`, `main`, `develop` and
+ * `release/2.0` for any remote URI, with `master` as the default branch.
  */
 
 const REPOSITORIES = [
@@ -139,6 +139,54 @@ test.describe('Repositories', () => {
                 'A folder name is required',
                 'A URI is required',
             ]);
+        });
+
+        test('AC-REP-003-3, AC-REP-003-4: a repository made in the form is saved with its URI, type and branch', async ({
+            page,
+        }) => {
+            const dialog = repositories.dialog;
+            const uri = 'https://github.com/PlaceOS/lighting';
+            await repositories.goto();
+
+            const id = await repositories.createWith(async () => {
+                await dialog
+                    .getByRole('textbox', { name: 'Name*', exact: true })
+                    .fill('Lighting Interface');
+                await dialog
+                    .getByRole('combobox', { name: 'Repository Type' })
+                    .click();
+                await page.getByRole('option', { name: 'Interface' }).click();
+                await dialog
+                    .getByRole('textbox', { name: 'Folder name*' })
+                    .fill('lighting');
+                await dialog
+                    .getByRole('textbox', { name: 'Repository URI*' })
+                    .fill(uri);
+                // The URI loads the remote branches and selects the default
+                const branch = dialog.getByRole('combobox', {
+                    name: /^Branch/,
+                });
+                await expect(branch).toContainText('master');
+                await branch.click();
+                await page.getByRole('option', { name: 'develop' }).click();
+                await expect(branch).toContainText('develop');
+            });
+
+            await page.reload();
+            await repositories.waitForItemDetails();
+            expect(id).toMatch(/^repo-/);
+            await expect(repositories.itemName).toHaveText(
+                'Lighting Interface',
+            );
+            await expect(
+                repositories.tabContent.getByRole('link', { name: uri }),
+            ).toHaveAttribute('href', uri);
+            await expect(repositories.tabContent).toContainText(
+                'Interface Repository',
+            );
+            await expect(
+                repositories.tabContent.locator('code').first(),
+            ).toHaveText('develop');
         });
     });
 

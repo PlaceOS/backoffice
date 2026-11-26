@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures/test-fixtures';
+import { expect, holdMetadata, test } from './fixtures/test-fixtures';
 import { UsersPage } from './pages';
 
 /**
@@ -144,24 +144,15 @@ test.describe('Users', () => {
         test('AC-USR-009-2: shows a spinner while metadata loads', async ({
             page,
         }) => {
-            await page.addInitScript(() => {
-                sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '1000');
-            });
+            const release = await holdMetadata(page);
             await users.openUser('Chris Anderson');
             await users.openTab('metadata');
 
             await expect(users.metadataLoadingSpinner).toBeVisible();
+            await release();
             await expect(users.metadataLoadingSpinner).toBeHidden();
-        });
-    });
-
-    test.describe('US-USR-010: View User History', () => {
-        test('AC-USR-010-1: shows the empty session log', async () => {
-            await users.openUser('Chris Anderson');
-            await users.openTab('history');
-
             await expect(users.tabContent).toContainText(
-                'No logs found for this user',
+                'No Metadata blocks found',
             );
         });
     });

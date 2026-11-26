@@ -1,5 +1,10 @@
 import { Page } from '@playwright/test';
-import { uniqueName } from '../../support/api';
+import {
+    ENGINE_API,
+    lastWord,
+    uniqueName,
+    waitForListed,
+} from '../../support/api';
 import { expect, test } from '../../support/fixtures';
 import { FeaturePage } from '../pages';
 import {
@@ -13,7 +18,6 @@ import {
     enginePath,
     fieldOf,
     fillSettingsEditor,
-    lastWord,
     settingsOf,
     statusOf,
 } from './support/drivers';
@@ -57,6 +61,15 @@ test.describe('Drivers on the local backend', () => {
         const other = await createDriver(api, cleanup, repo.id, {
             name: uniqueName('E2E Audio Driver'),
         });
+        // Search comes from Elasticsearch, which indexes a new item late
+        for (const driver of [found, other]) {
+            await waitForListed(
+                api,
+                `${ENGINE_API}/drivers`,
+                lastWord(driver.name),
+                driver.id,
+            );
+        }
         const drivers = new FeaturePage(page, 'drivers');
         await drivers.goto();
 

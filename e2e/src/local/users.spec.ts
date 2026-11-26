@@ -1,5 +1,12 @@
 import { APIRequestContext } from '@playwright/test';
-import { ENGINE_API, asList, getJson, uniqueName } from '../../support/api';
+import {
+    ENGINE_API,
+    asList,
+    getJson,
+    lastWord,
+    uniqueName,
+    waitForListed,
+} from '../../support/api';
 import { expect, test } from '../../support/fixtures';
 import { UsersPage } from '../pages';
 import {
@@ -49,6 +56,15 @@ test.describe('Users on the local backend', () => {
         }) => {
             const match = await createUser(api, cleanup);
             const other = await createUser(api, cleanup);
+            // Search comes from Elasticsearch, which indexes a new item late
+            for (const user of [match, other]) {
+                await waitForListed(
+                    api,
+                    `${ENGINE_API}/users`,
+                    lastWord(user.name),
+                    user.id,
+                );
+            }
             await users.goto();
 
             // Search for the unique part of the name only
@@ -64,6 +80,12 @@ test.describe('Users on the local backend', () => {
             cleanup,
         }) => {
             const user = await createUser(api, cleanup);
+            await waitForListed(
+                api,
+                `${ENGINE_API}/users`,
+                lastWord(user.name),
+                user.id,
+            );
             await users.goto();
             await users.search(user.name);
 
@@ -116,6 +138,13 @@ test.describe('Users on the local backend', () => {
             const { slug } = uniqueNames('e2e new');
             const email = `${slug}@e2e.test`;
             const last_name = slug.split('-').pop() ?? slug;
+            // The domain select lists domains from Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/domains`,
+                lastWord(domain.name),
+                domain.id,
+            );
             await users.goto();
 
             const id = await users.createWith(async () => {
@@ -141,6 +170,7 @@ test.describe('Users on the local backend', () => {
                 support: true,
                 sys_admin: false,
             });
+            await waitForListed(api, `${ENGINE_API}/users`, last_name, id);
             await users.search(last_name);
             await expect(users.itemLink(last_name)).toBeVisible();
         });
@@ -542,6 +572,13 @@ test.describe('Users on the local backend', () => {
         }) => {
             const user = await createUser(api, cleanup);
             const group = await createGroup(api, cleanup);
+            // The group search comes from Elasticsearch
+            await waitForListed(
+                api,
+                `${ENGINE_API}/groups`,
+                lastWord(group.name),
+                group.id,
+            );
             await users.gotoItem(user.id, 'groups');
 
             await page

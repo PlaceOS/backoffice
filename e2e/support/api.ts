@@ -2,7 +2,11 @@
  * Backend helpers. Specs make and remove their own data through these, and
  * check results against the API, not only the page.
  */
-import { APIRequestContext, request as pw_request } from '@playwright/test';
+import {
+    APIRequestContext,
+    expect,
+    request as pw_request,
+} from '@playwright/test';
 import { mintToken } from './auth';
 import { APP_URL, BACKEND_URL, RoleName, roleFor } from './env';
 
@@ -67,4 +71,28 @@ export async function createResource<T = { id: string }>(
 /** A name no other spec or run uses */
 export function uniqueName(prefix: string): string {
     return `${prefix} ${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+}
+
+/** Last word of a name from `uniqueName()`, which no other record has */
+export function lastWord(name: string): string {
+    return name.split(' ').pop() ?? name;
+}
+
+/**
+ * Wait until a search of `path` lists the item `id`. Lists come from
+ * Elasticsearch, so a new item shows a moment after the API made it.
+ */
+export async function waitForListed(
+    api: APIRequestContext,
+    path: string,
+    q: string,
+    id: string,
+): Promise<void> {
+    await expect
+        .poll(async () =>
+            asList<{ id: string }>(await getJson(api, path, { q })).map(
+                (item) => item.id,
+            ),
+        )
+        .toContain(id);
 }

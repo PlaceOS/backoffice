@@ -4,7 +4,9 @@ import {
     asList,
     createResource,
     getJson,
+    lastWord,
     uniqueName,
+    waitForListed,
 } from '../../support/api';
 import { Cleanup, expect, test } from '../../support/fixtures';
 import { FeaturePage } from '../pages';
@@ -44,9 +46,6 @@ interface AuthSource {
 const domainPath = (id: string) => `${ENGINE_API}/domains/${id}`;
 
 const NAME_ID_FORMAT = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress';
-
-/** The last word of a name from `uniqueName()`, which no other item has */
-const lastWord = (name: string) => name.split(' ').pop() ?? name;
 
 /** The OAuth applications of a domain */
 async function appsOf(api: APIRequestContext, domain_id: string) {
@@ -126,6 +125,15 @@ test.describe('Domains on the local backend', () => {
         }) => {
             const match = await createDomain(api, cleanup);
             const other = await createDomain(api, cleanup);
+            // Search comes from Elasticsearch, which indexes a new item late
+            for (const domain of [match, other]) {
+                await waitForListed(
+                    api,
+                    `${ENGINE_API}/domains`,
+                    lastWord(domain.name),
+                    domain.id,
+                );
+            }
             await domains.goto();
 
             await domains.search(lastWord(match.name));
@@ -140,6 +148,12 @@ test.describe('Domains on the local backend', () => {
             cleanup,
         }) => {
             const domain = await createDomain(api, cleanup);
+            await waitForListed(
+                api,
+                `${ENGINE_API}/domains`,
+                lastWord(domain.name),
+                domain.id,
+            );
             await domains.goto();
             await domains.search(lastWord(domain.name));
 
@@ -264,6 +278,12 @@ test.describe('Domains on the local backend', () => {
                 domain: host,
                 description: 'Made in the form',
             });
+            await waitForListed(
+                api,
+                `${ENGINE_API}/domains`,
+                lastWord(name),
+                id,
+            );
             await domains.search(lastWord(name));
             await expect(domains.itemLink(name)).toBeVisible();
         });

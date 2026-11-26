@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures/test-fixtures';
+import { expect, holdMetadata, test } from './fixtures/test-fixtures';
 import { SystemsPage } from './pages';
 
 /**
@@ -335,15 +335,12 @@ test.describe('Systems', () => {
         test('AC-SYS-009-2: renders the metadata view after a slow load', async ({
             page,
         }) => {
-            await page.addInitScript(() => {
-                sessionStorage.setItem('PLACEOS.mocks.metadata_delay', '3000');
-            });
+            const release = await holdMetadata(page);
             await systems.gotoItem(ACTIVITY_SPACE, 'metadata');
 
             await expect(systems.metadataLoadingSpinner).toBeVisible();
-            await expect(systems.metadataLoadingSpinner).toBeHidden({
-                timeout: 10000,
-            });
+            await release();
+            await expect(systems.metadataLoadingSpinner).toBeHidden();
             await expect(systems.tabContent).toContainText(
                 'No Metadata blocks found',
             );
