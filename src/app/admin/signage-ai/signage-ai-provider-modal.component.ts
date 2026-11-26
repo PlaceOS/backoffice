@@ -212,12 +212,14 @@ const SIGNAGE_AI_CREDENTIAL_FIELDS: Record<
                         </app-form-field>
                     </div>
                 </div>
-                <settings-toggle [formField]="form.enabled">{{
-                    'ADMIN.AI_PROVIDER_ENABLED' | translate
-                }}</settings-toggle>
-                <settings-toggle [formField]="form.is_default">{{
-                    'ADMIN.AI_PROVIDER_IS_DEFAULT' | translate
-                }}</settings-toggle>
+                <div class="flex gap-2">
+                    <settings-toggle class="flex-1" [formField]="form.enabled">{{
+                        'ADMIN.AI_PROVIDER_ENABLED' | translate
+                    }}</settings-toggle>
+                    <settings-toggle class="flex-1" [formField]="form.is_default">{{
+                        'ADMIN.AI_PROVIDER_IS_DEFAULT' | translate
+                    }}</settings-toggle>
+                </div>
             </form>
         </fullscreen-modal-shell>
     `,
