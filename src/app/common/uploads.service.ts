@@ -11,6 +11,10 @@ export class UploadsService {
 
     public readonly upload_list = this._upload_list.asReadonly();
 
+    private readonly _completed_count = signal(0);
+    /** Number of uploads in this tab that the server reported as complete */
+    public readonly completed_count = this._completed_count.asReadonly();
+
     constructor() {
         if (localStorage) {
             this._upload_list.set(
@@ -24,6 +28,8 @@ export class UploadsService {
             (file) => file.progress < 100 && !file.error,
         );
         this._upload_list.set(in_progress_list);
+        // Save the cleared history, so a reload does not show it again
+        this._updateUploadHistory();
     }
 
     /**
@@ -68,7 +74,10 @@ export class UploadsService {
             uploadFile(file, is_public, permissions).subscribe(
                 update_fn,
                 update_fn,
-                () => this._updateUploadHistory(),
+                () => {
+                    this._completed_count.update((count) => count + 1);
+                    this._updateUploadHistory();
+                },
             );
         });
     }

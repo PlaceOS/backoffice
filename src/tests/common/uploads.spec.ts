@@ -57,29 +57,37 @@ beforeEach(() => {
 });
 
 describe('uploadFile', () => {
-    it.each([
-        {
-            status: 'FAILED',
-            errors: [[expect.objectContaining({ error: 'Upload failed' })]],
-            completions: 0,
-        },
-        { status: 'COMPLETED', errors: [], completions: 1 },
-    ] as const)(
-        'stops listening once the upload is $status',
-        async ({ status, errors, completions }) => {
-            const upload = fakeUpload();
-            mocks.uploadNewFile.mockResolvedValue(upload);
-            const next = vi.fn();
-            const error = vi.fn();
-            const complete = vi.fn();
-            uploadFile(file).subscribe(next, error, complete);
-            await vi.waitFor(() => expect(next).toHaveBeenCalled());
-            upload.state.next({ ...uploading, status, progress: 100 });
-            expect(error.mock.calls).toEqual(errors);
-            expect(complete).toHaveBeenCalledTimes(completions);
-            expect(upload.state.observed).toBe(false);
-        },
-    );
+    it('stops listening once the upload is complete', async () => {
+        const upload = fakeUpload();
+        mocks.uploadNewFile.mockResolvedValue(upload);
+        const next = vi.fn();
+        const complete = vi.fn();
+        uploadFile(file).subscribe(next, vi.fn(), complete);
+        await vi.waitFor(() => expect(next).toHaveBeenCalled());
+        upload.state.next({ ...uploading, status: 'COMPLETED', progress: 100 });
+        expect(complete).toHaveBeenCalledTimes(1);
+        expect(upload.state.observed).toBe(false);
+    });
+
+    it('gives the progress of a retry after a failure', async () => {
+        const upload = fakeUpload();
+        mocks.uploadNewFile.mockResolvedValue(upload);
+        const next = vi.fn();
+        const error = vi.fn();
+        uploadFile(file).subscribe(next, error);
+        await vi.waitFor(() => expect(next).toHaveBeenCalled());
+        upload.state.next({ ...uploading, status: 'FAILED' });
+        expect(error).toHaveBeenCalledWith(
+            expect.objectContaining({ error: 'Upload failed' }),
+        );
+
+        // The user retries, and the upload goes on
+        upload.state.next({ ...uploading, progress: 60 });
+
+        expect(next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ progress: 60 }),
+        );
+    });
 
     it('starts the upload service again when the PlaceOS token changes', async () => {
         mocks.uploadNewFile.mockResolvedValue(fakeUpload());

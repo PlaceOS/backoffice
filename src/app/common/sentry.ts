@@ -125,7 +125,9 @@ export async function initSentry(injector: Injector, user_id: string) {
                 ({ name }) => name !== 'GlobalHandlers' && name !== 'Console',
             ),
             Sentry.browserTracingIntegration(),
-            Sentry.replayIntegration(),
+            // Text is masked by default, but an `href` is recorded as it is.
+            // A `mailto:` link holds an email address, so leave it out.
+            Sentry.replayIntegration({ block: ['a[href^="mailto:"]'] }),
         ],
         tracesSampleRate: isDevMode() ? 1 : 0.1,
         replaysSessionSampleRate: 0,

@@ -63,7 +63,7 @@ import {
     systems as systems_v7,
     zones as zones_v7,
 } from '@placeos/ts-client';
-import { mockReply } from '@placeos/ts-client/compat';
+import { CallFailed, mockReply } from '@placeos/ts-client/compat';
 import { tenants } from '@placeos/ts-client/staff';
 import {
     planDomainCascade,
@@ -115,6 +115,16 @@ const system = (id: string, zones: string[], modules: string[] = []) => ({
     zones,
     modules,
 });
+
+/** The error that `orThrow` gives for an HTTP status */
+const httpFailure = (status: number) =>
+    new CallFailed({
+        kind: 'http',
+        status,
+        message: null,
+        body: null,
+        text: null,
+    });
 
 describe('cascade-delete', () => {
     beforeEach(() => {
@@ -338,13 +348,32 @@ describe('cascade-delete', () => {
             );
             (systems_v7.show as Query).mockImplementation(
                 fromV1Mock(
-                    () => Promise.reject(new Error('404')),
+                    () => Promise.reject(httpFailure(404)),
                     ['sys_id', '...'],
                 ),
             );
             const split = await splitZoneSystems(['zone-a']);
             expect(split.orphaned).toEqual([]);
             expect(split.retained).toEqual([]);
+        });
+
+        it('fails when a system cannot be checked', async () => {
+            // A 500 is not a deleted system. Leaving it out of the plan
+            // would leave it without a zone.
+            (systems_v7.query as Query).mockImplementation(
+                fromV1Mock(
+                    systemsByZone({ 'zone-a': [system('sys-1', ['zone-a'])] }),
+                    ['...'],
+                    'page',
+                ),
+            );
+            (systems_v7.show as Query).mockImplementation(
+                fromV1Mock(
+                    () => Promise.reject(httpFailure(500)),
+                    ['sys_id', '...'],
+                ),
+            );
+            await expect(splitZoneSystems(['zone-a'])).rejects.toThrow();
         });
 
         it('fails rather than reporting a zone as having no systems', async () => {

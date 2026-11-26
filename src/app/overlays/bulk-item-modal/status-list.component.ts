@@ -7,7 +7,9 @@ import {
     signal,
     SimpleChanges,
 } from '@angular/core';
+import type { SaveWarning } from '../../common/actions';
 import { describeError, readError } from '../../common/errors';
+import { i18n } from '../../common/locale.service';
 import { notify } from '../../common/notifications';
 import { PlaceResource } from '../../common/types';
 import { SpinnerComponent } from '../../ui/controls/spinner.component';
@@ -17,6 +19,12 @@ import { TranslatePipe } from '../../ui/translate.pipe';
 import { VirtualScrollComponent } from '../../ui/virtual-scroll.component';
 
 const BATCH_SIZE = 5;
+
+/** Status of one row. `message` gives the reason of a warning or an error */
+interface RowStatus {
+    state: '' | 'loading' | 'done' | 'warning' | 'error';
+    message?: string;
+}
 
 @Component({
     selector: 'bulk-item-status-list',
@@ -34,8 +42,15 @@ const BATCH_SIZE = 5;
                 </div>
             } @else {
                 <div class="mb-2 text-sm font-medium">
-                    {{ completed_count() }} succeeded, {{ error_count() }}
-                    failed
+                    {{
+                        'COMMON.BULK_SUMMARY'
+                            | translate
+                                : {
+                                      created: completed_count(),
+                                      warnings: warning_count(),
+                                      failed: error_count(),
+                                  }
+                    }}
                 </div>
             }
             <div
@@ -43,8 +58,8 @@ const BATCH_SIZE = 5;
             >
                 <div
                     class="bg-info h-full rounded-full transition-all"
-                    [class.bg-success]="is_done() && error_count() === 0"
-                    [class.bg-warning]="is_done() && error_count() > 0"
+                    [class.bg-success]="is_done() && !has_issues()"
+                    [class.bg-warning]="is_done() && has_issues()"
                     [style.width.%]="progress()"
                 ></div>
             </div>
@@ -78,28 +93,49 @@ const BATCH_SIZE = 5;
             >
                 <div class="flex min-w-0 flex-1 flex-col justify-center px-2">
                     <div class="name truncate">{{ item.name }}</div>
-                    @if (state && state !== 'done') {
-                        <div class="text-error truncate text-xs">
-                            {{ state }}
+                    @if (state.message) {
+                        <!-- Focus shows the full reason in the tooltip -->
+                        <div
+                            tabindex="0"
+                            class="truncate rounded-sm text-xs"
+                            [class]="
+                                state.state === 'error'
+                                    ? 'text-(--error-text)'
+                                    : ''
+                            "
+                            [appTooltip]="state.message"
+                        >
+                            {{ state.message }}
                         </div>
                     }
                 </div>
                 <div class="status">
-                    @if (state && state !== 'loading') {
+                    @if (state.state && state.state !== 'loading') {
                         <div
                             class="flex h-8 w-8 items-center justify-center rounded-full text-2xl shadow-sm"
-                            [class.bg-error]="state !== 'done'"
-                            [class.text-error-content]="state !== 'done'"
-                            [class.bg-success]="state === 'done'"
-                            [class.text-success-content]="state === 'done'"
-                            [appTooltip]="state"
+                            [class.bg-error]="state.state === 'error'"
+                            [class.text-error-content]="state.state === 'error'"
+                            [class.bg-warning]="state.state === 'warning'"
+                            [class.text-warning-content]="
+                                state.state === 'warning'
+                            "
+                            [class.bg-success]="state.state === 'done'"
+                            [class.text-success-content]="
+                                state.state === 'done'
+                            "
                         >
                             <icon>
-                                {{ state === 'done' ? 'done' : 'close' }}
+                                {{
+                                    state.state === 'done'
+                                        ? 'done'
+                                        : state.state === 'warning'
+                                          ? 'warning'
+                                          : 'close'
+                                }}
                             </icon>
                         </div>
                     }
-                    @if (state === 'loading') {
+                    @if (state.state === 'loading') {
                         <app-spinner diameter="24" />
                     }
                 </div>
@@ -127,9 +163,11 @@ export class StatusListComponent implements OnChanges {
     public readonly list = input<Record<string, unknown>[]>([]);
     /** Method to save changes to items in the list */
     public readonly save =
-        input<(item: Record<string, unknown>) => Promise<PlaceResource>>(
-            undefined,
-        );
+        input<
+            (
+                item: Record<string, unknown>,
+            ) => Promise<PlaceResource & SaveWarning>
+        >(undefined);
     /** Emitter for completion status of the item upload */
     public readonly done = output<Record<string, unknown>[]>();
     /** Emitter to close the modal once the user has reviewed results */
@@ -138,13 +176,21 @@ export class StatusListComponent implements OnChanges {
      * Status of each of the items to be created. One signal per row, so an
      * update re-checks that row only.
      */
-    public readonly status = computed(() => this.list().map(() => signal('')));
+    public readonly status = computed(() =>
+        this.list().map(() => signal<RowStatus>({ state: '' })),
+    );
     /** Whether all items have been processed */
     public readonly is_done = signal(false);
     /** Count of successfully completed items */
     public readonly completed_count = signal(0);
     /** Count of failed items */
     public readonly error_count = signal(0);
+    /** Count of items created with a warning. They are in `completed_count` too */
+    public readonly warning_count = signal(0);
+    /** Whether an item failed or has a warning */
+    public readonly has_issues = computed(
+        () => this.error_count() > 0 || this.warning_count() > 0,
+    );
 
     public processed_count(): number {
         return this.completed_count() + this.error_count();
@@ -174,7 +220,7 @@ export class StatusListComponent implements OnChanges {
                 const batch = items.slice(i, i + BATCH_SIZE);
                 const batch_promises = batch.map(async (item, batch_index) => {
                     const index = i + batch_index;
-                    this.setStatus(index, 'loading');
+                    this.setStatus(index, { state: 'loading' });
                     try {
                         // A blank cell gets the default of the server. 6.x
                         // classes filled them, and v7 rejects `''` for a number
@@ -184,13 +230,27 @@ export class StatusListComponent implements OnChanges {
                             ),
                         );
                         const saved_item = await this.save()(row);
-                        this.setStatus(index, 'done');
+                        // The item exists, so the row counts as created
+                        const warning = saved_item.save_warning;
+                        if (warning) {
+                            const message = i18n('COMMON.BULK_SAVE_WARNING', {
+                                reason: warning,
+                            });
+                            this.setStatus(index, {
+                                state: 'warning',
+                                message,
+                            });
+                            notify('warn', message);
+                            this.warning_count.update((count) => count + 1);
+                        } else {
+                            this.setStatus(index, { state: 'done' });
+                        }
                         success_count++;
                         this.completed_count.set(success_count);
                         results[index] = saved_item;
                     } catch (err) {
                         const message = `Error: ${await readError(err)}`;
-                        this.setStatus(index, message);
+                        this.setStatus(index, { state: 'error', message });
                         // The message can have data from the response, so log the status only
                         console.error(
                             `Failed to save item ${index}: ${describeError(err)}`,
@@ -212,7 +272,7 @@ export class StatusListComponent implements OnChanges {
         }
     }
 
-    private setStatus(index: number, value: string): void {
+    private setStatus(index: number, value: RowStatus): void {
         this.status()[index].set(value);
     }
 }

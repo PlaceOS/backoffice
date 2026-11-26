@@ -12,12 +12,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { orThrow } from '@placeos/ts-client/compat';
 import { tenants } from '@placeos/ts-client/staff';
 
-import {
-    ActivatedRoute,
-    NavigationEnd,
-    Router,
-    RouterOutlet,
-} from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { setupCache, updateAvailable } from './common/application';
 import { log } from './common/general';
 import { PlaceSettings, setLoadingMessage, setupPlace } from './common/placeos';
@@ -40,10 +35,30 @@ import { TooltipDirective } from './ui/controls/tooltip.directive';
 import { GlobalBannerComponent } from './ui/global-banner.component';
 import { GlobalLoadingComponent } from './ui/global-loading.component';
 import { IconComponent } from './ui/icon.component';
+import { TranslatePipe } from './ui/translate.pipe';
 import { UploadListComponent } from './ui/upload-list.component';
 
 /** Longest time start up waits for translations */
 const LOCALE_TIMEOUT_MS = 5000;
+/** Reloads that start up makes to recover before it shows an error */
+const MAX_STARTUP_RELOADS = 2;
+/** Session key that counts the start up reloads of this tab */
+const STARTUP_RELOADS_KEY = 'BACKOFFICE.startup_reloads';
+
+/**
+ * Count one more start up reload. Returns false at the limit, or when
+ * session storage is blocked, as then the count can not stop a reload loop.
+ */
+function claimStartupReload() {
+    try {
+        const count = Number(sessionStorage.getItem(STARTUP_RELOADS_KEY)) || 0;
+        if (count >= MAX_STARTUP_RELOADS) return false;
+        sessionStorage.setItem(STARTUP_RELOADS_KEY, `${count + 1}`);
+        return true;
+    } catch {
+        return false;
+    }
+}
 
 /** Signal of the browser's network state. Call in an injection context. */
 function browserOnline() {
@@ -74,24 +89,40 @@ function browserOnline() {
                 <div class="relative h-1/2 w-full flex-1">
                     <router-outlet />
                 </div>
-                @if (!simple()) {
-                    @defer (on idle) {
-                        <app-upload-list />
-                    } @error {}
-                }
+                @defer (on idle) {
+                    <app-upload-list />
+                } @error {}
             } @else {
                 <!-- The splash from index.html shows behind the progress bar -->
                 <div class="absolute inset-0 z-50">
-                    <div
-                        class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
-                    >
-                        <!-- Translations are not loaded yet, so the label is English -->
-                        <app-progress-bar
-                            mode="indeterminate"
-                            class="scale-150 rounded"
-                            label="Loading"
-                        />
-                    </div>
+                    @if (startup_error()) {
+                        <section
+                            role="alert"
+                            class="bg-base-100 text-base-content absolute bottom-4 left-1/2 flex w-[24rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-md p-3 shadow-lg"
+                        >
+                            <p class="min-w-0 flex-1 text-sm">
+                                {{ 'COMMON.STARTUP_ERROR' | translate }}
+                            </p>
+                            <button
+                                btn
+                                type="button"
+                                (click)="refreshApplication()"
+                            >
+                                {{ 'COMMON.RETRY' | translate }}
+                            </button>
+                        </section>
+                    } @else {
+                        <div
+                            class="border-base-300 absolute bottom-2 left-1/2 w-[24rem] -translate-x-1/2 overflow-hidden rounded-full border shadow"
+                        >
+                            <!-- Translations are not loaded yet, so the label is English -->
+                            <app-progress-bar
+                                mode="indeterminate"
+                                class="scale-150 rounded"
+                                label="Loading"
+                            />
+                        </div>
+                    }
                 </div>
             }
         </div>
@@ -150,6 +181,7 @@ function browserOnline() {
         UploadListComponent,
         GlobalLoadingComponent,
         IconComponent,
+        TranslatePipe,
     ],
 })
 export class AppComponent implements OnInit {
@@ -157,14 +189,14 @@ export class AppComponent implements OnInit {
     private _users = inject(BackofficeUsersService);
     private _cache = inject(SwUpdate);
     private _injector = inject(Injector);
-    private _router = inject(Router);
     private _route = inject(ActivatedRoute);
     private _locale = inject(LocaleService, { optional: true });
 
     /** Whether the application is loading */
     public readonly loading = signal(false);
-    /** Whether to hide the upload list, e.g. on MQTT routes */
-    public readonly simple = signal(false);
+    /** Whether start up failed after its automatic reloads */
+    public readonly startup_error = signal(false);
+    /** Whether a new version of the app is ready */
     public readonly update_available = updateAvailable;
 
     private readonly _browser_online = browserOnline();
@@ -203,7 +235,11 @@ export class AppComponent implements OnInit {
         settings.ignore_api_key = true;
         setLoadingMessage('Authenticating user...');
         /** Wait for authentication details to load */
-        await setupPlace(settings).catch(() => this.onInitError());
+        const place_ready = await setupPlace(settings).then(
+            () => true,
+            () => false,
+        );
+        if (!place_ready) return this.onInitError();
         setupCache(this._cache);
         const user_ready = await waitForSignalValue(
             this._users.initialised,
@@ -219,15 +255,15 @@ export class AppComponent implements OnInit {
         // TranslatePipe is pure, so load translations before the shell renders
         await this._initLocale();
         this.loading.set(false);
+        try {
+            sessionStorage.removeItem(STARTUP_RELOADS_KEY);
+        } catch {
+            // Storage can be blocked. Then start up does not reload.
+        }
         // Remove it late. Chrome does not record the paint of an element
         // removed soon after it shows, which makes it miss the splash as
         // the largest contentful paint.
         document.getElementById('app-splash')?.remove();
-        this._router.events.subscribe((event) => {
-            if (event instanceof NavigationEnd) {
-                this.simple.set(this._router.url.includes('mqtt'));
-            }
-        });
         setLoadingMessage('Checking staff tenants...');
         // Runs after the user loads, so currentUser() is set here
         this._checkTenants().catch((error) =>
@@ -235,12 +271,20 @@ export class AppComponent implements OnInit {
         );
     }
 
-    private onInitError() {
-        if (isMock()) return;
-
-        log('Init', 'Failed to initialise user. Restarting application...');
-        invalidateToken();
-        location.reload();
+    /**
+     * Get a new token and reload, up to `MAX_STARTUP_RELOADS` times in a tab.
+     * After that, show the start up error with a Retry button.
+     */
+    private async onInitError() {
+        if (!isMock() && claimStartupReload()) {
+            log('Init', 'Failed to initialise user. Restarting application...');
+            invalidateToken();
+            location.reload();
+            return;
+        }
+        log('Init', 'Failed to initialise user', undefined, 'error', true);
+        await this._initLocale();
+        this.startup_error.set(true);
     }
 
     /** Show one banner for staff tenants with expiring secrets */
