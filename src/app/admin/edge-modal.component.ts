@@ -46,9 +46,12 @@ export interface EdgeModalData {
                     <label for="edge-description">{{
                         'COMMON.FIELD_DESCRIPTION' | translate
                     }}</label>
-                    <app-form-field>
+                    <app-form-field
+                        class="min-h-80">
                         <textarea
                             id="edge-description"
+
+                            class="min-h-80"
                             [formField]="form.description"
                             [placeholder]="
                                 'ADMIN.EDGE_DESCRIPTION_PLACEHOLDER' | translate

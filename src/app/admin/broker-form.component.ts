@@ -146,7 +146,7 @@ import {
                         @if (form.tls) {
                             <div class="field">
                                 <settings-toggle
-                                    class="mt-8 w-full"
+                                    class="mt-6 w-full"
                                     [label]="'COMMON.TLS' | translate"
                                     [formField]="form.tls"
                                 />
