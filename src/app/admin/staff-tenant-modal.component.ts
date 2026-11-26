@@ -152,13 +152,14 @@ export interface StaffTenantModalData {
                         </app-form-field>
                     </div>
                     <div class="flex flex-1 flex-col">
-                        <label for="tenant-platform">
+                        <label id="tenant-platform-label" for="tenant-platform">
                             {{ 'ADMIN.TENANTS_PLATFORM' | translate }}
                             <span>*</span>
                         </label>
                         <app-form-field>
                             <app-select
                                 id="tenant-platform"
+                                aria-labelledby="tenant-platform-label"
                                 [formField]="form.platform"
                             >
                                 <app-option value="google">Google</app-option>
@@ -187,12 +188,15 @@ export interface StaffTenantModalData {
                     </app-form-field>
                 </div>
                 <div class="flex flex-col space-y-2">
-                    <label for="tenant-early-checkin">{{
-                        'ADMIN.TENANTS_EARLY_CHECKIN' | translate
-                    }}</label>
+                    <label
+                        id="tenant-early-checkin-label"
+                        for="tenant-early-checkin"
+                        >{{ 'ADMIN.TENANTS_EARLY_CHECKIN' | translate }}</label
+                    >
                     <app-form-field>
                         <app-select
                             id="tenant-early-checkin"
+                            aria-labelledby="tenant-early-checkin-label"
                             [formField]="form.early_checkin"
                             placeholder="Select time"
                         >

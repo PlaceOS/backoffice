@@ -277,8 +277,11 @@ export class PlaceExtensionsComponent implements OnInit {
     }
 
     public async updateDomain(extension_list: BackofficeExtension[]) {
-        const domain = this.domain();
-        if (!domain) return;
+        const selected = this.domain();
+        if (!selected) return;
+        // Change the saved domain, not the copy in the list. The list can be
+        // older than a change made on another page.
+        const domain = await domains.show({ id: selected.id }).then(orThrow);
         const extensions: Partial<
             Record<ExtensionSection, AppComponentExtensions>
         > = {};

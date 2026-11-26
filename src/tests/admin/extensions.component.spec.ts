@@ -13,7 +13,7 @@ import { DialogEvent } from '../../app/common/types';
 vi.mock('@placeos/ts-client', { spy: true });
 
 describe('PlaceExtensionsComponent', () => {
-    it('keeps other domain settings when an extension is edited', async () => {
+    it('keeps the saved domain settings when an extension is edited', async () => {
         vi.mocked(domains.update).mockImplementation(async ({ body }) =>
             mockReply(newItem(Domain, body)),
         );
@@ -39,6 +39,15 @@ describe('PlaceExtensionsComponent', () => {
                     },
                 },
             }),
+        );
+        // Another page saved a new theme after the list loaded
+        vi.mocked(domains.show).mockResolvedValue(
+            mockReply(
+                newItem(Domain, {
+                    ...domain(),
+                    config: { ...domain().config, theme: 'light' },
+                }),
+            ),
         );
         const ref = {
             componentInstance: {
@@ -81,7 +90,7 @@ describe('PlaceExtensionsComponent', () => {
             id: 'domain-1',
             body: expect.objectContaining({
                 config: {
-                    theme: 'dark',
+                    theme: 'light',
                     backoffice: {
                         logo: 'logo.svg',
                         extend: {

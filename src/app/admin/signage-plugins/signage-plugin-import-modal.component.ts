@@ -92,7 +92,6 @@ interface PluginProbe {
                             (ngModelChange)="repository_filter.set($event)"
                             (mousedown)="$event.stopPropagation()"
                             (click)="$event.stopPropagation()"
-                            (keydown)="$event.stopPropagation()"
                             [placeholder]="
                                 'COMMON.SEARCH_FOR'
                                     | translate: { name: 'repositories' }

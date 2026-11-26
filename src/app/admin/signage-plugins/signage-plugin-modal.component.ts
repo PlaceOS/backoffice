@@ -326,7 +326,7 @@ export class SignagePluginModalComponent
 
         this.subscription(
             'save_key',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
+            this._hotkey.listen(['Alt', 'Shift', 'KeyS'], () => this.submit()),
         );
     }
 

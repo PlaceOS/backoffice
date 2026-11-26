@@ -1,10 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { signal } from '@angular/core';
+import { ApplicationRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { configure } from '@placeos/ts-client';
 import {
     clearEndpointMocks,
     endpointMocks,
+    httpError,
     mockEndpoint,
 } from '@placeos/ts-client/mock';
 import { Subject } from 'rxjs';
@@ -99,6 +100,25 @@ describe('APIKeyService', () => {
         expect(mocks.notifySuccess).toHaveBeenCalledWith(
             'Successfully created new API key.',
         );
+    });
+
+    it('shows a load error, not an empty list, when the key list fails', async () => {
+        mockEndpoint('api_keys.query', () => {
+            throw httpError(500);
+        });
+        const service = TestBed.inject(APIKeyService);
+        const app = TestBed.inject(ApplicationRef);
+        service.available_keys();
+        await app.whenStable();
+
+        expect(service.load_error()).toBe('500 request failed');
+
+        mockEndpoint('api_keys.query', () => [{ id: 'key-1', name: 'Key' }]);
+        service.reloadKeys();
+        await app.whenStable();
+
+        expect(service.load_error()).toBe('');
+        expect(service.available_keys().map(({ id }) => id)).toEqual(['key-1']);
     });
 
     it('clears the permissions of a key when None is chosen', async () => {

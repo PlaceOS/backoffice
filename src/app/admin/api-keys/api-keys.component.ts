@@ -1,6 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 
-import { Component, OnInit, inject } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    OnInit,
+    effect,
+    inject,
+    viewChild,
+} from '@angular/core';
 import { i18n } from '../../common/locale.service';
 import { notifySuccess } from '../../common/notifications';
 import { IconComponent } from '../../ui/icon.component';
@@ -17,9 +24,9 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
     template: `
         <div class="flex h-full w-full flex-col">
             <div class="my-4 flex items-center justify-between space-x-2 px-4">
-                <div class="text-2xl">
+                <h2 #heading tabindex="-1" class="text-2xl outline-none">
                     {{ 'ADMIN.APP_KEYS_HEADER' | translate }}
-                </div>
+                </h2>
                 <div class="flex items-center space-x-2">
                     <admin-domain-select key="api-keys" field_class="h-12" />
                     <button
@@ -81,52 +88,85 @@ import { AdminDomainSelectComponent } from '../admin-domain-select.component';
                     class="w-full"
                     [class.invisible]="loading() !== true"
                 />
-                <simple-table
-                    class="block min-w-7xl text-sm"
-                    [data]="key_list"
-                    [columns]="[
-                        { key: 'name', name: 'COMMON.FIELD_NAME' | translate },
-                        {
-                            key: 'description',
-                            name: 'COMMON.FIELD_DESCRIPTION' | translate,
-                            content: description_template,
-                        },
-                        {
-                            key: 'scopes',
-                            name: 'ADMIN.APP_KEYS_FIELD_SCOPES' | translate,
-                            content: scopes_template,
-                        },
-                        {
-                            key: 'permissions',
-                            name:
-                                'ADMIN.APP_KEYS_FIELD_PERMISSIONS' | translate,
-                            content: access_template,
-                            size: '6rem',
-                        },
-                        {
-                            key: 'created_at',
-                            name: 'COMMON.CREATED_AT' | translate,
-                            content: data_from_template,
-                            size: '8rem',
-                        },
-                        {
-                            key: 'expires_at',
-                            name: 'ADMIN.APP_KEYS_FIELD_EXPIRES_AT' | translate,
-                            content: expires_template,
-                            size: '9rem',
-                        },
-                        {
-                            key: 'actions',
-                            name: 'COMMON.ACTIONS' | translate,
-                            hide_name: true,
-                            content: actions_template,
-                            size: '6rem',
-                            sortable: false,
-                        },
-                    ]"
-                    [sortable]="true"
-                    [empty_message]="'ADMIN.APP_KEYS_LIST_EMPTY' | translate"
-                />
+                @if (load_error()) {
+                    <div
+                        role="alert"
+                        class="flex flex-col items-center space-y-4 p-8 text-center"
+                    >
+                        <icon class="text-error text-4xl">error</icon>
+                        <p>
+                            {{
+                                'ADMIN.APP_KEYS_LOAD_ERROR'
+                                    | translate: { error: load_error() }
+                            }}
+                        </p>
+                        <button
+                            #retry
+                            btn
+                            ripple
+                            [attr.aria-disabled]="loading() || null"
+                            [attr.aria-busy]="loading() || null"
+                            (click)="reload()"
+                        >
+                            {{ 'COMMON.RETRY' | translate }}
+                        </button>
+                    </div>
+                } @else {
+                    <simple-table
+                        class="block min-w-7xl text-sm"
+                        [data]="key_list"
+                        [columns]="[
+                            {
+                                key: 'name',
+                                name: 'COMMON.FIELD_NAME' | translate,
+                            },
+                            {
+                                key: 'description',
+                                name: 'COMMON.FIELD_DESCRIPTION' | translate,
+                                content: description_template,
+                            },
+                            {
+                                key: 'scopes',
+                                name: 'ADMIN.APP_KEYS_FIELD_SCOPES' | translate,
+                                content: scopes_template,
+                            },
+                            {
+                                key: 'permissions',
+                                name:
+                                    'ADMIN.APP_KEYS_FIELD_PERMISSIONS'
+                                    | translate,
+                                content: access_template,
+                                size: '6rem',
+                            },
+                            {
+                                key: 'created_at',
+                                name: 'COMMON.CREATED_AT' | translate,
+                                content: data_from_template,
+                                size: '8rem',
+                            },
+                            {
+                                key: 'expires_at',
+                                name:
+                                    'ADMIN.APP_KEYS_FIELD_EXPIRES_AT'
+                                    | translate,
+                                content: expires_template,
+                                size: '9rem',
+                            },
+                            {
+                                key: 'actions',
+                                name: 'COMMON.ACTIONS' | translate,
+                                hide_name: true,
+                                content: actions_template,
+                                size: '6rem',
+                                sortable: false,
+                            },
+                        ]"
+                        [sortable]="true"
+                        [empty_message]="
+                            'ADMIN.APP_KEYS_LIST_EMPTY' | translate
+                        "
+                    />
+                }
                 <div class="h-12 w-full"></div>
             </div>
         </div>
@@ -225,11 +265,32 @@ export class AdminAPIKeysComponent implements OnInit {
     public readonly last_key = this._service.last_key;
 
     public readonly loading = this._service.loading;
+    public readonly load_error = this._service.load_error;
 
     public readonly newKey = () => this._service.newKey();
     public readonly quickCreateKey = () => this._service.quickCreateKey();
     public readonly editKey = (k) => this._service.editKey(k);
     public readonly deleteKey = (k) => this._service.removeKey(k);
+    private readonly _heading =
+        viewChild.required<ElementRef<HTMLElement>>('heading');
+    private readonly _retry = viewChild<ElementRef<HTMLElement>>('retry');
+
+    /** Load the list again. Retry stays while it loads, so it keeps focus */
+    public reload() {
+        if (!this.loading()) this._service.reloadKeys();
+    }
+
+    constructor() {
+        // A retry that loads the list removes Retry, so move its focus to
+        // the heading. This runs before the view removes Retry.
+        effect(() => {
+            const retry = this._retry()?.nativeElement;
+            if (this.loading() || this.load_error() || !retry) return;
+            if (document.activeElement === retry) {
+                this._heading().nativeElement.focus();
+            }
+        });
+    }
 
     public async ngOnInit() {
         await this._service.selectDefaultDomain();

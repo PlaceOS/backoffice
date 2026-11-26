@@ -3,6 +3,7 @@ import { Component, signal } from '@angular/core';
 import { cluster as cluster_v7 } from '@placeos/ts-client';
 import { orThrow } from '@placeos/ts-client/compat';
 import { AsyncHandler } from '../../common/async-handler.class';
+import { describeError } from '../../common/errors';
 import { HashMap } from '../../common/types';
 
 import { RouterModule } from '@angular/router';
@@ -21,6 +22,17 @@ import {
         <div class="my-4 flex items-center justify-between space-x-2 px-4">
             <div class="text-2xl">{{ 'ADMIN.CLUSTERS' | translate }}</div>
         </div>
+        <!-- One alert for a failed first load and a failed refresh -->
+        @if (refresh_error()) {
+            <p role="alert" class="mx-4 mb-2 text-sm text-(--error-text)">
+                {{
+                    (cluster_list().length
+                        ? 'ADMIN.CLUSTERS_STALE'
+                        : 'ADMIN.CLUSTERS_LOAD_ERROR'
+                    ) | translate: { error: refresh_error() }
+                }}
+            </p>
+        }
         <div class="flex max-h-full flex-wrap overflow-auto">
             @if (cluster_list().length) {
                 <div class="px-2">
@@ -66,7 +78,7 @@ import {
                         </div>
                     }
                 </div>
-            } @else {
+            } @else if (!refresh_error()) {
                 <div
                     class="absolute inset-0 flex flex-col items-center justify-center space-y-8 opacity-30"
                 >
@@ -96,6 +108,11 @@ export class PlaceClusterDetailsComponent extends AsyncHandler {
     > = {};
     /** Whether cluster details are being loaded */
     public readonly loading = signal(false);
+    /**
+     * Text of the error of the last refresh, or empty when it loaded. When set,
+     * the shown details are from the last refresh that loaded.
+     */
+    public readonly refresh_error = signal('');
 
     constructor() {
         super();
@@ -111,7 +128,16 @@ export class PlaceClusterDetailsComponent extends AsyncHandler {
             .nodes({ include_status: false })
             .then(orThrow)
             .then((nodes) => nodes.map(clusterFromStatus))
-            .catch((): PlaceCluster[] => []);
+            .catch((error: unknown): null => {
+                this.refresh_error.set(describeError(error));
+                return null;
+            });
+        if (!list) {
+            // Keep the last details, so a failed refresh does not hide them
+            this.loading.set(false);
+            return;
+        }
+        this.refresh_error.set('');
         this.cluster_list.set(list);
         const date = Date.now();
         // A new object, so the signal notifies and removed clusters drop out

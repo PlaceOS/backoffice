@@ -239,7 +239,7 @@ export class ExtensionModalComponent extends AsyncHandler implements OnInit {
     public ngOnInit() {
         this.subscription(
             'save',
-            this._hotkey.listen(['KeyS'], () => this.submit()),
+            this._hotkey.listen(['Alt', 'Shift', 'KeyS'], () => this.submit()),
         );
         this.formModel.update((value) => ({ ...value, ...this.item }));
     }
